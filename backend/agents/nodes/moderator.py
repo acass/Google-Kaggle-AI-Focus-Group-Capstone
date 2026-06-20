@@ -1,4 +1,5 @@
 from google import genai
+from google.genai import types
 from ...models.state import FocusGroupState, StreamEvent
 
 client = genai.Client()
@@ -19,11 +20,16 @@ Write a brief, focused introduction (3-5 sentences) that:
 2. Sets the expectation that each panelist will give their honest, independent assessment
 3. Asks them to identify strengths, weaknesses, risks, and specific suggestions
 
+Before writing your introduction, use your Search tool to fetch 1-2 real-world facts or recent news context about this topic and include them to ground the discussion.
+
 Be concise and professional. Do not be overly formal."""
 
     response = await client.aio.models.generate_content(
         model="gemini-2.5-pro",
         contents=prompt,
+        config=types.GenerateContentConfig(
+            tools=[{"google_search": {}}],
+        )
     )
     intro = response.text
 

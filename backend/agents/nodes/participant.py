@@ -37,6 +37,8 @@ async def make_independent_response(state: FocusGroupState, persona: AgentPerson
 
 Topic to evaluate: {topic}
 
+Before answering, use your Search tool to find actual real-world data, news, or context about this topic to ground your evaluation. Mention specific facts you find.
+
 Give your honest, independent assessment. Cover:
 - Your first impression (1-2 sentences)
 - 2-3 specific strengths
@@ -49,6 +51,9 @@ Do NOT hedge excessively. If you hate something, say so."""
     response = await client.aio.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt,
+        config=types.GenerateContentConfig(
+            tools=[{"google_search": {}}],
+        )
     )
     content = response.text
 
