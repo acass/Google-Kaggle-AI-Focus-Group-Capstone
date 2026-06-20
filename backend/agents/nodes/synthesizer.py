@@ -1,11 +1,9 @@
 import json
 import math
-from google import genai
-from google.genai import types
+from google.adk.agents import LlmAgent
+from google.adk.agents.context import Context
 from pydantic import BaseModel, Field
 from ...models.state import FocusGroupState, FinalReport, ScoreSet, StreamEvent
-
-client = genai.Client()
 
 CATEGORIES = ["innovation", "market", "ux", "feasibility", "monetization", "risk"]
 
@@ -39,7 +37,7 @@ def _compute_stats(scores: dict[str, ScoreSet]) -> tuple[ScoreSet, ScoreSet, flo
     return averages, std_devs, consensus
 
 
-async def synthesizer_node(state: FocusGroupState) -> dict:
+async def synthesizer_node(ctx: Context, state: FocusGroupState) -> dict:
     topic = state["topic"]
     participants = state["participants"]
     independent_responses = state.get("independent_responses", {})
@@ -83,25 +81,25 @@ Consensus confidence: {consensus_confidence}
 Produce a structured synthesis based on the provided discussion and scores.
 Be specific. Reference actual points made. Do not be generic."""
 
-    response = await client.aio.models.generate_content(
+    agent = LlmAgent(
+        name="synthesizer",
         model="gemini-2.5-pro",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=0.4,
-            response_mime_type="application/json",
-            response_schema=SynthesisResult,
-        )
+        instruction=prompt,
+        output_schema=SynthesisResult,
+        generate_content_config={"temperature": 0.4},
     )
 
-    try:
-        analysis = json.loads(response.text)
-    except (json.JSONDecodeError, IndexError):
+    analysis_data = await ctx.run_node(agent, node_input="")
+    
+    if isinstance(analysis_data, dict):
+        analysis = analysis_data
+    else:
         analysis = {
-            "key_concerns": ["Analysis parsing error — check logs"],
-            "key_strengths": [],
-            "action_items": [],
-            "recommendation": response.text[:300] if response.text else "Failed to generate recommendation.",
-            "sentiment": "neutral",
+            "key_concerns": analysis_data.key_concerns,
+            "key_strengths": analysis_data.key_strengths,
+            "action_items": analysis_data.action_items,
+            "recommendation": analysis_data.recommendation,
+            "sentiment": analysis_data.sentiment,
         }
 
     report: FinalReport = {

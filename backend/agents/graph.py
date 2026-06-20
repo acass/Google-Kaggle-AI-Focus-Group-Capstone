@@ -13,19 +13,19 @@ def build_graph(participants: list[AgentPersona]) -> Workflow:
     join_disc = JoinNode(name="collect_discussion")
     join_vote = JoinNode(name="collect_votes")
 
-    @node(name="moderator_introduce")
+    @node(name="moderator_introduce", rerun_on_resume=True)
     async def mod_intro(ctx: Context, node_input: Any):
-        result = await moderator_introduce_node(ctx.state)
+        result = await moderator_introduce_node(ctx, ctx.state)
         return Event(output=result, state=result)
 
-    @node(name="moderator_followup")
+    @node(name="moderator_followup", rerun_on_resume=True)
     async def mod_followup(ctx: Context, node_input: Any):
-        result = await moderator_followup_node(ctx.state)
+        result = await moderator_followup_node(ctx, ctx.state)
         return Event(output=result, state=result)
 
-    @node(name="synthesizer")
+    @node(name="synthesizer", rerun_on_resume=True)
     async def synth(ctx: Context, node_input: Any):
-        result = await synthesizer_node(ctx.state)
+        result = await synthesizer_node(ctx, ctx.state)
         return Event(output=result, state=result)
     
     indep_nodes = []
@@ -34,23 +34,23 @@ def build_graph(participants: list[AgentPersona]) -> Workflow:
     
     for p in participants:
         # We use a default argument `_p=p` to capture the loop variable properly.
-        @node(name=f"independent_{p['id']}")
+        @node(name=f"independent_{p['id']}", rerun_on_resume=True)
         async def indep_node(ctx: Context, node_input: Any, _p=p):
-            res = await make_independent_response(ctx.state, _p)
+            res = await make_independent_response(ctx, ctx.state, _p)
             return Event(output=res, state=res)
         
         indep_nodes.append(indep_node)
 
-        @node(name=f"discussion_{p['id']}")
+        @node(name=f"discussion_{p['id']}", rerun_on_resume=True)
         async def disc_node(ctx: Context, node_input: Any, _p=p):
-            res = await make_discussion_response(ctx.state, _p)
+            res = await make_discussion_response(ctx, ctx.state, _p)
             return Event(output=res, state=res)
         
         disc_nodes.append(disc_node)
 
-        @node(name=f"vote_{p['id']}")
+        @node(name=f"vote_{p['id']}", rerun_on_resume=True)
         async def v_node(ctx: Context, node_input: Any, _p=p):
-            res = await make_vote(ctx.state, _p)
+            res = await make_vote(ctx, ctx.state, _p)
             return Event(output=res, state=res)
         
         vote_nodes.append(v_node)

@@ -1,10 +1,9 @@
 import json
-from google import genai
-from google.genai import types
+from google.adk.agents import LlmAgent
+from google.adk.agents.context import Context
+from google.adk.tools import google_search
 from pydantic import BaseModel
 from ...models.state import FocusGroupState, AgentPersona, StreamEvent, ScoreSet
-
-client = genai.Client()
 
 SCORE_CATEGORIES = ["innovation", "market", "ux", "feasibility", "monetization", "risk"]
 
@@ -27,7 +26,7 @@ Your communication style: {persona['communication_style']}
 Stay in character. Disagree when your worldview differs from others. Be direct."""
 
 
-async def make_independent_response(state: FocusGroupState, persona: AgentPersona) -> dict:
+async def make_independent_response(ctx: Context, state: FocusGroupState, persona: AgentPersona) -> dict:
     topic = state["topic"]
     moderator_intro = state.get("moderator_intro", "")
 
@@ -48,14 +47,16 @@ Give your honest, independent assessment. Cover:
 Be direct and specific. Speak from your perspective as a {persona['role']}.
 Do NOT hedge excessively. If you hate something, say so."""
 
-    response = await client.aio.models.generate_content(
+    agent = LlmAgent(
+        name=f"participant_{persona['id']}_indep",
         model="gemini-2.5-flash",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            tools=[{"google_search": {}}],
-        )
+        instruction=prompt,
+        tools=[google_search],
     )
-    content = response.text
+    
+    # Run the agent inside the workflow context
+    result = await ctx.run_node(agent, node_input="")
+    content = result.text if hasattr(result, "text") else str(result)
 
     event: StreamEvent = {
         "type": "agent_message",
@@ -72,7 +73,7 @@ Do NOT hedge excessively. If you hate something, say so."""
     }
 
 
-async def make_discussion_response(state: FocusGroupState, persona: AgentPersona) -> dict:
+async def make_discussion_response(ctx: Context, state: FocusGroupState, persona: AgentPersona) -> dict:
     topic = state["topic"]
     moderator_followup = state.get("moderator_followup", "")
     independent_responses = state.get("independent_responses", {})
@@ -106,11 +107,15 @@ Respond to the moderator's questions and engage with what the other panelists sa
 - Add new points the group missed
 - Keep it to 3-5 sentences. Be sharp."""
 
-    response = await client.aio.models.generate_content(
+    agent = LlmAgent(
+        name=f"participant_{persona['id']}_disc",
         model="gemini-2.5-flash",
-        contents=prompt,
+        instruction=prompt,
+        tools=[google_search],
     )
-    content = response.text
+
+    result = await ctx.run_node(agent, node_input="")
+    content = result.text if hasattr(result, "text") else str(result)
 
     event: StreamEvent = {
         "type": "agent_message",
@@ -127,7 +132,7 @@ Respond to the moderator's questions and engage with what the other panelists sa
     }
 
 
-async def make_vote(state: FocusGroupState, persona: AgentPersona) -> dict:
+async def make_vote(ctx: Context, state: FocusGroupState, persona: AgentPersona) -> dict:
     topic = state["topic"]
     own_response = state.get("independent_responses", {}).get(persona["id"], "")
     discussion_response = state.get("discussion_responses", {}).get(persona["id"], "")
@@ -147,17 +152,16 @@ Score this topic 0-10 for each category. Your scoring priorities: {weights_desc}
 
 For "risk", 0 = extremely risky, 10 = very safe/low risk."""
 
-    response = await client.aio.models.generate_content(
+    agent = LlmAgent(
+        name=f"participant_{persona['id']}_vote",
         model="gemini-2.5-flash",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_mime_type="application/json",
-            response_schema=VoteScores,
-        ),
+        instruction=prompt,
+        output_schema=VoteScores,
     )
+
+    score_data = await ctx.run_node(agent, node_input="")
     
-    try:
-        score_data = json.loads(response.text)
+    if isinstance(score_data, dict):
         scores: ScoreSet = {
             "innovation": float(score_data.get("innovation", 5)),
             "market": float(score_data.get("market", 5)),
@@ -166,14 +170,14 @@ For "risk", 0 = extremely risky, 10 = very safe/low risk."""
             "monetization": float(score_data.get("monetization", 5)),
             "risk": float(score_data.get("risk", 5)),
         }
-    except (json.JSONDecodeError, KeyError):
-        scores = {
-            "innovation": 5.0,
-            "market": 5.0,
-            "ux": 5.0,
-            "feasibility": 5.0,
-            "monetization": 5.0,
-            "risk": 5.0,
+    else:
+        scores: ScoreSet = {
+            "innovation": float(score_data.innovation),
+            "market": float(score_data.market),
+            "ux": float(score_data.ux),
+            "feasibility": float(score_data.feasibility),
+            "monetization": float(score_data.monetization),
+            "risk": float(score_data.risk),
         }
 
     event: StreamEvent = {

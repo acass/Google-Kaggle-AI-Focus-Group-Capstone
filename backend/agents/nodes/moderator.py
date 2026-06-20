@@ -1,10 +1,9 @@
-from google import genai
-from google.genai import types
+from google.adk.agents import LlmAgent
+from google.adk.agents.context import Context
+from google.adk.tools import google_search
 from ...models.state import FocusGroupState, StreamEvent
 
-client = genai.Client()
-
-async def moderator_introduce_node(state: FocusGroupState) -> dict:
+async def moderator_introduce_node(ctx: Context, state: FocusGroupState) -> dict:
     topic = state["topic"]
     participants = state["participants"]
     panel = ", ".join(f"{p['name']} ({p['role']})" for p in participants)
@@ -24,14 +23,15 @@ Before writing your introduction, use your Search tool to fetch 1-2 real-world f
 
 Be concise and professional. Do not be overly formal."""
 
-    response = await client.aio.models.generate_content(
+    agent = LlmAgent(
+        name="moderator_intro",
         model="gemini-2.5-pro",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            tools=[{"google_search": {}}],
-        )
+        instruction=prompt,
+        tools=[google_search],
     )
-    intro = response.text
+
+    result = await ctx.run_node(agent, node_input="")
+    intro = result.text if hasattr(result, "text") else str(result)
 
     event: StreamEvent = {
         "type": "agent_message",
@@ -49,7 +49,7 @@ Be concise and professional. Do not be overly formal."""
     }
 
 
-async def moderator_followup_node(state: FocusGroupState) -> dict:
+async def moderator_followup_node(ctx: Context, state: FocusGroupState) -> dict:
     topic = state["topic"]
     independent_responses = state["independent_responses"]
     participants = state["participants"]
@@ -73,11 +73,15 @@ Write 2-3 targeted follow-up questions that:
 
 Be specific — reference what was actually said. Keep the total to 2-3 focused questions."""
 
-    response = await client.aio.models.generate_content(
+    agent = LlmAgent(
+        name="moderator_followup",
         model="gemini-2.5-pro",
-        contents=prompt,
+        instruction=prompt,
+        tools=[google_search],
     )
-    followup = response.text
+
+    result = await ctx.run_node(agent, node_input="")
+    followup = result.text if hasattr(result, "text") else str(result)
 
     event: StreamEvent = {
         "type": "phase_change",
