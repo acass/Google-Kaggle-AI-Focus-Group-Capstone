@@ -1,4 +1,5 @@
-from typing import Optional, TypedDict, Annotated
+from typing import Optional, Annotated
+from typing_extensions import TypedDict
 import operator
 
 

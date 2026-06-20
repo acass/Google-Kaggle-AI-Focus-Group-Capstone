@@ -28,11 +28,8 @@ async def _run_session(session_id: str, initial_state: FocusGroupState):
     runner = InMemoryRunner(app=app)
     
     session = await runner.session_service.create_session(
-        app_name=app.name, user_id="system", id=session_id
+        app_name=app.name, user_id="system", session_id=session_id, state=dict(initial_state)
     )
-    # Initialize the session state with our state object
-    session.state = dict(initial_state)
-    await runner.session_service.update_session(session)
 
     # Stream state updates so the SSE endpoint sees incremental progress
     async for event in runner.run_async(
@@ -40,8 +37,8 @@ async def _run_session(session_id: str, initial_state: FocusGroupState):
         session_id=session_id,
         new_message=types.Content(role="user", parts=[types.Part.from_text(text="start")]),
     ):
-        if event.state:
-            node_output = event.state
+        if event.output:
+            node_output = event.output
             if isinstance(node_output, dict):
                 current = _sessions[session_id]
                 # Merge stream_events (append)

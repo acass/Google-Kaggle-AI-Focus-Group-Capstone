@@ -1,4 +1,6 @@
-from google.adk.workflow import Workflow, JoinNode, node, Event
+from google.adk.workflow import Workflow, JoinNode, node
+from google.adk.events.event import Event
+from typing import Any
 from google.adk.agents.context import Context
 from ..models.state import FocusGroupState, AgentPersona
 from .nodes.moderator import moderator_introduce_node, moderator_followup_node
@@ -12,17 +14,17 @@ def build_graph(participants: list[AgentPersona]) -> Workflow:
     join_vote = JoinNode(name="collect_votes")
 
     @node(name="moderator_introduce")
-    async def mod_intro(ctx: Context, node_input: dict):
+    async def mod_intro(ctx: Context, node_input: Any):
         result = await moderator_introduce_node(ctx.state)
         return Event(output=result, state=result)
 
     @node(name="moderator_followup")
-    async def mod_followup(ctx: Context, node_input: dict):
+    async def mod_followup(ctx: Context, node_input: Any):
         result = await moderator_followup_node(ctx.state)
         return Event(output=result, state=result)
 
     @node(name="synthesizer")
-    async def synth(ctx: Context, node_input: dict):
+    async def synth(ctx: Context, node_input: Any):
         result = await synthesizer_node(ctx.state)
         return Event(output=result, state=result)
     
@@ -33,21 +35,21 @@ def build_graph(participants: list[AgentPersona]) -> Workflow:
     for p in participants:
         # We use a default argument `_p=p` to capture the loop variable properly.
         @node(name=f"independent_{p['id']}")
-        async def indep_node(ctx: Context, node_input: dict, _p=p):
+        async def indep_node(ctx: Context, node_input: Any, _p=p):
             res = await make_independent_response(ctx.state, _p)
             return Event(output=res, state=res)
         
         indep_nodes.append(indep_node)
 
         @node(name=f"discussion_{p['id']}")
-        async def disc_node(ctx: Context, node_input: dict, _p=p):
+        async def disc_node(ctx: Context, node_input: Any, _p=p):
             res = await make_discussion_response(ctx.state, _p)
             return Event(output=res, state=res)
         
         disc_nodes.append(disc_node)
 
         @node(name=f"vote_{p['id']}")
-        async def v_node(ctx: Context, node_input: dict, _p=p):
+        async def v_node(ctx: Context, node_input: Any, _p=p):
             res = await make_vote(ctx.state, _p)
             return Event(output=res, state=res)
         
