@@ -8,6 +8,8 @@ from ..agents.graph import build_graph
 from google.adk.apps import App
 from google.adk.runners import InMemoryRunner
 from google.genai import types
+from ..plugins.blue_team_plugin import BlueTeamAnalyticsPlugin
+from ..plugins.green_team_plugin import GreenTeamQuarantinePlugin
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
@@ -25,7 +27,11 @@ async def _run_session(session_id: str, initial_state: FocusGroupState):
         participants = initial_state["participants"]
         workflow = build_graph(participants)
 
-        app = App(name=f"focus_group_{session_id}", root_agent=workflow)
+        app = App(
+            name=f"focus_group_{session_id}",
+            root_agent=workflow,
+            plugins=[BlueTeamAnalyticsPlugin(), GreenTeamQuarantinePlugin()]
+        )
         runner = InMemoryRunner(app=app)
 
         await runner.session_service.create_session(
@@ -96,6 +102,10 @@ async def create_session(
         "scores": {},
         "final_report": None,
         "stream_events": [],
+        "security_test_mode": body.security_test_mode,
+        "trust_score": 100.0,
+        "agbom": [],
+        "quarantine_flag": False,
     }
 
     _sessions[session_id] = dict(initial_state)

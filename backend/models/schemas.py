@@ -6,6 +6,7 @@ from .state import FinalReport, ScoreSet, StreamEvent
 class CreateSessionRequest(BaseModel):
     topic: str
     participant_ids: list[str]
+    security_test_mode: bool = False
 
 
 class CreateSessionResponse(BaseModel):

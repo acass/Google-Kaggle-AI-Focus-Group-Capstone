@@ -69,3 +69,7 @@ class FocusGroupState(TypedDict):
     scores: Annotated[dict[str, ScoreSet], operator.or_]
     final_report: Optional[FinalReport]
     stream_events: Annotated[list[StreamEvent], operator.add]
+    security_test_mode: bool
+    trust_score: float
+    agbom: list[dict]
+    quarantine_flag: bool
