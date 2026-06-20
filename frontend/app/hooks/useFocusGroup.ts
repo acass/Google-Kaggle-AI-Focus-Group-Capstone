@@ -33,6 +33,7 @@ export function useFocusGroup() {
 
       setSession({
         session_id: sessionId,
+        topic: topic,
         phase: "intro",
         events: [],
         scores: {},

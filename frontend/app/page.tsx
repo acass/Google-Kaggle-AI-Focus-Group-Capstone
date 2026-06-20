@@ -40,7 +40,7 @@ export default function Home() {
           </div>
           {showReport && session?.final_report && (
             <div className="flex-shrink-0 border-t border-zinc-800 max-h-96 overflow-y-auto">
-              <FinalReport report={session.final_report} onReset={reset} />
+              <FinalReport session={session} onReset={reset} />
             </div>
           )}
         </div>

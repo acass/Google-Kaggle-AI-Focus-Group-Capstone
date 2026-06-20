@@ -2,7 +2,7 @@ import { useState } from "react"
 import type { FinalReport as FinalReportType } from "../types"
 
 interface Props {
-  report: FinalReportType
+  session: any
   onReset: () => void
 }
 
@@ -13,7 +13,8 @@ const sentimentColors: Record<string, string> = {
   negative: "border-red-500/30 bg-red-500/5",
 }
 
-export function FinalReport({ report, onReset }: Props) {
+export function FinalReport({ session, onReset }: Props) {
+  const report = session.final_report as FinalReportType;
   const borderColor = sentimentColors[report.sentiment] ?? sentimentColors.neutral
   const [pdfLoading, setPdfLoading] = useState(false)
   const [docxLoading, setDocxLoading] = useState(false)
@@ -21,14 +22,14 @@ export function FinalReport({ report, onReset }: Props) {
   const handlePdf = async () => {
     setPdfLoading(true)
     const { exportAsPdf } = await import("../utils/exportReport")
-    await exportAsPdf(report)
+    await exportAsPdf(session)
     setPdfLoading(false)
   }
 
   const handleDocx = async () => {
     setDocxLoading(true)
     const { exportAsDocx } = await import("../utils/exportReport")
-    await exportAsDocx(report)
+    await exportAsDocx(session)
     setDocxLoading(false)
   }
 

@@ -1,12 +1,22 @@
-import type { FinalReport } from "../types"
+import type { FinalReport, FocusGroupSession, StreamEvent } from "../types"
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
 const formattedDate = () =>
   new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
 
-export async function exportAsPdf(report: FinalReport): Promise<void> {
+function getPhaseLabel(phase: string): string {
+  if (phase === "intro") return "Introduction"
+  if (phase === "independent") return "Round 1 — Independent"
+  if (phase === "discussion") return "Round 2 — Discussion"
+  if (phase === "voting") return "Scoring Phase"
+  if (phase === "synthesis") return "Synthesis"
+  return phase
+}
+
+export async function exportAsPdf(session: FocusGroupSession): Promise<void> {
   const { jsPDF } = await import("jspdf")
+  const report = session.final_report!
 
   const doc = new jsPDF({ unit: "mm", format: "a4" })
   const margin = 20
@@ -22,64 +32,85 @@ export async function exportAsPdf(report: FinalReport): Promise<void> {
     }
   }
 
-  doc.setFontSize(18)
-  doc.setFont("helvetica", "bold")
-  doc.setTextColor(0, 0, 0)
-  doc.text("AI Focus Group — Final Report", margin, y)
-  y += 9
+  const addText = (text: string, fontSize: number, isBold: boolean, color: [number, number, number], spacingAfter: number) => {
+    if (!text) return
+    doc.setFontSize(fontSize)
+    doc.setFont("helvetica", isBold ? "bold" : "normal")
+    doc.setTextColor(color[0], color[1], color[2])
+    
+    // Some content might have explicit newlines. We need to split by newline first.
+    const rawLines = text.split('\n')
+    for (const rawLine of rawLines) {
+      const lines = doc.splitTextToSize(rawLine, usableWidth) as string[]
+      const lineHeight = fontSize * 0.35 + 1
+      checkPage(lines.length * lineHeight)
+      doc.text(lines, margin, y)
+      y += lines.length * lineHeight
+    }
+    y += spacingAfter
+  }
 
-  doc.setFontSize(9)
-  doc.setFont("helvetica", "normal")
-  doc.setTextColor(120, 120, 120)
-  doc.text(`Generated: ${formattedDate()}`, margin, y)
-  y += 12
+  // Topic
+  addText("Topic", 14, true, [0, 0, 0], 2)
+  addText(`“${session.topic}”`, 11, false, [60, 60, 60], 10)
 
-  doc.setFontSize(14)
-  doc.setFont("helvetica", "bold")
-  doc.setTextColor(0, 0, 0)
-  doc.text(`Overall Score: ${report.overall_score} / 10`, margin, y)
-  y += 7
+  // Transcript
+  let scoringPhaseRendered = false
+  for (const evt of session.events) {
+    if (evt.type === "agent_message") {
+      addText(evt.agent_name || "Unknown", 12, true, [0, 0, 0], 2)
+      addText(getPhaseLabel(evt.phase), 10, false, [100, 100, 100], 4)
+      addText(evt.content, 10, false, [40, 40, 40], 10)
+    }
+  }
 
-  doc.setFontSize(10)
-  doc.setFont("helvetica", "normal")
-  doc.setTextColor(80, 80, 80)
-  doc.text(
-    `Sentiment: ${capitalize(report.sentiment)}  |  Consensus: ${Math.round(report.consensus_confidence * 100)}%`,
-    margin,
-    y
-  )
-  y += 14
+  // Scoring
+  addText("Scoring Phase", 14, true, [0, 0, 0], 6)
+  for (const evt of session.events) {
+    if (evt.type === "score_update" && evt.scores) {
+      const catArray = Object.entries(evt.scores).map(([k, v]) => `${k}=${v.toFixed(1)}`)
+      addText(evt.agent_name || "Unknown", 12, true, [0, 0, 0], 2)
+      addText(`Scored: ${catArray.join(', ')}`, 10, false, [60, 60, 60], 8)
+    }
+  }
 
-  doc.setFontSize(12)
-  doc.setFont("helvetica", "bold")
-  doc.setTextColor(0, 0, 0)
-  doc.text("Recommendation", margin, y)
-  y += 7
+  y += 5
 
-  doc.setFontSize(10)
-  doc.setFont("helvetica", "normal")
-  const recLines = doc.splitTextToSize(report.recommendation, usableWidth) as string[]
-  checkPage(recLines.length * 5)
-  doc.text(recLines, margin, y)
-  y += recLines.length * 5 + 12
+  // Summary header
+  addText("Status - Complete", 11, true, [0, 0, 0], 2)
+  addText(`Sentiment - ${capitalize(report.sentiment)}`, 11, true, [0, 0, 0], 2)
+  addText(`Consensus - ${Math.round(report.consensus_confidence * 100)}%`, 11, true, [0, 0, 0], 6)
+  
+  addText(report.overall_score.toFixed(1), 16, true, [0, 0, 0], 2)
+  addText("Overall score / 10", 10, false, [100, 100, 100], 6)
+  
+  addText("Scores by category", 12, true, [0, 0, 0], 4)
+  const cats = [
+    ["Innovation", report.category_averages.innovation],
+    ["Market Potential", report.category_averages.market],
+    ["UX / Clarity", report.category_averages.ux],
+    ["Feasibility", report.category_averages.feasibility],
+    ["Monetization", report.category_averages.monetization],
+    ["Risk (10 = safe)", report.category_averages.risk],
+  ]
+  for (const [k, v] of cats) {
+    addText(`${k} - ${Number(v).toFixed(1)}`, 10, false, [60, 60, 60], 2)
+  }
+  y += 8
+
+  // Final Report
+  addText("Final Report", 18, true, [0, 0, 0], 4)
+  addText(`${capitalize(report.sentiment)} — ${Math.round(report.consensus_confidence * 100)}% Consensus`, 12, true, [80, 80, 80], 2)
+  addText(`${report.overall_score.toFixed(1)} / 10`, 12, true, [80, 80, 80], 6)
+  addText(report.recommendation, 10, false, [40, 40, 40], 8)
 
   const addSection = (title: string, items: string[]) => {
     if (items.length === 0) return
-    checkPage(24)
-    doc.setFontSize(12)
-    doc.setFont("helvetica", "bold")
-    doc.setTextColor(0, 0, 0)
-    doc.text(title, margin, y)
-    y += 7
-    doc.setFontSize(10)
-    doc.setFont("helvetica", "normal")
+    addText(title, 12, true, [0, 0, 0], 4)
     for (const item of items) {
-      const lines = doc.splitTextToSize(`•  ${item}`, usableWidth - 4) as string[]
-      checkPage(lines.length * 5 + 3)
-      doc.text(lines, margin + 2, y)
-      y += lines.length * 5 + 3
+      addText(`•  ${item}`, 10, false, [40, 40, 40], 3)
     }
-    y += 8
+    y += 4
   }
 
   addSection("Strengths", report.key_strengths)
@@ -89,64 +120,102 @@ export async function exportAsPdf(report: FinalReport): Promise<void> {
   doc.save("focus-group-report.pdf")
 }
 
-export async function exportAsDocx(report: FinalReport): Promise<void> {
+export async function exportAsDocx(session: FocusGroupSession): Promise<void> {
   const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx")
+  const report = session.final_report!
 
-  const bulletItems = (items: string[]) =>
-    items.map(
-      (item) =>
-        new Paragraph({
-          text: item,
-          bullet: { level: 0 },
-        })
-    )
+  const children: any[] = []
 
-  const sectionChildren: InstanceType<typeof Paragraph>[] = []
-
-  const pushSection = (title: string, items: string[]) => {
-    if (items.length === 0) return
-    sectionChildren.push(
-      new Paragraph({ text: title, heading: HeadingLevel.HEADING_2 }),
-      ...bulletItems(items),
-      new Paragraph({ text: "" })
+  const addPara = (text: string, bold = false, size = 22, color = "000000", spacing = 120, heading?: any) => {
+    // docx sizes are in half-points (22 = 11pt)
+    const runs = text.split('\n').map((line, i, arr) => {
+      return new TextRun({ text: line, bold, size, color, break: i > 0 ? 1 : 0 })
+    })
+    
+    children.push(
+      new Paragraph({
+        children: runs,
+        heading: heading,
+        spacing: { after: spacing }
+      })
     )
   }
 
-  pushSection("Strengths", report.key_strengths)
-  pushSection("Concerns", report.key_concerns)
-  pushSection("Action Items", report.action_items)
+  // Topic
+  addPara("Topic", false, 28, "000000", 40)
+  addPara(`“${session.topic}”`, false, 22, "444444", 240)
+
+  // Transcript
+  for (const evt of session.events) {
+    if (evt.type === "agent_message") {
+      addPara(evt.agent_name || "Unknown", false, 24, "000000", 40)
+      addPara(getPhaseLabel(evt.phase), false, 20, "666666", 80)
+      addPara(evt.content, false, 20, "222222", 240)
+    }
+  }
+
+  // Scoring
+  addPara("Scoring Phase", false, 28, "000000", 120)
+  for (const evt of session.events) {
+    if (evt.type === "score_update" && evt.scores) {
+      const catArray = Object.entries(evt.scores).map(([k, v]) => `${k}=${v.toFixed(1)}`)
+      addPara(evt.agent_name || "Unknown", false, 24, "000000", 40)
+      addPara(`Scored: ${catArray.join(', ')}`, false, 20, "444444", 160)
+    }
+  }
+
+  children.push(new Paragraph({ text: "", spacing: { after: 240 } }))
+
+  // Summary
+  addPara("Status - Complete", true, 22, "000000", 40)
+  addPara(`Sentiment - ${capitalize(report.sentiment)}`, true, 22, "000000", 40)
+  addPara(`Consensus - ${Math.round(report.consensus_confidence * 100)}%`, true, 22, "000000", 120)
+
+  addPara(report.overall_score.toFixed(1), true, 32, "000000", 40)
+  addPara("Overall score / 10", false, 20, "666666", 120)
+
+  addPara("Scores by category", true, 24, "000000", 80)
+  const cats = [
+    ["Innovation", report.category_averages.innovation],
+    ["Market Potential", report.category_averages.market],
+    ["UX / Clarity", report.category_averages.ux],
+    ["Feasibility", report.category_averages.feasibility],
+    ["Monetization", report.category_averages.monetization],
+    ["Risk (10 = safe)", report.category_averages.risk],
+  ]
+  for (const [k, v] of cats) {
+    addPara(`${k} - ${Number(v).toFixed(1)}`, false, 20, "444444", 40)
+  }
+  
+  children.push(new Paragraph({ text: "", spacing: { after: 240 } }))
+
+  // Final Report
+  addPara("Final Report", true, 36, "000000", 80)
+  addPara(`${capitalize(report.sentiment)} — ${Math.round(report.consensus_confidence * 100)}% Consensus`, true, 24, "555555", 40)
+  addPara(`${report.overall_score.toFixed(1)} / 10`, true, 24, "555555", 120)
+  addPara(report.recommendation, false, 20, "222222", 160)
+
+  const addList = (title: string, items: string[]) => {
+    if (items.length === 0) return
+    addPara(title, true, 24, "000000", 80)
+    for (const item of items) {
+      children.push(
+        new Paragraph({
+          text: item,
+          bullet: { level: 0 },
+          spacing: { after: 80 }
+        })
+      )
+    }
+    children.push(new Paragraph({ text: "", spacing: { after: 80 } }))
+  }
+
+  addList("Strengths", report.key_strengths)
+  addList("Concerns", report.key_concerns)
+  addList("Action Items", report.action_items)
 
   const doc = new Document({
-    sections: [
-      {
-        children: [
-          new Paragraph({ text: "AI Focus Group — Final Report", heading: HeadingLevel.HEADING_1 }),
-          new Paragraph({
-            children: [new TextRun({ text: `Generated: ${formattedDate()}`, color: "888888", size: 18 })],
-          }),
-          new Paragraph({ text: "" }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: `Overall Score: ${report.overall_score} / 10`, bold: true, size: 28 }),
-            ],
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: `Sentiment: ${capitalize(report.sentiment)}  |  Consensus: ${Math.round(report.consensus_confidence * 100)}%`,
-                color: "555555",
-                size: 20,
-              }),
-            ],
-          }),
-          new Paragraph({ text: "" }),
-          new Paragraph({ text: "Recommendation", heading: HeadingLevel.HEADING_2 }),
-          new Paragraph({ text: report.recommendation }),
-          new Paragraph({ text: "" }),
-          ...sectionChildren,
-        ],
-      },
-    ],
+    sections: [{ children }]
   })
 
   const blob = await Packer.toBlob(doc)

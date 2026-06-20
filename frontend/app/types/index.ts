@@ -21,7 +21,7 @@ export interface FinalReport {
 }
 
 export interface StreamEvent {
-  type: "agent_message" | "phase_change" | "score_update" | "report_complete" | "done"
+  type: "agent_message" | "phase_change" | "score_update" | "report_complete" | "done" | "error"
   agent_id: string | null
   agent_name: string | null
   phase: string
@@ -40,6 +40,7 @@ export type Phase = "idle" | "intro" | "independent" | "discussion" | "voting" |
 
 export interface FocusGroupSession {
   session_id: string
+  topic: string
   phase: Phase
   events: StreamEvent[]
   scores: Record<string, ScoreSet>
