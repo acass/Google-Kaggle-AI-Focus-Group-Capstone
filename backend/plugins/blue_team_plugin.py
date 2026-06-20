@@ -11,6 +11,9 @@ class BlueTeamAnalyticsPlugin(BasePlugin):
     Detects Intent Drift if the agent enters an infinite loop or calls an unusual number of tools.
     """
 
+    def __init__(self, name: str = "blue_team_analytics"):
+        super().__init__(name=name)
+
     async def after_tool_callback(self, *, tool: BaseTool, args: dict, tool_context: ToolContext, tool_response: dict) -> dict | None:
         state = tool_context.state
         

@@ -1,8 +1,8 @@
 import { useState } from "react"
-import type { FinalReport as FinalReportType } from "../types"
+import type { FinalReport as FinalReportType, FocusGroupSession } from "../types"
 
 interface Props {
-  session: any
+  session: FocusGroupSession
   onReset: () => void
 }
 

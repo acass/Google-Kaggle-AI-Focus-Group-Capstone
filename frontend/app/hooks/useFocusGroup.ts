@@ -53,8 +53,8 @@ export function useFocusGroup() {
 
             const events = [...prev.events, event]
             let phase: Phase = prev.phase
-            let scores = { ...prev.scores }
-            let final_report = prev.final_report
+            const scores = { ...prev.scores }
+            const final_report = prev.final_report
             let completed = prev.completed
 
             if (event.type === "phase_change" || event.type === "agent_message") {

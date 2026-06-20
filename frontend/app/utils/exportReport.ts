@@ -1,9 +1,7 @@
-import type { FinalReport, FocusGroupSession, StreamEvent } from "../types"
+import type { FocusGroupSession } from "../types"
+import type { Paragraph as DocxParagraph } from "docx"
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
-
-const formattedDate = () =>
-  new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
 
 function getPhaseLabel(phase: string): string {
   if (phase === "intro") return "Introduction"
@@ -55,7 +53,6 @@ export async function exportAsPdf(session: FocusGroupSession): Promise<void> {
   addText(`“${session.topic}”`, 11, false, [60, 60, 60], 10)
 
   // Transcript
-  let scoringPhaseRendered = false
   for (const evt of session.events) {
     if (evt.type === "agent_message") {
       addText(evt.agent_name || "Unknown", 12, true, [0, 0, 0], 2)
@@ -121,21 +118,20 @@ export async function exportAsPdf(session: FocusGroupSession): Promise<void> {
 }
 
 export async function exportAsDocx(session: FocusGroupSession): Promise<void> {
-  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx")
+  const { Document, Packer, Paragraph, TextRun } = await import("docx")
   const report = session.final_report!
 
-  const children: any[] = []
+  const children: DocxParagraph[] = []
 
-  const addPara = (text: string, bold = false, size = 22, color = "000000", spacing = 120, heading?: any) => {
+  const addPara = (text: string, bold = false, size = 22, color = "000000", spacing = 120) => {
     // docx sizes are in half-points (22 = 11pt)
-    const runs = text.split('\n').map((line, i, arr) => {
+    const runs = text.split('\n').map((line, i) => {
       return new TextRun({ text: line, bold, size, color, break: i > 0 ? 1 : 0 })
     })
     
     children.push(
       new Paragraph({
         children: runs,
-        heading: heading,
         spacing: { after: spacing }
       })
     )
