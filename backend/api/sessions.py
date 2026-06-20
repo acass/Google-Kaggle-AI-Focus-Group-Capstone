@@ -21,41 +21,48 @@ def get_session_store() -> dict[str, dict]:
 
 
 async def _run_session(session_id: str, initial_state: FocusGroupState):
-    participants = initial_state["participants"]
-    workflow = build_graph(participants)
-    
-    app = App(name=f"focus_group_{session_id}", root_agent=workflow)
-    runner = InMemoryRunner(app=app)
-    
-    session = await runner.session_service.create_session(
-        app_name=app.name, user_id="system", session_id=session_id, state=dict(initial_state)
-    )
+    try:
+        participants = initial_state["participants"]
+        workflow = build_graph(participants)
 
-    # Stream state updates so the SSE endpoint sees incremental progress
-    async for event in runner.run_async(
-        user_id="system",
-        session_id=session_id,
-        new_message=types.Content(role="user", parts=[types.Part.from_text(text="start")]),
-    ):
-        if event.output:
-            node_output = event.output
-            if isinstance(node_output, dict):
-                current = _sessions[session_id]
-                # Merge stream_events (append)
-                if "stream_events" in node_output:
-                    existing = current.get("stream_events", [])
-                    current["stream_events"] = existing + node_output["stream_events"]
-                    node_output_copy = {k: v for k, v in node_output.items() if k != "stream_events"}
-                else:
-                    node_output_copy = node_output.copy()
-                # Merge dict fields (independent_responses, discussion_responses, scores)
-                for key in ("independent_responses", "discussion_responses", "scores"):
-                    if key in node_output_copy:
-                        merged = {**current.get(key, {}), **node_output_copy[key]}
-                        current[key] = merged
-                        del node_output_copy[key]
-                current.update(node_output_copy)
-    _session_complete[session_id] = True
+        app = App(name=f"focus_group_{session_id}", root_agent=workflow)
+        runner = InMemoryRunner(app=app)
+
+        await runner.session_service.create_session(
+            app_name=app.name, user_id="system", session_id=session_id, state=dict(initial_state)
+        )
+
+        # Stream state updates so the SSE endpoint sees incremental progress
+        async for event in runner.run_async(
+            user_id="system",
+            session_id=session_id,
+            new_message=types.Content(role="user", parts=[types.Part.from_text(text="start")]),
+        ):
+            if event.output:
+                node_output = event.output
+                if isinstance(node_output, dict):
+                    current = _sessions[session_id]
+                    # Merge stream_events (append)
+                    if "stream_events" in node_output:
+                        existing = current.get("stream_events", [])
+                        current["stream_events"] = existing + node_output["stream_events"]
+                        node_output_copy = {k: v for k, v in node_output.items() if k != "stream_events"}
+                    else:
+                        node_output_copy = node_output.copy()
+                    # Merge dict fields (independent_responses, discussion_responses, scores)
+                    for key in ("independent_responses", "discussion_responses", "scores"):
+                        if key in node_output_copy:
+                            merged = {**current.get(key, {}), **node_output_copy[key]}
+                            current[key] = merged
+                            del node_output_copy[key]
+                    current.update(node_output_copy)
+    except Exception as e:
+        if session_id in _sessions:
+            error_event = {"type": "error", "phase": "error", "content": str(e)}
+            existing = _sessions[session_id].get("stream_events", [])
+            _sessions[session_id]["stream_events"] = existing + [error_event]
+    finally:
+        _session_complete[session_id] = True
 
 
 @router.post("", response_model=CreateSessionResponse)

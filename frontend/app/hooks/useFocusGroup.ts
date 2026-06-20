@@ -66,6 +66,10 @@ export function useFocusGroup() {
             if (event.type === "report_complete") {
               phase = "synthesis"
             }
+            if (event.type === "error") {
+              setError(event.content || "Session failed")
+              es.close()
+            }
             if (event.type === "done") {
               completed = true
               phase = "complete"

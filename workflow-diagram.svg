@@ -1,0 +1,235 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1350" height="1010" viewBox="0 0 1350 1010" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,1 L9,4 L0,7 Z" fill="#1e1e1e"/>
+    </marker>
+    <marker id="arr-blue" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,1 L9,4 L0,7 Z" fill="#4a9eed"/>
+    </marker>
+    <marker id="arr-purple" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,1 L9,4 L0,7 Z" fill="#8b5cf6"/>
+    </marker>
+    <marker id="arr-green" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,1 L9,4 L0,7 Z" fill="#22c55e"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1350" height="1010" fill="white"/>
+
+  <!-- Title -->
+  <text x="675" y="34" text-anchor="middle" font-size="23" font-weight="700" fill="#1e1e1e">Agentic Focus Group — System Workflow</text>
+
+  <!-- ==================== SYSTEM OVERVIEW ==================== -->
+
+  <!-- Zone backgrounds -->
+  <rect x="20" y="52" width="440" height="158" rx="10" fill="#dbe4ff" fill-opacity="0.65" stroke="#4a9eed" stroke-width="1.5"/>
+  <text x="32" y="70" font-size="12" fill="#2563eb" font-weight="600">Frontend (Next.js 16)</text>
+
+  <rect x="508" y="52" width="370" height="158" rx="10" fill="#e5dbff" fill-opacity="0.65" stroke="#8b5cf6" stroke-width="1.5"/>
+  <text x="520" y="70" font-size="12" fill="#7c3aed" font-weight="600">Backend (FastAPI)</text>
+
+  <rect x="926" y="52" width="370" height="158" rx="10" fill="#d3f9d8" fill-opacity="0.65" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="938" y="70" font-size="12" fill="#15803d" font-weight="600">AI (Google ADK)</text>
+
+  <!-- User Input box -->
+  <rect x="32" y="88" width="172" height="70" rx="8" fill="#a5d8ff" stroke="#4a9eed" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e" font-weight="500">
+    <tspan x="118" y="118">User Input</tspan>
+    <tspan x="118" dy="17">Topic + Personas</tspan>
+  </text>
+
+  <!-- Next.js App box -->
+  <rect x="225" y="88" width="188" height="70" rx="8" fill="#a5d8ff" stroke="#4a9eed" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e" font-weight="500">
+    <tspan x="319" y="118">Next.js App</tspan>
+    <tspan x="319" dy="17">useFocusGroup hook</tspan>
+  </text>
+
+  <!-- FastAPI box -->
+  <rect x="520" y="88" width="162" height="70" rx="8" fill="#d0bfff" stroke="#8b5cf6" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e" font-weight="500">
+    <tspan x="601" y="118">FastAPI</tspan>
+    <tspan x="601" dy="17">/sessions API</tspan>
+  </text>
+
+  <!-- ADK Runner box -->
+  <rect x="700" y="88" width="160" height="70" rx="8" fill="#d0bfff" stroke="#8b5cf6" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e" font-weight="500">
+    <tspan x="780" y="118">ADK Runner</tspan>
+    <tspan x="780" dy="17">(background task)</tspan>
+  </text>
+
+  <!-- ADK Workflow box -->
+  <rect x="940" y="88" width="196" height="70" rx="8" fill="#b2f2bb" stroke="#22c55e" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e" font-weight="500">
+    <tspan x="1038" y="118">ADK Workflow</tspan>
+    <tspan x="1038" dy="17">focus_group_workflow</tspan>
+  </text>
+
+  <!-- System arrows -->
+  <!-- user -> nextjs -->
+  <line x1="204" y1="123" x2="222" y2="123" stroke="#4a9eed" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+  <!-- nextjs -> fastapi: POST /sessions -->
+  <line x1="413" y1="108" x2="518" y2="108" stroke="#4a9eed" stroke-width="2" marker-end="url(#arr-blue)"/>
+  <text x="465" y="103" text-anchor="middle" font-size="10.5" fill="#2563eb">POST /sessions</text>
+
+  <!-- fastapi -> nextjs: SSE events (dashed, going left) -->
+  <line x1="520" y1="143" x2="415" y2="143" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arr-purple)"/>
+  <text x="465" y="157" text-anchor="middle" font-size="10.5" fill="#7c3aed">SSE events</text>
+
+  <!-- fastapi -> runner -->
+  <line x1="682" y1="123" x2="698" y2="123" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arr-purple)"/>
+
+  <!-- runner -> adk -->
+  <line x1="860" y1="123" x2="938" y2="123" stroke="#22c55e" stroke-width="2" marker-end="url(#arr-green)"/>
+
+  <!-- ==================== WORKFLOW GRAPH ==================== -->
+
+  <line x1="20" y1="228" x2="1330" y2="228" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="675" y="246" text-anchor="middle" font-size="15" fill="#15803d" font-weight="600">ADK Workflow Graph</text>
+
+  <!-- START -->
+  <ellipse cx="675" cy="270" rx="55" ry="21" fill="#1e1e1e"/>
+  <text x="675" y="275" text-anchor="middle" font-size="12.5" fill="white" font-weight="600">START</text>
+
+  <!-- START -> mod_intro -->
+  <line x1="675" y1="291" x2="675" y2="303" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- moderator_introduce -->
+  <rect x="535" y="303" width="280" height="50" rx="8" fill="#ffd8a8" stroke="#f59e0b" stroke-width="2"/>
+  <text x="675" y="333" text-anchor="middle" font-size="14" fill="#1e1e1e" font-weight="500">moderator_introduce</text>
+
+  <!-- fan-out: mod_intro -> independent nodes -->
+  <line x1="675" y1="353" x2="408" y2="381" stroke="#4a9eed" stroke-width="2" marker-end="url(#arr-blue)"/>
+  <line x1="675" y1="353" x2="675" y2="381" stroke="#4a9eed" stroke-width="2" marker-end="url(#arr-blue)"/>
+  <line x1="675" y1="353" x2="942" y2="381" stroke="#4a9eed" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+  <!-- independent nodes -->
+  <rect x="313" y="381" width="190" height="50" rx="8" fill="#a5d8ff" stroke="#4a9eed" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e">
+    <tspan x="408" y="401">independent</tspan>
+    <tspan x="408" dy="16">(participant 1)</tspan>
+  </text>
+
+  <rect x="580" y="381" width="190" height="50" rx="8" fill="#a5d8ff" stroke="#4a9eed" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e">
+    <tspan x="675" y="401">independent</tspan>
+    <tspan x="675" dy="16">(participant 2)</tspan>
+  </text>
+
+  <rect x="847" y="381" width="190" height="50" rx="8" fill="#a5d8ff" stroke="#4a9eed" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e">
+    <tspan x="942" y="401">independent</tspan>
+    <tspan x="942" dy="16">(participant 3)</tspan>
+  </text>
+
+  <text x="1053" y="408" font-size="11" fill="#a0a0a0" font-style="italic">(parallel)</text>
+
+  <!-- fan-in: independent -> collect_independent -->
+  <line x1="408" y1="431" x2="670" y2="457" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="675" y1="431" x2="675" y2="457" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="942" y1="431" x2="680" y2="457" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- collect_independent -->
+  <rect x="535" y="457" width="280" height="40" rx="8" fill="#fff3bf" stroke="#f59e0b" stroke-width="2"/>
+  <text x="675" y="481" text-anchor="middle" font-size="12.5" fill="#1e1e1e">collect_independent (join)</text>
+
+  <!-- collect_independent -> mod_followup -->
+  <line x1="675" y1="497" x2="675" y2="515" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- moderator_followup -->
+  <rect x="535" y="515" width="280" height="50" rx="8" fill="#ffd8a8" stroke="#f59e0b" stroke-width="2"/>
+  <text x="675" y="545" text-anchor="middle" font-size="14" fill="#1e1e1e" font-weight="500">moderator_followup</text>
+
+  <!-- fan-out: mod_followup -> discussion nodes -->
+  <line x1="675" y1="565" x2="408" y2="593" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arr-purple)"/>
+  <line x1="675" y1="565" x2="675" y2="593" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arr-purple)"/>
+  <line x1="675" y1="565" x2="942" y2="593" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arr-purple)"/>
+
+  <!-- discussion nodes -->
+  <rect x="313" y="593" width="190" height="50" rx="8" fill="#d0bfff" stroke="#8b5cf6" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e">
+    <tspan x="408" y="613">discussion</tspan>
+    <tspan x="408" dy="16">(participant 1)</tspan>
+  </text>
+
+  <rect x="580" y="593" width="190" height="50" rx="8" fill="#d0bfff" stroke="#8b5cf6" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e">
+    <tspan x="675" y="613">discussion</tspan>
+    <tspan x="675" dy="16">(participant 2)</tspan>
+  </text>
+
+  <rect x="847" y="593" width="190" height="50" rx="8" fill="#d0bfff" stroke="#8b5cf6" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e">
+    <tspan x="942" y="613">discussion</tspan>
+    <tspan x="942" dy="16">(participant 3)</tspan>
+  </text>
+
+  <text x="1053" y="620" font-size="11" fill="#a0a0a0" font-style="italic">(parallel)</text>
+
+  <!-- fan-in: discussion -> collect_discussion -->
+  <line x1="408" y1="643" x2="670" y2="669" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="675" y1="643" x2="675" y2="669" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="942" y1="643" x2="680" y2="669" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- collect_discussion -->
+  <rect x="535" y="669" width="280" height="40" rx="8" fill="#fff3bf" stroke="#f59e0b" stroke-width="2"/>
+  <text x="675" y="693" text-anchor="middle" font-size="12.5" fill="#1e1e1e">collect_discussion (join)</text>
+
+  <!-- fan-out: collect_discussion -> vote nodes -->
+  <line x1="675" y1="709" x2="408" y2="737" stroke="#22c55e" stroke-width="2" marker-end="url(#arr-green)"/>
+  <line x1="675" y1="709" x2="675" y2="737" stroke="#22c55e" stroke-width="2" marker-end="url(#arr-green)"/>
+  <line x1="675" y1="709" x2="942" y2="737" stroke="#22c55e" stroke-width="2" marker-end="url(#arr-green)"/>
+
+  <!-- vote nodes -->
+  <rect x="313" y="737" width="190" height="50" rx="8" fill="#c3fae8" stroke="#22c55e" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e">
+    <tspan x="408" y="757">vote</tspan>
+    <tspan x="408" dy="16">(participant 1)</tspan>
+  </text>
+
+  <rect x="580" y="737" width="190" height="50" rx="8" fill="#c3fae8" stroke="#22c55e" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e">
+    <tspan x="675" y="757">vote</tspan>
+    <tspan x="675" dy="16">(participant 2)</tspan>
+  </text>
+
+  <rect x="847" y="737" width="190" height="50" rx="8" fill="#c3fae8" stroke="#22c55e" stroke-width="2"/>
+  <text text-anchor="middle" font-size="12.5" fill="#1e1e1e">
+    <tspan x="942" y="757">vote</tspan>
+    <tspan x="942" dy="16">(participant 3)</tspan>
+  </text>
+
+  <text x="1053" y="764" font-size="11" fill="#a0a0a0" font-style="italic">(parallel)</text>
+
+  <!-- fan-in: vote -> collect_votes -->
+  <line x1="408" y1="787" x2="670" y2="813" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="675" y1="787" x2="675" y2="813" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="942" y1="787" x2="680" y2="813" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- collect_votes -->
+  <rect x="535" y="813" width="280" height="40" rx="8" fill="#fff3bf" stroke="#f59e0b" stroke-width="2"/>
+  <text x="675" y="837" text-anchor="middle" font-size="12.5" fill="#1e1e1e">collect_votes (join)</text>
+
+  <!-- collect_votes -> synthesizer -->
+  <line x1="675" y1="853" x2="675" y2="871" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- synthesizer -->
+  <rect x="535" y="871" width="280" height="50" rx="8" fill="#ffc9c9" stroke="#ef4444" stroke-width="2"/>
+  <text x="675" y="901" text-anchor="middle" font-size="14" fill="#1e1e1e" font-weight="500">synthesizer</text>
+
+  <!-- synthesizer -> final_report -->
+  <line x1="675" y1="921" x2="675" y2="939" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- final_report -->
+  <rect x="535" y="939" width="280" height="55" rx="8" fill="#b2f2bb" stroke="#22c55e" stroke-width="2"/>
+  <text text-anchor="middle" font-size="13" fill="#1e1e1e" font-weight="500">
+    <tspan x="675" y="960">Final Report</tspan>
+    <tspan x="675" dy="19">PDF / Word export</tspan>
+  </text>
+
+  <!-- Note -->
+  <text x="675" y="1002" text-anchor="middle" font-size="11" fill="#a0a0a0" font-style="italic">Results streamed incrementally to the frontend via SSE as each workflow node completes</text>
+</svg>
