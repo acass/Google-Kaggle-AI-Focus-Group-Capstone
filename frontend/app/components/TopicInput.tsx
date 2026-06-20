@@ -24,7 +24,7 @@ export function TopicInput({ onStart, isLoading, disabled }: Props) {
         setPersonas(list)
         setSelected(new Set(list.map((p) => p.id)))
       })
-      .catch(() => {})
+      .catch(() => { })
   }, [])
 
   const toggle = (id: string) => {
@@ -55,7 +55,7 @@ export function TopicInput({ onStart, isLoading, disabled }: Props) {
         <label className="text-xs font-medium text-zinc-300 mb-1 block">Topic</label>
         <textarea
           className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-sm text-white placeholder-zinc-500 resize-none focus:outline-none focus:border-zinc-500 h-28"
-          placeholder="e.g. 'AI app that analyzes YouTube channels for viral niches'"
+          placeholder="e.g. 'Business product or service'"
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
           disabled={disabled}
@@ -72,11 +72,10 @@ export function TopicInput({ onStart, isLoading, disabled }: Props) {
               key={p.id}
               onClick={() => toggle(p.id)}
               disabled={disabled}
-              className={`text-left p-2.5 rounded-lg border text-xs transition-all ${
-                selected.has(p.id)
+              className={`text-left p-2.5 rounded-lg border text-xs transition-all ${selected.has(p.id)
                   ? "border-indigo-500 bg-indigo-500/10 text-white"
                   : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600"
-              }`}
+                }`}
             >
               <div className="font-medium">{p.name}</div>
               <div className="text-zinc-500 mt-0.5">{p.role}</div>
