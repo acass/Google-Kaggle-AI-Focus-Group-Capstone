@@ -19,6 +19,35 @@ The result is far more useful than a single AI opinion: you get structured disag
 
 ---
 
+## Workflow & Architecture
+
+The application orchestrates a structured research study using parallel and sequential agent nodes defined via the **Google ADK** workflow graph:
+
+```mermaid
+graph TD
+    START([Start Session]) --> ModIntro[Moderator Intro Node]
+    ModIntro --> IndepFan{Parallel Fan-out}
+    IndepFan --> Indep1[Independent Eval: Agent 1]
+    IndepFan --> Indep2[Independent Eval: Agent 2]
+    IndepFan --> IndepN[Independent Eval: Agent N]
+    Indep1 & Indep2 & IndepN --> JoinIndep[Join Node: collect_independent]
+    JoinIndep --> ModFollowup[Moderator Follow-up Node]
+    ModFollowup --> DiscFan{Parallel Fan-out}
+    DiscFan --> Disc1[Discussion: Agent 1]
+    DiscFan --> Disc2[Discussion: Agent 2]
+    DiscFan --> DiscN[Discussion: Agent N]
+    Disc1 & Disc2 & DiscN --> JoinDisc[Join Node: collect_discussion]
+    JoinDisc --> VoteFan{Parallel Fan-out}
+    VoteFan --> Vote1[Vote & Score: Agent 1]
+    VoteFan --> Vote2[Vote & Score: Agent 2]
+    VoteFan --> VoteN[Vote & Score: Agent N]
+    Vote1 & Vote2 & VoteN --> JoinVote[Join Node: collect_votes]
+    JoinVote --> Synth[Synthesizer Node]
+    Synth --> END([Session Complete])
+```
+
+---
+
 ## Example Personas
 
 | Name | Role | Hidden Motivation |

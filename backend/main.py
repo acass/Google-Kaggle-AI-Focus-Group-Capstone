@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).parent / ".env", override=True)  # must run before importing modules that instantiate ChatAnthropic at module level
+load_dotenv(Path(__file__).parent / ".env", override=True)  # must run before importing modules that configure the GenAI client
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
