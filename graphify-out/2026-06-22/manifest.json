@@ -1,0 +1,207 @@
+{
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/agents/__init__.py": {
+    "mtime": 1781971604.2453203,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/agents/graph.py": {
+    "mtime": 1781972276.8852599,
+    "ast_hash": "ff8656f3610f7f31cba1f4d0a2112a4d",
+    "semantic_hash": "ff8656f3610f7f31cba1f4d0a2112a4d"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/agents/nodes/__init__.py": {
+    "mtime": 1781971604.245843,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/agents/nodes/moderator.py": {
+    "mtime": 1781972276.8855412,
+    "ast_hash": "5a4bd8187ed9aa01857ddb9bf04cae49",
+    "semantic_hash": "5a4bd8187ed9aa01857ddb9bf04cae49"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/agents/nodes/participant.py": {
+    "mtime": 1781972276.885907,
+    "ast_hash": "9f0246b07138e085995cb06a2f0167a2",
+    "semantic_hash": "9f0246b07138e085995cb06a2f0167a2"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/agents/nodes/synthesizer.py": {
+    "mtime": 1781972276.8863518,
+    "ast_hash": "b851c3f09b548b582ee01c87182bcbb3",
+    "semantic_hash": "b851c3f09b548b582ee01c87182bcbb3"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/agents/personas.py": {
+    "mtime": 1781971604.2467859,
+    "ast_hash": "b33fe0c4311cd8ae423ae1fa14269426",
+    "semantic_hash": "b33fe0c4311cd8ae423ae1fa14269426"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/api/__init__.py": {
+    "mtime": 1781971604.2469554,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/api/sessions.py": {
+    "mtime": 1781972276.8867888,
+    "ast_hash": "c4e1d54febe9e42558daeb171fdbc14b",
+    "semantic_hash": "c4e1d54febe9e42558daeb171fdbc14b"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/api/stream.py": {
+    "mtime": 1781971604.247435,
+    "ast_hash": "742c63e7dc87c22bba68a57b9cf23952",
+    "semantic_hash": "742c63e7dc87c22bba68a57b9cf23952"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/main.py": {
+    "mtime": 1781972965.211553,
+    "ast_hash": "b0ab34ef6dfb96a1e174cb8a9fbf8e14",
+    "semantic_hash": "b0ab34ef6dfb96a1e174cb8a9fbf8e14"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/models/__init__.py": {
+    "mtime": 1781971604.2478862,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/models/schemas.py": {
+    "mtime": 1781971604.2481263,
+    "ast_hash": "d819acd39e78f7e6fde6e7c20d4b23b2",
+    "semantic_hash": "d819acd39e78f7e6fde6e7c20d4b23b2"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/models/state.py": {
+    "mtime": 1781971604.2483099,
+    "ast_hash": "469cd2c5bf871037b3c4fb4ae96126b8",
+    "semantic_hash": "469cd2c5bf871037b3c4fb4ae96126b8"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/app/components/AgentBubble.tsx": {
+    "mtime": 1781971604.2505488,
+    "ast_hash": "0227a3ddfd6fbc4a8b3baae4e4d28815",
+    "semantic_hash": "0227a3ddfd6fbc4a8b3baae4e4d28815"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/app/components/DiscussionThread.tsx": {
+    "mtime": 1781971604.2507405,
+    "ast_hash": "a205fa6fc512acbee779e1089b780d0a",
+    "semantic_hash": "a205fa6fc512acbee779e1089b780d0a"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/app/components/FinalReport.tsx": {
+    "mtime": 1781971604.2509406,
+    "ast_hash": "014fd54a00ddc04fe15fafcab0ff111a",
+    "semantic_hash": "014fd54a00ddc04fe15fafcab0ff111a"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/app/components/ScorePanel.tsx": {
+    "mtime": 1781971604.251506,
+    "ast_hash": "120c4178022a7f53972d744ee7a0f33b",
+    "semantic_hash": "120c4178022a7f53972d744ee7a0f33b"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/app/components/TopicInput.tsx": {
+    "mtime": 1781971604.2518156,
+    "ast_hash": "207ee35899c919c248281a5d1e3502c7",
+    "semantic_hash": "207ee35899c919c248281a5d1e3502c7"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/app/hooks/useFocusGroup.ts": {
+    "mtime": 1781971604.2534628,
+    "ast_hash": "e226a05da1b9b49a5b1f6cd2a1f2926e",
+    "semantic_hash": "e226a05da1b9b49a5b1f6cd2a1f2926e"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/app/layout.tsx": {
+    "mtime": 1781971604.2537727,
+    "ast_hash": "1cdc4b01b0bdeb8d53645255b638dbd6",
+    "semantic_hash": "1cdc4b01b0bdeb8d53645255b638dbd6"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/app/page.tsx": {
+    "mtime": 1781971604.253979,
+    "ast_hash": "b0cbcfa6c57ff8250a51c513ef0546d8",
+    "semantic_hash": "b0cbcfa6c57ff8250a51c513ef0546d8"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/app/types/index.ts": {
+    "mtime": 1781971604.2548237,
+    "ast_hash": "cadc6a30eebbcdefa0bfe6a01943d43a",
+    "semantic_hash": "cadc6a30eebbcdefa0bfe6a01943d43a"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/app/utils/exportReport.ts": {
+    "mtime": 1781971604.255604,
+    "ast_hash": "5a6d13f509d29462dd51f73b51ae6391",
+    "semantic_hash": "5a6d13f509d29462dd51f73b51ae6391"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/eslint.config.mjs": {
+    "mtime": 1781971604.25606,
+    "ast_hash": "dfa1f5f6a7037bf39dc510f30b180002",
+    "semantic_hash": "dfa1f5f6a7037bf39dc510f30b180002"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/next.config.ts": {
+    "mtime": 1781971604.256462,
+    "ast_hash": "9b77af189a21a7a64e4bd7a426f64176",
+    "semantic_hash": "9b77af189a21a7a64e4bd7a426f64176"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/package.json": {
+    "mtime": 1781971604.2585602,
+    "ast_hash": "eda161332724eb403c43f933e82392fc",
+    "semantic_hash": "eda161332724eb403c43f933e82392fc"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/postcss.config.mjs": {
+    "mtime": 1781971604.2589748,
+    "ast_hash": "239f3ebf717465dc636818a1a619398d",
+    "semantic_hash": "239f3ebf717465dc636818a1a619398d"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/tsconfig.json": {
+    "mtime": 1781971604.263351,
+    "ast_hash": "02fc19ad21338c2ab820a70136310db4",
+    "semantic_hash": "02fc19ad21338c2ab820a70136310db4"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/AGENTS.md": {
+    "mtime": 1781972971.151221,
+    "ast_hash": "f29e6b1442275485f0fbb337cf145e23",
+    "semantic_hash": "f29e6b1442275485f0fbb337cf145e23"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/CLAUDE.md": {
+    "mtime": 1781972988.9697216,
+    "ast_hash": "11b40dd03b73c682896b2ecedd9e9106",
+    "semantic_hash": "11b40dd03b73c682896b2ecedd9e9106"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/README.md": {
+    "mtime": 1781972979.4543211,
+    "ast_hash": "52bdb688a4da89b245041a5488dd70f9",
+    "semantic_hash": "52bdb688a4da89b245041a5488dd70f9"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/backend/requirements.txt": {
+    "mtime": 1781972276.8870857,
+    "ast_hash": "325155c707deb2ff299ae6a24e7f63b5",
+    "semantic_hash": "325155c707deb2ff299ae6a24e7f63b5"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/AGENTS.md": {
+    "mtime": 1781972975.1598291,
+    "ast_hash": "e2d0ee9d5af017fe7686624e810f352b",
+    "semantic_hash": "e2d0ee9d5af017fe7686624e810f352b"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/CLAUDE.md": {
+    "mtime": 1781971604.2497492,
+    "ast_hash": "5c27369b226fcf2be8a6cfe52224e767",
+    "semantic_hash": "5c27369b226fcf2be8a6cfe52224e767"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/README.md": {
+    "mtime": 1781972984.8595927,
+    "ast_hash": "a1473999c8a5b40f4f8346245ed13c59",
+    "semantic_hash": "a1473999c8a5b40f4f8346245ed13c59"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/public/file.svg": {
+    "mtime": 1781971604.2595825,
+    "ast_hash": "d09f95206c3fa0bb9bd9fefabfd0ea71",
+    "semantic_hash": "d09f95206c3fa0bb9bd9fefabfd0ea71"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/public/globe.svg": {
+    "mtime": 1781971604.260011,
+    "ast_hash": "2aaafa6a49b6563925fe440891e32717",
+    "semantic_hash": "2aaafa6a49b6563925fe440891e32717"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/public/next.svg": {
+    "mtime": 1781971604.2606983,
+    "ast_hash": "8e061864f388b47f33a1c3780831193e",
+    "semantic_hash": "8e061864f388b47f33a1c3780831193e"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/public/vercel.svg": {
+    "mtime": 1781971604.2614872,
+    "ast_hash": "c0af2f507b369b085b35ef4bbe3bcf1e",
+    "semantic_hash": "c0af2f507b369b085b35ef4bbe3bcf1e"
+  },
+  "/Users/christophercass03/Desktop/Agentic-Focus-Group/frontend/public/window.svg": {
+    "mtime": 1781971604.2626328,
+    "ast_hash": "a2760511c65806022ad20adf74370ff3",
+    "semantic_hash": "a2760511c65806022ad20adf74370ff3"
+  }
+}
