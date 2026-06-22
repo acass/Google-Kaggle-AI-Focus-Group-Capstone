@@ -1,9 +1,10 @@
 import json
 from google.adk.agents import LlmAgent
 from google.adk.agents.context import Context
-from google.adk.tools import google_search
+from google.adk.tools import google_search, url_context
 from pydantic import BaseModel
 from ...models.state import FocusGroupState, AgentPersona, StreamEvent, ScoreSet
+from ...agents.tools import record_citation_tool
 
 SCORE_CATEGORIES = ["innovation", "market", "ux", "feasibility", "monetization", "risk"]
 
@@ -36,7 +37,10 @@ async def make_independent_response(ctx: Context, state: FocusGroupState, person
 
 Topic to evaluate: {topic}
 
-Before answering, use your Search tool to find actual real-world data, news, or context about this topic to ground your evaluation. Mention specific facts you find.
+Before answering:
+- Use Search to find actual real-world data, news, or context about this topic.
+- Follow at least one URL with url_context to read the full article, not just the snippet.
+- Call record_citation for each source you use (title, url, key excerpt).
 
 Give your honest, independent assessment. Cover:
 - Your first impression (1-2 sentences)
@@ -51,7 +55,7 @@ Do NOT hedge excessively. If you hate something, say so."""
         name=f"participant_{persona['id']}_indep",
         model="gemini-2.5-flash",
         instruction=prompt,
-        tools=[google_search],
+        tools=[google_search, url_context, record_citation_tool],
     )
     
     # Run the agent inside the workflow context
@@ -105,13 +109,14 @@ Respond to the moderator's questions and engage with what the other panelists sa
 - Agree where you genuinely agree, but explain why
 - Push back hard where you disagree — don't just be polite
 - Add new points the group missed
+- If you cite a specific fact or statistic, use Search + url_context to verify it and call record_citation
 - Keep it to 3-5 sentences. Be sharp."""
 
     agent = LlmAgent(
         name=f"participant_{persona['id']}_disc",
         model="gemini-2.5-flash",
         instruction=prompt,
-        tools=[google_search],
+        tools=[google_search, url_context, record_citation_tool],
     )
 
     result = await ctx.run_node(agent, node_input="")
