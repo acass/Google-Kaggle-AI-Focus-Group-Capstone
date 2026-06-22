@@ -1,6 +1,6 @@
 {
-    "name": "focus_group",
-    "short_name": "focus_group",
+    "name": "Synthetic Market Intelligence Platform",
+    "short_name": "SMIP",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

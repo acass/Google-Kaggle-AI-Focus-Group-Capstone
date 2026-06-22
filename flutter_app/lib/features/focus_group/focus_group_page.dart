@@ -30,7 +30,7 @@ class FocusGroupPage extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                const Text('AI Focus Group',
+                const Text('Synthetic Market Intelligence Platform',
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,

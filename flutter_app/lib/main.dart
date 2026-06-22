@@ -14,7 +14,7 @@ class FocusGroupApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AI Focus Group',
+      title: 'Synthetic Market Intelligence Platform',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
       home: const FocusGroupPage(),

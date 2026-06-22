@@ -67,7 +67,7 @@ class _TopicInputState extends ConsumerState<TopicInput> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('AI Focus Group',
+          const Text('Synthetic Market Intelligence Platform',
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
