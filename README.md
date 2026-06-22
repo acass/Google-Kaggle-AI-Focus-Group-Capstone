@@ -1,25 +1,26 @@
-# AI Focus Group
+<!-- generated-by: gsd-doc-writer -->
+# Synthetic Market Intelligence Platform
 
 A synthetic research panel powered by role-based AI agents. Submit any idea, product, or concept and watch a structured panel of distinct AI personas debate, critique, score, and synthesize it — in real time.
 
-<img width="1487" height="825" alt="AI Focus Group" src="https://github.com/user-attachments/assets/f0356da1-bf63-4829-9cd7-22b932632a35" />
+<img width="1487" height="825" alt="Synthetic Market Intelligence Platform" src="https://github.com/user-attachments/assets/f0356da1-bf63-4829-9cd7-22b932632a35" />
 
 ## What It Does
 
-Instead of asking a single AI "what do you think?", AI Focus Group convenes a panel of five opinionated agents, each with a unique background, bias set, hidden motivation, and scoring lens. They run through a structured discussion protocol:
+Instead of asking a single AI "what do you think?", this platform convenes a panel of five opinionated agents, each with a unique background, bias set, hidden motivation, and scoring lens. They run through a structured discussion protocol:
 
 1. **Independent evaluation** — each agent reacts without seeing the others' responses (prevents groupthink)
 2. **Moderated follow-up** — a Moderator agent surfaces disagreements and asks targeted follow-up questions
 3. **Open discussion** — participants respond to each other's critiques
 4. **Blind voting** — each agent scores the idea privately across six dimensions
 5. **Synthesis** — a dedicated Synthesizer agent reads the full discussion and produces an executive report
-6. **Report Export** — users can export the generated executive report in professional PDF or editable DOCX formats directly from the UI
+6. **Report Export** — export the generated executive report as PDF or DOCX directly from the UI
 
 The result is far more useful than a single AI opinion: you get structured disagreement, diverse risk analysis, a consensus score, and actionable recommendations.
 
 ---
 
-## Workflow & Architecture
+## Workflow and Architecture
 
 The application orchestrates a structured research study using parallel and sequential agent nodes defined via the **Google ADK** workflow graph:
 
@@ -48,17 +49,17 @@ graph TD
 
 ---
 
-## Example Personas
+## Personas
 
 | Name | Role | Hidden Motivation |
-|---|---|---|
+|------|------|-------------------|
 | Marcus Chen | Skeptical Investor | Find the fatal flaw before anyone else does |
 | Zoe Park | Enthusiastic Early Adopter | Be first to discover the next big thing |
 | David Okafor | Enterprise CTO | Protect against vendor lock-in and technical debt |
 | Priya Sharma | UX Researcher | Ensure real users can use this without a manual |
 | Jordan Ellis | Growth Marketer | Find the distribution wedge that makes this explode |
 
-Each persona has its own personality traits, expertise domain, known biases, LLM temperature, and weighted scoring criteria.
+Each persona has its own personality traits, expertise domain, known biases, LLM temperature, and weighted scoring criteria. Sessions accept 1–5 participants.
 
 ---
 
@@ -77,59 +78,74 @@ The Synthesizer aggregates scores into an overall viability rating plus a standa
 
 ---
 
+## Agent Security
+
+Two ADK plugins run on every session:
+
+- **BlueTeamAnalyticsPlugin** — tracks per-node tool call counts (Agent BOM). If a single workflow node exceeds 10 tool calls, it deducts 25 points from the session Trust Score and flags potential Intent Drift.
+- **GreenTeamQuarantinePlugin** — enforces a Stateful Quarantine when Trust Score falls below 50: blocks further tool execution while preserving session state for forensic analysis.
+
+Set `security_test_mode: true` in the session creation request to exercise these defenses.
+
+---
+
 ## Stack
 
 **Backend**
 - Python 3.11+
-- [FastAPI](https://fastapi.tiangolo.com/) — REST API + SSE streaming
-- [Google ADK](https://adk.dev/) — multi-agent workflow orchestration with parallel fan-out
-- [Google GenAI](https://pypi.org/project/google-genai/) — Gemini 2.5 Pro (Moderator and Synthesizer) & Gemini 2.5 Flash (Participants)
-- Server-Sent Events for real-time discussion streaming
+- [FastAPI](https://fastapi.tiangolo.com/) — REST API + SSE streaming via `sse-starlette`
+- [Google ADK](https://adk.dev/) `>=2.0.0` — multi-agent workflow orchestration with parallel fan-out
+- [Google GenAI](https://pypi.org/project/google-genai/) — Gemini 2.5 Pro (Moderator and Synthesizer) and Gemini 2.5 Flash (Participants)
+- [Pydantic](https://docs.pydantic.dev/) `>=2.8` — request/response validation
 
 **Frontend**
-- [Next.js 16](https://nextjs.org/) + React 19
-- [Tailwind CSS v4](https://tailwindcss.com/)
-- TypeScript
-- [jsPDF](https://github.com/parallax/jsPDF) — Client-side PDF report generation
-- [docx](https://docx.js.org/) — Client-side Word document (.docx) report generation
+- [Flutter Web](https://flutter.dev/) (Dart SDK `^3.11.5`)
+- [Riverpod](https://riverpod.dev/) `^3.3.2` — state management (`SessionNotifier`)
+- `package:web` + `dart:js_interop` — native browser `EventSource` for SSE
+- `pdf` + `printing` packages — client-side PDF report generation
+- `archive` package — client-side DOCX report generation (hand-rolled OOXML)
 
 ---
 
 ## Project Structure
 
 ```
-AI Focus Group/
+.
 ├── backend/
+│   ├── main.py                  # FastAPI app, CORS, router registration
+│   ├── requirements.txt
+│   ├── .env.example
 │   ├── agents/
-│   │   ├── graph.py          # ADK Workflow state machine (fan-out/fan-in per phase)
-│   │   ├── personas.py       # All 5 agent persona definitions
+│   │   ├── graph.py             # ADK Workflow graph builder (fan-out/fan-in per phase)
+│   │   ├── personas.py          # All 5 agent persona definitions
 │   │   └── nodes/
-│   │       ├── moderator.py  # Introduction + follow-up question generation
-│   │       ├── participant.py # Independent, discussion, and voting responses
-│   │       └── synthesizer.py # Final report generation
+│   │       ├── moderator.py     # Introduction and follow-up question generation
+│   │       ├── participant.py   # Independent eval, discussion, and voting responses
+│   │       └── synthesizer.py   # Final report synthesis
 │   ├── api/
-│   │   ├── sessions.py       # Session creation and management
-│   │   └── stream.py         # SSE streaming endpoint
+│   │   ├── sessions.py          # POST /sessions and GET /sessions/{id}
+│   │   └── stream.py            # GET /sessions/{id}/stream (SSE, with history replay)
 │   ├── models/
-│   │   ├── schemas.py        # Pydantic request/response models
-│   │   └── state.py          # State types
-│   ├── main.py               # FastAPI app + CORS
-│   └── requirements.txt
-└── frontend/
-    ├── app/
-    │   ├── components/
-    │   │   ├── TopicInput.tsx      # Left panel — topic submission
-    │   │   ├── DiscussionThread.tsx # Center — live agent messages
-    │   │   ├── ScorePanel.tsx      # Right panel — live scores
-    │   │   ├── AgentBubble.tsx     # Individual agent message card
-    │   │   └── FinalReport.tsx     # Synthesizer report display
-    │   ├── hooks/
-    │   │   └── useFocusGroup.ts    # SSE client + session state
-    │   ├── utils/
-    │   │   └── exportReport.ts     # PDF and DOCX export utilities
-    │   └── page.tsx
-    ├── package.json
-    └── tsconfig.json
+│   │   ├── state.py             # FocusGroupState, AgentPersona, FinalReport TypedDicts
+│   │   └── schemas.py           # Pydantic request/response schemas
+│   ├── plugins/
+│   │   ├── blue_team_plugin.py  # Intent Drift detection, Trust Score tracking
+│   │   └── green_team_plugin.py # Stateful Quarantine enforcement
+│   └── tests/
+└── flutter_app/
+    ├── lib/
+    │   ├── app/config.dart           # API_BASE dart-define config
+    │   ├── data/
+    │   │   ├── api_client.dart       # REST client
+    │   │   └── sse_client.dart       # EventSource SSE client
+    │   ├── state/
+    │   │   └── session_notifier.dart # Riverpod SessionNotifier (session state machine)
+    │   ├── models/                   # Dart models with fromJson
+    │   ├── export/
+    │   │   ├── pdf_builder.dart      # Client-side PDF export
+    │   │   └── docx_builder.dart     # Client-side DOCX export
+    │   └── features/                 # UI feature widgets
+    └── test/
 ```
 
 ---
@@ -139,78 +155,107 @@ AI Focus Group/
 ### Prerequisites
 
 - Python 3.11+
-- Node.js 18+
+- Flutter SDK (Dart `^3.11.5`) with Chrome available
 - A [Google Gemini API key](https://aistudio.google.com/app/apikey)
 
 ### Backend
 
 ```bash
-cd backend
-
-# Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+# From the repo root — do NOT cd into backend/ first
+python -m venv backend/.venv
+backend/.venv/bin/pip install -r backend/requirements.txt
 
 # Configure environment
-cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY
+cp backend/.env.example backend/.env
+# Edit backend/.env and set GEMINI_API_KEY=<your key>
 
-# Start the API server
-uvicorn main:app --reload
+# Start the API server (must run from repo root)
+backend/.venv/bin/uvicorn backend.main:app --reload --port 8000
 ```
 
 The API will be available at `http://localhost:8000`. Health check: `GET /health`.
 
+> Run from the repo root as `backend.main:app`. Running `cd backend && uvicorn main:app` will fail with "attempted relative import with no known parent package".
+
 ### Frontend
 
 ```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start the dev server
-npm run dev
+cd flutter_app
+flutter pub get
+flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000
 ```
 
-Open `http://localhost:3000`.
+Open `http://localhost:8080` in Chrome.
+
+> Keep `--web-port=8080`. The backend CORS allowlist permits `http://localhost:8080`. Using a different port will produce CORS errors.
 
 ---
 
 ## How to Use
 
-1. Enter any topic, idea, product concept, or pitch in the left panel
-2. Select which personas to include (defaults to all five)
+1. Enter any topic, idea, product concept, or pitch in the input panel
+2. Select which personas to include (up to five)
 3. Click **Start Session**
-4. Watch the agents debate in real time in the center panel
-5. Monitor live scores updating in the right panel
-6. Read the Synthesizer's final report at the bottom when the session completes
+4. Watch the agents debate in real time as each SSE event arrives
+5. Monitor live scores updating as each persona submits its vote
+6. Read the Synthesizer's final report when the session completes
+7. Export the report as PDF or DOCX using the export buttons
 
 ---
 
 ## API Endpoints
 
 | Method | Path | Description |
-|---|---|---|
-| `POST` | `/sessions` | Create a new focus group session |
-| `GET` | `/sessions/{id}` | Get session details and final report |
-| `GET` | `/sessions/{id}/stream` | SSE stream of discussion events |
-| `GET` | `/personas` | List all available personas |
+|--------|------|-------------|
 | `GET` | `/health` | Health check |
+| `GET` | `/personas` | List all available personas |
+| `POST` | `/sessions` | Create a new focus group session |
+| `GET` | `/sessions/{id}` | Get session state and final report |
+| `GET` | `/sessions/{id}/stream` | SSE stream of live discussion events |
+
+### Create Session Request
+
+```json
+{
+  "topic": "A subscription service for AI-generated meal plans",
+  "participant_ids": ["skeptical_investor", "ux_researcher", "growth_marketer"],
+  "security_test_mode": false
+}
+```
+
+### SSE Event Types
+
+| `type` | Description |
+|--------|-------------|
+| `phase_change` | Workflow phase transition |
+| `agent_message` | Persona response (independent, discussion) |
+| `score_update` | Persona blind vote with scores |
+| `done` | Session complete |
+| `error` | Workflow error |
 
 ---
 
 ## Environment Variables
 
-| Variable | Description |
-|---|---|
-| `GEMINI_API_KEY` | Your Gemini API key (required) |
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GEMINI_API_KEY` | Required | Your Gemini API key from Google AI Studio |
 
 ---
 
-## License
+## Running Tests
 
-MIT
+### Backend
+
+```bash
+# From the repo root
+backend/.venv/bin/python -m pytest
+```
+
+### Flutter
+
+```bash
+cd flutter_app
+flutter test
+flutter analyze
+```
