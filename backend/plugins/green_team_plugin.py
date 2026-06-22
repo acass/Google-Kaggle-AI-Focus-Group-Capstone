@@ -15,7 +15,7 @@ class GreenTeamQuarantinePlugin(BasePlugin):
     def __init__(self, name: str = "green_team_quarantine"):
         super().__init__(name=name)
 
-    async def before_tool_callback(self, *, tool: BaseTool, args: dict, tool_context: ToolContext) -> dict | None:
+    async def before_tool_callback(self, *, tool: BaseTool, tool_args: dict, tool_context: ToolContext) -> dict | None:
         state = tool_context.state
         
         if state.get("quarantine_flag") is True:

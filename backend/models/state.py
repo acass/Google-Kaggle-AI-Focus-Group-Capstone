@@ -74,4 +74,5 @@ class FocusGroupState(TypedDict):
     security_test_mode: bool
     trust_score: float
     agbom: list[dict]
+    agbom_per_node: dict[str, list[dict]]
     quarantine_flag: bool

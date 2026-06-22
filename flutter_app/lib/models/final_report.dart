@@ -11,6 +11,7 @@ class FinalReport {
   final List<String> actionItems;
   final String recommendation;
   final String sentiment;
+  final List<Map<String, dynamic>> citations;
 
   const FinalReport({
     required this.overallScore,
@@ -23,6 +24,7 @@ class FinalReport {
     required this.actionItems,
     required this.recommendation,
     required this.sentiment,
+    required this.citations,
   });
 
   factory FinalReport.fromJson(Map<String, dynamic> j) {
@@ -46,6 +48,9 @@ class FinalReport {
       actionItems: strs(j['action_items']),
       recommendation: (j['recommendation'] as String?) ?? '',
       sentiment: (j['sentiment'] as String?) ?? 'neutral',
+      citations: (j['citations'] as List<dynamic>?)
+          ?.map((e) => Map<String, dynamic>.from(e as Map))
+          .toList() ?? [],
     );
   }
 }

@@ -18,7 +18,7 @@ class BlueTeamAnalyticsPlugin(BasePlugin):
         super().__init__(name=name)
 
     async def after_tool_callback(
-        self, *, tool: BaseTool, args: dict, tool_context: ToolContext, tool_response: dict
+        self, *, tool: BaseTool, tool_args: dict, tool_context: ToolContext, result: dict
     ) -> dict | None:
         state = tool_context.state
         node = tool_context.node_path or "unknown"
@@ -33,8 +33,8 @@ class BlueTeamAnalyticsPlugin(BasePlugin):
         record = {
             "node": node,
             "tool": tool.name,
-            "args": args,
-            "status": "success" if tool_response else "unknown",
+            "args": tool_args,
+            "status": "success" if result else "unknown",
         }
         state["agbom"].append(record)
 

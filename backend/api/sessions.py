@@ -55,6 +55,11 @@ async def _run_session(session_id: str, initial_state: FocusGroupState):
                         node_output_copy = {k: v for k, v in node_output.items() if k != "stream_events"}
                     else:
                         node_output_copy = node_output.copy()
+                    # Merge citations (append)
+                    if "citations" in node_output_copy:
+                        existing_c = current.get("citations", [])
+                        current["citations"] = existing_c + node_output_copy["citations"]
+                        node_output_copy = {k: v for k, v in node_output_copy.items() if k != "citations"}
                     # Merge dict fields (independent_responses, discussion_responses, scores)
                     for key in ("independent_responses", "discussion_responses", "scores"):
                         if key in node_output_copy:
@@ -105,6 +110,8 @@ async def create_session(
         "security_test_mode": body.security_test_mode,
         "trust_score": 100.0,
         "agbom": [],
+        "agbom_per_node": {},
+        "citations": [],
         "quarantine_flag": False,
     }
 

@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock
 
 
 @pytest.mark.asyncio
@@ -18,7 +18,7 @@ async def test_blue_team_does_not_fire_on_normal_usage():
     # Simulate MAX_TOOLS_PER_NODE calls from the same node — should NOT trigger quarantine
     for _ in range(MAX_TOOLS_PER_NODE):
         await plugin.after_tool_callback(
-            tool=mock_tool, args={}, tool_context=mock_ctx, tool_response={"result": "ok"}
+            tool=mock_tool, tool_args={}, tool_context=mock_ctx, result={"result": "ok"}
         )
 
     assert mock_ctx.state.get("quarantine_flag") is not True
@@ -41,7 +41,8 @@ async def test_blue_team_fires_on_excessive_node_usage():
     # Exceed the threshold
     for _ in range(MAX_TOOLS_PER_NODE + 3):
         await plugin.after_tool_callback(
-            tool=mock_tool, args={}, tool_context=mock_ctx, tool_response={"result": "ok"}
+            tool=mock_tool, tool_args={}, tool_context=mock_ctx, result={"result": "ok"}
         )
 
     assert mock_ctx.state["trust_score"] < 100
+    assert mock_ctx.state.get("quarantine_flag") is True
