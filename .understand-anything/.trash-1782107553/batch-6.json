@@ -1,0 +1,144 @@
+{
+  "nodes": [
+    {
+      "id": "config:.understand-anything/.understandignore",
+      "type": "config",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "Exclusion patterns configuration for the understand-anything analysis tool, specifying files and directories to skip during codebase scanning. Excludes graphify-out/, .venv/, __pycache__/, and provides commented patterns for common test file conventions.",
+      "tags": ["configuration", "tooling", "analysis"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:backend/.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": "backend/.env.example",
+      "summary": "Template environment file for the backend showing the required GEMINI_API_KEY environment variable that must be set before running the FastAPI server.",
+      "tags": ["configuration", "environment", "security"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/agents/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/agents/__init__.py",
+      "summary": "Empty Python package marker for the backend agents module.",
+      "tags": ["python", "package"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/agents/nodes/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/agents/nodes/__init__.py",
+      "summary": "Empty Python package marker for the backend agents nodes submodule.",
+      "tags": ["python", "package"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/api/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/api/__init__.py",
+      "summary": "Empty Python package marker for the backend API module.",
+      "tags": ["python", "package"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/models/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/models/__init__.py",
+      "summary": "Empty Python package marker for the backend models module.",
+      "tags": ["python", "package"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/plugins/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/plugins/__init__.py",
+      "summary": "Python package marker for the backend plugins module.",
+      "tags": ["python", "package"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:backend/requirements.txt",
+      "type": "document",
+      "name": "requirements.txt",
+      "filePath": "backend/requirements.txt",
+      "summary": "Python dependency manifest for the backend listing: google-adk (Agent Development Kit), fastapi, uvicorn, sse-starlette (Server-Sent Events), pydantic, python-dotenv, and httpx.",
+      "tags": ["documentation", "dependencies", "backend", "python"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/app/globals.css",
+      "type": "file",
+      "name": "globals.css",
+      "filePath": "frontend/app/globals.css",
+      "summary": "Global Tailwind CSS v4 stylesheet importing the Tailwind base layer and defining dark-mode CSS custom properties for the application color palette.",
+      "tags": ["css", "styling", "tailwind", "frontend"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/app/layout.tsx",
+      "type": "file",
+      "name": "layout.tsx",
+      "filePath": "frontend/app/layout.tsx",
+      "summary": "Next.js App Router root layout component that configures Geist Sans and Geist Mono fonts, sets page metadata (title and description), applies global styles, and wraps all pages with the font class names.",
+      "tags": ["next.js", "layout", "frontend", "typescript", "fonts"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/eslint.config.mjs",
+      "type": "file",
+      "name": "eslint.config.mjs",
+      "filePath": "frontend/eslint.config.mjs",
+      "summary": "ESLint flat configuration for the Next.js frontend extending the official next/core-web-vitals and next/typescript rulesets.",
+      "tags": ["configuration", "linting", "frontend", "tooling"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/next.config.ts",
+      "type": "file",
+      "name": "next.config.ts",
+      "filePath": "frontend/next.config.ts",
+      "summary": "Minimal Next.js configuration file with empty config object, relying on Next.js 16 defaults for the Turbopack-powered dev server.",
+      "tags": ["configuration", "next.js", "frontend", "tooling"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/postcss.config.mjs",
+      "type": "file",
+      "name": "postcss.config.mjs",
+      "filePath": "frontend/postcss.config.mjs",
+      "summary": "PostCSS configuration enabling the @tailwindcss/postcss plugin required for Tailwind CSS v4 processing.",
+      "tags": ["configuration", "css", "tailwind", "tooling", "frontend"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:frontend/app/layout.tsx",
+      "target": "file:frontend/app/globals.css",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/postcss.config.mjs",
+      "target": "file:frontend/app/globals.css",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:backend/requirements.txt",
+      "target": "file:backend/agents/__init__.py",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

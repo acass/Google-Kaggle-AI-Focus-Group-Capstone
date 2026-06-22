@@ -1,0 +1,16 @@
+{
+  "fixedSectionOk": true,
+  "nodesRecovered": 0,
+  "edgesRestored": 0,
+  "crossBatchEdgesAdded": 0,
+  "typesRemapped": 0,
+  "complexityRemapped": 0,
+  "notes": [
+    "The merge script report shows a clean run: 90 nodes in, 90 nodes out, 157 edges in, 157 edges out. No normalization fixes, deduplication, or dropped items were reported.",
+    "The script pre-recovered 6 import edges from the import map: schemas.py->state.py, and five edges from page.tsx (to DiscussionThread.tsx, FinalReport.tsx, ScorePanel.tsx, TopicInput.tsx, and useFocusGroup.ts). All 6 are present in the assembled graph.",
+    "All 42 import relationships in the import map were verified against the assembled graph. Every required imports edge is present.",
+    "Node types used are all standard: file, function, class, document, config. All complexity values are simple, moderate, or complex.",
+    "No nodes lacked an id field and no dangling edge references were present. The graph is structurally sound.",
+    "No changes were made to assembled-graph.json during this review pass."
+  ]
+}

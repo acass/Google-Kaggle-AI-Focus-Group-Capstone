@@ -1,0 +1,87 @@
+{
+  "nodes": [
+    {
+      "id": "document:frontend/AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "frontend/AGENTS.md",
+      "summary": "Frontend-specific developer guidelines covering state management via the useFocusGroup hook, client component conventions, Tailwind CSS v4 styling, and requirements for PDF and DOCX report export. Supplements the root-level AGENTS.md with frontend-only rules.",
+      "tags": ["documentation", "development", "configuration", "frontend", "conventions"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:frontend/CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "frontend/CLAUDE.md",
+      "summary": "Minimal pointer document that delegates all frontend Claude Code instructions to the root AGENTS.md via an @-reference directive.",
+      "tags": ["documentation", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:frontend/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "frontend/README.md",
+      "summary": "Comprehensive frontend getting-started guide covering the Next.js 16 + React 19 + Tailwind CSS v4 stack, directory structure, SSE-based real-time streaming architecture with the FastAPI backend, and setup/run instructions.",
+      "tags": ["documentation", "entry-point", "overview", "frontend"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:frontend/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "frontend/package.json",
+      "summary": "NPM package manifest for the Next.js 16 frontend, declaring runtime dependencies (next, react, react-dom, jspdf, docx) and devDependencies (tailwindcss v4, typescript, eslint, type packages) with dev/build/lint/start scripts.",
+      "tags": ["configuration", "build-system", "dependencies", "frontend"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:frontend/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "frontend/tsconfig.json",
+      "summary": "TypeScript compiler configuration for the Next.js frontend enabling strict mode, ESNext module output with bundler resolution, JSX react-jsx transform, incremental compilation, and an @/* path alias mapping to the frontend root.",
+      "tags": ["configuration", "typescript", "build-system", "frontend"],
+      "complexity": "simple",
+      "languageNotes": "Uses moduleResolution: bundler (Next.js 13+ recommended setting) and the Next.js TypeScript plugin for enhanced IDE support. The @/* path alias enables clean absolute imports throughout the frontend."
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:frontend/AGENTS.md",
+      "target": "document:frontend/README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:frontend/CLAUDE.md",
+      "target": "document:frontend/AGENTS.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:frontend/README.md",
+      "target": "config:frontend/package.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:frontend/README.md",
+      "target": "config:frontend/tsconfig.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:frontend/tsconfig.json",
+      "target": "config:frontend/package.json",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

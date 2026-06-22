@@ -1,0 +1,96 @@
+{
+  "nodes": [
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "summary": "Developer guidelines for AI agents working on the AI Focus Group codebase, covering the full stack architecture, Google ADK workflow graph, backend patterns (GenAI SDK usage, SSE state management), and frontend conventions (React 19, Tailwind CSS v4, SSE client).",
+      "tags": ["documentation", "development", "architecture", "guidelines", "entry-point"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "CLAUDE.md",
+      "summary": "Quick reference card for the AI Focus Group project providing run commands for backend (FastAPI) and frontend (Next.js), environment setup instructions, and coding conventions for Python and TypeScript/React.",
+      "tags": ["documentation", "configuration", "development", "quick-reference"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Primary project overview for AI Focus Group describing the synthetic research panel concept, ADK workflow graph architecture, five AI personas, six scoring dimensions, full technology stack, project structure, getting-started setup instructions, API endpoint reference, and usage guide.",
+      "tags": ["documentation", "entry-point", "overview", "api-schema"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:AGENTS.md",
+      "target": "document:README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "document:README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/agents/graph.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/agents/personas.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:frontend/app/page.tsx",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "file:backend/agents/graph.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "file:frontend/app/hooks/useFocusGroup.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:backend/main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

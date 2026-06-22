@@ -1,0 +1,2710 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "AI Focus Group",
+    "languages": [
+      "Python",
+      "TypeScript",
+      "JavaScript",
+      "CSS",
+      "Markdown"
+    ],
+    "frameworks": [
+      "FastAPI",
+      "Google ADK",
+      "Next.js",
+      "React",
+      "Tailwind CSS"
+    ],
+    "description": "A synthetic research panel powered by role-based AI agents. Submit any idea, product, or concept and watch a structured panel of distinct AI personas debate, critique, score, and synthesize it in real time.",
+    "analyzedAt": "2026-06-22T05:51:38Z",
+    "gitCommitHash": "cc2262e67291166317ba1493572d7d97dda56592"
+  },
+  "nodes": [
+    {
+      "id": "file:frontend/app/types/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "frontend/app/types/index.ts",
+      "summary": "Central TypeScript type definitions barrel for the AI Focus Group frontend, declaring all shared interfaces and types: ScoreSet, FinalReport, StreamEvent, PersonaMeta, Phase union, and FocusGroupSession. Every other frontend module imports from this file.",
+      "tags": [
+        "type-definition",
+        "barrel",
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/app/hooks/useFocusGroup.ts",
+      "type": "file",
+      "name": "useFocusGroup.ts",
+      "filePath": "frontend/app/hooks/useFocusGroup.ts",
+      "summary": "Custom React hook that manages the full focus group session lifecycle: creating sessions via POST to the backend, consuming a Server-Sent Events stream to accumulate StreamEvent messages, updating phase and score state in real time, and fetching the final report once the stream completes.",
+      "tags": [
+        "hook",
+        "service",
+        "event-handler",
+        "api-handler"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses useCallback with a ref-tracked EventSource so the ES connection can be closed on reset without stale closure issues."
+    },
+    {
+      "id": "function:frontend/app/hooks/useFocusGroup.ts:useFocusGroup",
+      "type": "function",
+      "name": "useFocusGroup",
+      "filePath": "frontend/app/hooks/useFocusGroup.ts",
+      "lineRange": [
+        8,
+        118
+      ],
+      "summary": "React hook exposing session state, loading/error flags, and start/reset callbacks. Orchestrates POST session creation, SSE streaming, real-time state updates, and final report hydration.",
+      "tags": [
+        "hook",
+        "api-handler",
+        "event-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:frontend/app/page.tsx",
+      "type": "file",
+      "name": "page.tsx",
+      "filePath": "frontend/app/page.tsx",
+      "summary": "Root Next.js page component that composes the application shell: a fixed header, a left sidebar with TopicInput, a central DiscussionThread with optional FinalReport footer, and a right ScorePanel. Drives all child components through the useFocusGroup hook.",
+      "tags": [
+        "entry-point",
+        "component",
+        "api-handler"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses the 'use client' directive \u2014 required because it consumes the useFocusGroup hook which manages EventSource and React state."
+    },
+    {
+      "id": "function:frontend/app/page.tsx:Home",
+      "type": "function",
+      "name": "Home",
+      "filePath": "frontend/app/page.tsx",
+      "lineRange": [
+        9,
+        58
+      ],
+      "summary": "Default export page component. Derives isRunning and showReport from session state and conditionally renders FinalReport below the discussion thread.",
+      "tags": [
+        "component",
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/app/components/AgentBubble.tsx",
+      "type": "file",
+      "name": "AgentBubble.tsx",
+      "filePath": "frontend/app/components/AgentBubble.tsx",
+      "summary": "Presentational React component that renders a single agent message as a styled chat bubble, including a color-coded avatar derived from the agent role, a phase badge, message text, and optional inline score chips when scores are present.",
+      "tags": [
+        "component",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/app/components/AgentBubble.tsx:AgentBubble",
+      "type": "function",
+      "name": "AgentBubble",
+      "filePath": "frontend/app/components/AgentBubble.tsx",
+      "lineRange": [
+        43,
+        75
+      ],
+      "summary": "Exported React component that maps a StreamEvent to a visual bubble with avatar initials, phase color badge, message content, and optional per-category score chips.",
+      "tags": [
+        "component"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/app/components/AgentBubble.tsx:getInitials",
+      "type": "function",
+      "name": "getInitials",
+      "filePath": "frontend/app/components/AgentBubble.tsx",
+      "lineRange": [
+        29,
+        37
+      ],
+      "summary": "Derives a 1-2 character uppercase initials string from an agent display name, returning '?' for null input.",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/app/components/DiscussionThread.tsx",
+      "type": "file",
+      "name": "DiscussionThread.tsx",
+      "filePath": "frontend/app/components/DiscussionThread.tsx",
+      "summary": "Scrolling conversation feed component that renders AgentBubble entries for each StreamEvent and injects phase-separator banners between discussion, voting, and synthesis phases. Auto-scrolls to the bottom as new events arrive and shows a typing indicator while a session is running.",
+      "tags": [
+        "component",
+        "event-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/components/DiscussionThread.tsx:DiscussionThread",
+      "type": "function",
+      "name": "DiscussionThread",
+      "filePath": "frontend/app/components/DiscussionThread.tsx",
+      "lineRange": [
+        19,
+        79
+      ],
+      "summary": "Exported component that maps over StreamEvents to produce interleaved phase banners and AgentBubble elements, auto-scrolls via a bottom ref, and renders an empty state when no session is active.",
+      "tags": [
+        "component",
+        "event-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/app/components/FinalReport.tsx",
+      "type": "file",
+      "name": "FinalReport.tsx",
+      "filePath": "frontend/app/components/FinalReport.tsx",
+      "summary": "Component that renders the completed focus group report card, showing overall score, sentiment, consensus confidence, strengths/concerns/action items, and export buttons for PDF and DOCX. Lazily imports exportReport utilities on demand to avoid bundling jspdf and docx at page load.",
+      "tags": [
+        "component",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/components/FinalReport.tsx:FinalReport",
+      "type": "function",
+      "name": "FinalReport",
+      "filePath": "frontend/app/components/FinalReport.tsx",
+      "lineRange": [
+        16,
+        90
+      ],
+      "summary": "Exported component displaying the final report with sentiment-colored border, score display, structured sections, and async export button handlers that dynamically import PDF/DOCX utilities.",
+      "tags": [
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/components/FinalReport.tsx:Section",
+      "type": "function",
+      "name": "Section",
+      "filePath": "frontend/app/components/FinalReport.tsx",
+      "lineRange": [
+        92,
+        114
+      ],
+      "summary": "Internal helper component that renders a color-labeled bullet list of strings for strengths, concerns, or action items sections within the final report.",
+      "tags": [
+        "component",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/app/components/ScorePanel.tsx",
+      "type": "file",
+      "name": "ScorePanel.tsx",
+      "filePath": "frontend/app/components/ScorePanel.tsx",
+      "summary": "Right-panel component displaying live session status, overall score, per-category score bars with standard deviation indicators, and individual agent vote summaries. Computes running averages from raw vote data during the session and switches to final report averages once complete.",
+      "tags": [
+        "component",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/components/ScorePanel.tsx:ScorePanel",
+      "type": "function",
+      "name": "ScorePanel",
+      "filePath": "frontend/app/components/ScorePanel.tsx",
+      "lineRange": [
+        58,
+        154
+      ],
+      "summary": "Exported component rendering the score sidebar: phase status badge, sentiment/consensus rows from final report, overall score card, per-category ScoreBar list with std dev, and per-agent vote breakdown.",
+      "tags": [
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/components/ScorePanel.tsx:averageScores",
+      "type": "function",
+      "name": "averageScores",
+      "filePath": "frontend/app/components/ScorePanel.tsx",
+      "lineRange": [
+        22,
+        32
+      ],
+      "summary": "Computes a rounded per-category average ScoreSet from a map of agent ID to ScoreSet, returning null when no scores are available.",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/app/components/ScorePanel.tsx:ScoreBar",
+      "type": "function",
+      "name": "ScoreBar",
+      "filePath": "frontend/app/components/ScorePanel.tsx",
+      "lineRange": [
+        34,
+        50
+      ],
+      "summary": "Internal component rendering a horizontal progress bar with color-coded fill (emerald/amber/red) based on score value relative to a max of 10.",
+      "tags": [
+        "component",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/app/components/TopicInput.tsx",
+      "type": "file",
+      "name": "TopicInput.tsx",
+      "filePath": "frontend/app/components/TopicInput.tsx",
+      "summary": "Left-sidebar form component that fetches available AI personas from the backend on mount, lets the user enter a topic and toggle which personas participate (1-5 constraint), and triggers the focus group session via an onStart callback.",
+      "tags": [
+        "component",
+        "api-handler",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/components/TopicInput.tsx:TopicInput",
+      "type": "function",
+      "name": "TopicInput",
+      "filePath": "frontend/app/components/TopicInput.tsx",
+      "lineRange": [
+        14,
+        96
+      ],
+      "summary": "Exported component managing topic text state and persona selection set. Fetches PersonaMeta list from /personas on mount, enforces 1-5 selection constraint, and dispatches onStart with the topic and selected IDs.",
+      "tags": [
+        "component",
+        "api-handler",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/app/utils/exportReport.ts",
+      "type": "file",
+      "name": "exportReport.ts",
+      "filePath": "frontend/app/utils/exportReport.ts",
+      "summary": "Client-side report export utilities that dynamically import jspdf and docx to serialize a completed FocusGroupSession into a downloadable PDF or DOCX file, including full transcript, scoring data, and structured final report sections.",
+      "tags": [
+        "utility",
+        "serialization"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Both exports use dynamic import() so jspdf and docx are code-split and only loaded when the user clicks an export button, keeping initial bundle size small."
+    },
+    {
+      "id": "function:frontend/app/utils/exportReport.ts:exportAsPdf",
+      "type": "function",
+      "name": "exportAsPdf",
+      "filePath": "frontend/app/utils/exportReport.ts",
+      "lineRange": [
+        15,
+        118
+      ],
+      "summary": "Async function that dynamically imports jsPDF, iterates session events and final report data, handles pagination and text wrapping for A4 layout, and triggers a browser download of the generated PDF.",
+      "tags": [
+        "utility",
+        "serialization"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/app/utils/exportReport.ts:exportAsDocx",
+      "type": "function",
+      "name": "exportAsDocx",
+      "filePath": "frontend/app/utils/exportReport.ts",
+      "lineRange": [
+        120,
+        226
+      ],
+      "summary": "Async function that dynamically imports the docx library, builds a Document from session transcript and final report paragraphs and bullet lists, converts it to a Blob via Packer, and triggers a browser download.",
+      "tags": [
+        "utility",
+        "serialization"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/app/utils/exportReport.ts:getPhaseLabel",
+      "type": "function",
+      "name": "getPhaseLabel",
+      "filePath": "frontend/app/utils/exportReport.ts",
+      "lineRange": [
+        6,
+        13
+      ],
+      "summary": "Maps an internal phase string to a human-readable label for use in exported report documents.",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/agents/personas.py",
+      "type": "file",
+      "name": "personas.py",
+      "filePath": "backend/agents/personas.py",
+      "summary": "Defines the five AI panel participant personas (Marcus Chen, Zoe Park, David Okafor, Priya Sharma, Jordan Ellis) as typed dicts with personality traits, expertise, biases, and per-dimension scoring weights, plus accessor helpers.",
+      "tags": [
+        "data-model",
+        "factory",
+        "utility",
+        "configuration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/agents/personas.py:get_persona",
+      "type": "function",
+      "name": "get_persona",
+      "filePath": "backend/agents/personas.py",
+      "lineRange": [
+        102,
+        105
+      ],
+      "summary": "Returns a single AgentPersona dict by ID, raising ValueError for unknown IDs.",
+      "tags": [
+        "utility",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/agents/personas.py:get_all_persona_ids",
+      "type": "function",
+      "name": "get_all_persona_ids",
+      "filePath": "backend/agents/personas.py",
+      "lineRange": [
+        108,
+        109
+      ],
+      "summary": "Returns the list of all registered persona IDs from the PERSONAS registry.",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/api/sessions.py",
+      "type": "file",
+      "name": "sessions.py",
+      "filePath": "backend/api/sessions.py",
+      "summary": "FastAPI router that manages focus-group session lifecycle: creates sessions, launches the Google ADK graph runner with Blue/Green team plugins as a background task, and exposes GET state for polling clients.",
+      "tags": [
+        "api-handler",
+        "service",
+        "entry-point",
+        "event-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/api/sessions.py:get_session_store",
+      "type": "function",
+      "name": "get_session_store",
+      "filePath": "backend/api/sessions.py",
+      "lineRange": [
+        21,
+        22
+      ],
+      "summary": "Returns the in-memory session dictionary for use by other modules.",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/api/sessions.py:_run_session",
+      "type": "function",
+      "name": "_run_session",
+      "filePath": "backend/api/sessions.py",
+      "lineRange": [
+        25,
+        71
+      ],
+      "summary": "Async background coroutine that builds the ADK agent graph, creates a runner with Blue/Green team plugins, and streams state updates incrementally into the in-memory session store as events arrive.",
+      "tags": [
+        "service",
+        "event-handler",
+        "middleware"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/api/sessions.py:create_session",
+      "type": "function",
+      "name": "create_session",
+      "filePath": "backend/api/sessions.py",
+      "lineRange": [
+        74,
+        120
+      ],
+      "summary": "POST /sessions endpoint that validates participants, builds initial FocusGroupState, stores it in memory, and schedules _run_session as a FastAPI BackgroundTask.",
+      "tags": [
+        "api-handler",
+        "entry-point"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/api/sessions.py:get_session",
+      "type": "function",
+      "name": "get_session",
+      "filePath": "backend/api/sessions.py",
+      "lineRange": [
+        123,
+        142
+      ],
+      "summary": "GET /sessions/{session_id} endpoint that reads current state from the in-memory store and returns a SessionStateResponse.",
+      "tags": [
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/api/stream.py",
+      "type": "file",
+      "name": "stream.py",
+      "filePath": "backend/api/stream.py",
+      "summary": "FastAPI router exposing a Server-Sent Events endpoint that replays past session events and then polls the in-memory session store to stream incremental updates to connected clients.",
+      "tags": [
+        "api-handler",
+        "event-handler",
+        "middleware"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/api/stream.py:get_or_create_queue",
+      "type": "function",
+      "name": "get_or_create_queue",
+      "filePath": "backend/api/stream.py",
+      "lineRange": [
+        13,
+        16
+      ],
+      "summary": "Lazily creates and returns an asyncio.Queue for a session, used as a per-session SSE delivery channel.",
+      "tags": [
+        "utility",
+        "event-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/api/stream.py:push_event",
+      "type": "function",
+      "name": "push_event",
+      "filePath": "backend/api/stream.py",
+      "lineRange": [
+        19,
+        21
+      ],
+      "summary": "Pushes an event dict into the session's asyncio queue for SSE delivery.",
+      "tags": [
+        "utility",
+        "event-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/api/stream.py:_event_generator",
+      "type": "function",
+      "name": "_event_generator",
+      "filePath": "backend/api/stream.py",
+      "lineRange": [
+        24,
+        49
+      ],
+      "summary": "Async generator that replays already-stored session events on connect, then polls the session store every 0.5 seconds for new events and yields them as SSE data until the session completes.",
+      "tags": [
+        "event-handler",
+        "middleware"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/api/stream.py:stream_session",
+      "type": "function",
+      "name": "stream_session",
+      "filePath": "backend/api/stream.py",
+      "lineRange": [
+        52,
+        57
+      ],
+      "summary": "GET /sessions/{session_id}/stream endpoint that wraps _event_generator in an EventSourceResponse for SSE delivery.",
+      "tags": [
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/main.py",
+      "type": "file",
+      "name": "main.py",
+      "filePath": "backend/main.py",
+      "summary": "FastAPI application entry point: loads environment variables, configures CORS middleware, mounts the sessions and stream routers, and exposes /health and /personas convenience endpoints.",
+      "tags": [
+        "entry-point",
+        "middleware",
+        "api-handler",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/main.py:health",
+      "type": "function",
+      "name": "health",
+      "filePath": "backend/main.py",
+      "lineRange": [
+        26,
+        28
+      ],
+      "summary": "GET /health liveness probe returning a static status OK response.",
+      "tags": [
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/main.py:list_personas",
+      "type": "function",
+      "name": "list_personas",
+      "filePath": "backend/main.py",
+      "lineRange": [
+        31,
+        42
+      ],
+      "summary": "GET /personas endpoint that lazily imports the PERSONAS registry and returns a minimal public view of each persona (id, name, role, communication_style).",
+      "tags": [
+        "api-handler",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/models/schemas.py",
+      "type": "file",
+      "name": "schemas.py",
+      "filePath": "backend/models/schemas.py",
+      "summary": "Pydantic request/response models for the session API: CreateSessionRequest, CreateSessionResponse, and SessionStateResponse with full field typing.",
+      "tags": [
+        "data-model",
+        "type-definition",
+        "validation",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/models/schemas.py:CreateSessionRequest",
+      "type": "class",
+      "name": "CreateSessionRequest",
+      "filePath": "backend/models/schemas.py",
+      "lineRange": [
+        6,
+        9
+      ],
+      "summary": "Pydantic model for POST /sessions request body: topic string, list of participant IDs, and optional security_test_mode flag.",
+      "tags": [
+        "data-model",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/models/schemas.py:CreateSessionResponse",
+      "type": "class",
+      "name": "CreateSessionResponse",
+      "filePath": "backend/models/schemas.py",
+      "lineRange": [
+        12,
+        15
+      ],
+      "summary": "Pydantic model for POST /sessions response: echoes back session_id, topic, and participant_ids.",
+      "tags": [
+        "data-model",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/models/schemas.py:SessionStateResponse",
+      "type": "class",
+      "name": "SessionStateResponse",
+      "filePath": "backend/models/schemas.py",
+      "lineRange": [
+        18,
+        30
+      ],
+      "summary": "Pydantic model for GET /sessions/{id} response: full session state snapshot including phase, responses, scores, final report, event count, and completion flag.",
+      "tags": [
+        "data-model",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/plugins/blue_team_plugin.py",
+      "type": "file",
+      "name": "blue_team_plugin.py",
+      "filePath": "backend/plugins/blue_team_plugin.py",
+      "summary": "Google ADK plugin implementing the Blue Team defender role: records every tool invocation in a runtime AgBOM, calculates a decaying trust score, and sets a quarantine flag when trust drops below 50.",
+      "tags": [
+        "middleware",
+        "security",
+        "event-handler",
+        "monitoring"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses the ADK after_tool_callback hook pattern to observe tool invocations post-execution without blocking them."
+    },
+    {
+      "id": "class:backend/plugins/blue_team_plugin.py:BlueTeamAnalyticsPlugin",
+      "type": "class",
+      "name": "BlueTeamAnalyticsPlugin",
+      "filePath": "backend/plugins/blue_team_plugin.py",
+      "lineRange": [
+        7,
+        46
+      ],
+      "summary": "ADK BasePlugin subclass that monitors agent tool usage, maintains an AgBOM audit log and trust score in session state, and signals quarantine when the trust score decays below threshold.",
+      "tags": [
+        "middleware",
+        "security",
+        "monitoring"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/plugins/green_team_plugin.py",
+      "type": "file",
+      "name": "green_team_plugin.py",
+      "filePath": "backend/plugins/green_team_plugin.py",
+      "summary": "Google ADK plugin implementing the Green Team fixer role: intercepts every tool call before execution and raises a RuntimeError to halt the agent if the Blue Team has set the quarantine flag.",
+      "tags": [
+        "middleware",
+        "security",
+        "event-handler"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses the ADK before_tool_callback hook to enforce a stateful quarantine \u2014 the session state is preserved for forensic analysis while blocking further tool execution."
+    },
+    {
+      "id": "class:backend/plugins/green_team_plugin.py:GreenTeamQuarantinePlugin",
+      "type": "class",
+      "name": "GreenTeamQuarantinePlugin",
+      "filePath": "backend/plugins/green_team_plugin.py",
+      "lineRange": [
+        7,
+        27
+      ],
+      "summary": "ADK BasePlugin subclass that enforces stateful quarantine by blocking all tool invocations when the quarantine_flag in session state is True, preserving state for post-incident forensics.",
+      "tags": [
+        "middleware",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/models/state.py",
+      "type": "file",
+      "name": "state.py",
+      "filePath": "backend/models/state.py",
+      "summary": "Defines all shared TypedDict data models for the focus group session, including AgentPersona, ScoreSet, FinalReport, StreamEvent, and the central FocusGroupState that flows through the LangGraph/ADK workflow.",
+      "tags": [
+        "data-model",
+        "type-definition",
+        "schema-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/agents/graph.py",
+      "type": "file",
+      "name": "graph.py",
+      "filePath": "backend/agents/graph.py",
+      "summary": "Constructs the Google ADK Workflow (focus_group_workflow) by wiring moderator, parallel participant, and synthesizer nodes together with JoinNodes for fan-out/fan-in coordination across the three focus group phases.",
+      "tags": [
+        "entry-point",
+        "factory",
+        "workflow",
+        "orchestration"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses Python closure default-argument trick (_p=p) to correctly capture loop variables when dynamically creating per-participant ADK nodes."
+    },
+    {
+      "id": "file:backend/agents/nodes/moderator.py",
+      "type": "file",
+      "name": "moderator.py",
+      "filePath": "backend/agents/nodes/moderator.py",
+      "summary": "Implements the two moderator workflow nodes: introduction (grounding the topic with real-world search results) and follow-up question generation (probing disagreements across independent participant responses), both backed by a Gemini 2.5 Pro LlmAgent.",
+      "tags": [
+        "api-handler",
+        "service",
+        "middleware"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/agents/nodes/participant.py",
+      "type": "file",
+      "name": "participant.py",
+      "filePath": "backend/agents/nodes/participant.py",
+      "summary": "Implements the three participant workflow node functions (independent response, discussion response, and structured vote scoring) using Gemini 2.5 Flash LlmAgents with persona-driven prompts and a Pydantic VoteScores output schema.",
+      "tags": [
+        "api-handler",
+        "service",
+        "factory"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:backend/agents/nodes/synthesizer.py",
+      "type": "file",
+      "name": "synthesizer.py",
+      "filePath": "backend/agents/nodes/synthesizer.py",
+      "summary": "Implements the final synthesizer workflow node: computes per-category score averages, standard deviations, and consensus confidence from all participant votes, then uses a Gemini 2.5 Pro LlmAgent with a structured SynthesisResult schema to produce the FinalReport.",
+      "tags": [
+        "service",
+        "data-model",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:backend/models/state.py:ScoringWeights",
+      "type": "class",
+      "name": "ScoringWeights",
+      "filePath": "backend/models/state.py",
+      "lineRange": [
+        6,
+        12
+      ],
+      "summary": "TypedDict defining the six scoring dimension weights (innovation, market, ux, feasibility, monetization, risk) used to bias each agent persona's evaluation priorities.",
+      "tags": [
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/models/state.py:AgentPersona",
+      "type": "class",
+      "name": "AgentPersona",
+      "filePath": "backend/models/state.py",
+      "lineRange": [
+        15,
+        25
+      ],
+      "summary": "TypedDict representing a focus group participant persona, including identity fields, behavioral traits (personality, biases, communication_style), and scoring weights that shape prompt construction.",
+      "tags": [
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/models/state.py:ScoreSet",
+      "type": "class",
+      "name": "ScoreSet",
+      "filePath": "backend/models/state.py",
+      "lineRange": [
+        28,
+        34
+      ],
+      "summary": "TypedDict holding a single participant's six-category evaluation scores; used in both per-agent score collection and aggregated category averages.",
+      "tags": [
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/models/state.py:FinalReport",
+      "type": "class",
+      "name": "FinalReport",
+      "filePath": "backend/models/state.py",
+      "lineRange": [
+        37,
+        47
+      ],
+      "summary": "TypedDict for the aggregated focus group output, capturing overall score, per-agent and category statistics, consensus confidence, qualitative analysis (concerns, strengths, action items), recommendation, and sentiment.",
+      "tags": [
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/models/state.py:StreamEvent",
+      "type": "class",
+      "name": "StreamEvent",
+      "filePath": "backend/models/state.py",
+      "lineRange": [
+        50,
+        56
+      ],
+      "summary": "TypedDict for SSE stream events emitted by each workflow node, carrying event type, agent identity, phase, message content, and optional scores for real-time frontend updates.",
+      "tags": [
+        "data-model",
+        "type-definition",
+        "event-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/models/state.py:FocusGroupState",
+      "type": "class",
+      "name": "FocusGroupState",
+      "filePath": "backend/models/state.py",
+      "lineRange": [
+        59,
+        75
+      ],
+      "summary": "Central LangGraph/ADK workflow state TypedDict accumulating all session data across phases, with Annotated merge strategies (operator.or_ for dicts, operator.add for lists) to support parallel node fan-in.",
+      "tags": [
+        "data-model",
+        "type-definition",
+        "singleton"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/agents/graph.py:build_graph",
+      "type": "function",
+      "name": "build_graph",
+      "filePath": "backend/agents/graph.py",
+      "lineRange": [
+        11,
+        73
+      ],
+      "summary": "Factory function that dynamically creates per-participant ADK nodes for independent response, discussion, and voting phases, then assembles them with moderator and synthesizer nodes into a full Workflow with fan-out/fan-in edge topology.",
+      "tags": [
+        "factory",
+        "workflow",
+        "entry-point"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/agents/nodes/moderator.py:moderator_introduce_node",
+      "type": "function",
+      "name": "moderator_introduce_node",
+      "filePath": "backend/agents/nodes/moderator.py",
+      "lineRange": [
+        6,
+        49
+      ],
+      "summary": "Async node function that creates a Gemini 2.5 Pro LlmAgent with Google Search to generate a grounded focus group introduction, then emits an agent_message StreamEvent and updates moderator_intro and phase in state.",
+      "tags": [
+        "api-handler",
+        "service",
+        "middleware"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/agents/nodes/moderator.py:moderator_followup_node",
+      "type": "function",
+      "name": "moderator_followup_node",
+      "filePath": "backend/agents/nodes/moderator.py",
+      "lineRange": [
+        52,
+        100
+      ],
+      "summary": "Async node function that synthesizes all independent participant responses into 2-3 targeted follow-up questions via a Gemini 2.5 Pro LlmAgent, emitting a phase_change StreamEvent and advancing state to the discussion phase.",
+      "tags": [
+        "api-handler",
+        "service",
+        "middleware"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/agents/nodes/participant.py:_build_persona_context",
+      "type": "function",
+      "name": "_build_persona_context",
+      "filePath": "backend/agents/nodes/participant.py",
+      "lineRange": [
+        18,
+        26
+      ],
+      "summary": "Helper that formats an AgentPersona into a persona-grounding prompt prefix used by all three participant node functions to keep the LlmAgent in character.",
+      "tags": [
+        "utility",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/agents/nodes/participant.py:make_independent_response",
+      "type": "function",
+      "name": "make_independent_response",
+      "filePath": "backend/agents/nodes/participant.py",
+      "lineRange": [
+        29,
+        73
+      ],
+      "summary": "Async node function that runs a persona-specific Gemini 2.5 Flash LlmAgent with Google Search to produce the participant's independent Round 1 evaluation, appending to independent_responses in state.",
+      "tags": [
+        "api-handler",
+        "service"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/agents/nodes/participant.py:make_discussion_response",
+      "type": "function",
+      "name": "make_discussion_response",
+      "filePath": "backend/agents/nodes/participant.py",
+      "lineRange": [
+        76,
+        132
+      ],
+      "summary": "Async node function that supplies a Gemini 2.5 Flash LlmAgent with the participant's prior response, all other panelists' Round 1 responses, and moderator follow-up questions to generate a discussion-phase reply.",
+      "tags": [
+        "api-handler",
+        "service"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/agents/nodes/participant.py:make_vote",
+      "type": "function",
+      "name": "make_vote",
+      "filePath": "backend/agents/nodes/participant.py",
+      "lineRange": [
+        135,
+        196
+      ],
+      "summary": "Async node function that runs a structured-output Gemini 2.5 Flash LlmAgent (VoteScores schema) to produce six numeric scores reflecting the participant's weighted evaluation, emitting a score_update StreamEvent.",
+      "tags": [
+        "api-handler",
+        "service",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/agents/nodes/participant.py:VoteScores",
+      "type": "class",
+      "name": "VoteScores",
+      "filePath": "backend/agents/nodes/participant.py",
+      "lineRange": [
+        10,
+        17
+      ],
+      "summary": "Pydantic BaseModel enforcing structured numeric output from the voting LlmAgent, with one float field per scoring category to guarantee parseable score data.",
+      "tags": [
+        "data-model",
+        "validation",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/agents/nodes/synthesizer.py:_compute_stats",
+      "type": "function",
+      "name": "_compute_stats",
+      "filePath": "backend/agents/nodes/synthesizer.py",
+      "lineRange": [
+        18,
+        37
+      ],
+      "summary": "Pure function that computes per-category means, standard deviations, and a consensus confidence score from the collected agent ScoreSets, used to populate FinalReport statistical fields.",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/agents/nodes/synthesizer.py:synthesizer_node",
+      "type": "function",
+      "name": "synthesizer_node",
+      "filePath": "backend/agents/nodes/synthesizer.py",
+      "lineRange": [
+        40,
+        131
+      ],
+      "summary": "Async terminal workflow node that computes score statistics, feeds full discussion transcripts and scores to a Gemini 2.5 Pro LlmAgent with SynthesisResult schema, assembles the FinalReport, and emits a report_complete StreamEvent.",
+      "tags": [
+        "api-handler",
+        "service"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:backend/agents/nodes/synthesizer.py:SynthesisResult",
+      "type": "class",
+      "name": "SynthesisResult",
+      "filePath": "backend/agents/nodes/synthesizer.py",
+      "lineRange": [
+        10,
+        15
+      ],
+      "summary": "Pydantic BaseModel defining the structured output schema for the synthesizer LlmAgent, capturing key concerns, strengths, action items, recommendation, and sentiment.",
+      "tags": [
+        "data-model",
+        "validation",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "summary": "Developer guidelines for AI agents working on the AI Focus Group codebase, covering the full stack architecture, Google ADK workflow graph, backend patterns (GenAI SDK usage, SSE state management), and frontend conventions (React 19, Tailwind CSS v4, SSE client).",
+      "tags": [
+        "documentation",
+        "development",
+        "architecture",
+        "guidelines",
+        "entry-point"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "CLAUDE.md",
+      "summary": "Quick reference card for the AI Focus Group project providing run commands for backend (FastAPI) and frontend (Next.js), environment setup instructions, and coding conventions for Python and TypeScript/React.",
+      "tags": [
+        "documentation",
+        "configuration",
+        "development",
+        "quick-reference"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Primary project overview for AI Focus Group describing the synthetic research panel concept, ADK workflow graph architecture, five AI personas, six scoring dimensions, full technology stack, project structure, getting-started setup instructions, API endpoint reference, and usage guide.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "overview",
+        "api-schema"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:frontend/AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "frontend/AGENTS.md",
+      "summary": "Frontend-specific developer guidelines covering state management via the useFocusGroup hook, client component conventions, Tailwind CSS v4 styling, and requirements for PDF and DOCX report export. Supplements the root-level AGENTS.md with frontend-only rules.",
+      "tags": [
+        "documentation",
+        "development",
+        "configuration",
+        "frontend",
+        "conventions"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:frontend/CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "frontend/CLAUDE.md",
+      "summary": "Minimal pointer document that delegates all frontend Claude Code instructions to the root AGENTS.md via an @-reference directive.",
+      "tags": [
+        "documentation",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:frontend/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "frontend/README.md",
+      "summary": "Comprehensive frontend getting-started guide covering the Next.js 16 + React 19 + Tailwind CSS v4 stack, directory structure, SSE-based real-time streaming architecture with the FastAPI backend, and setup/run instructions.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "overview",
+        "frontend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:frontend/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "frontend/package.json",
+      "summary": "NPM package manifest for the Next.js 16 frontend, declaring runtime dependencies (next, react, react-dom, jspdf, docx) and devDependencies (tailwindcss v4, typescript, eslint, type packages) with dev/build/lint/start scripts.",
+      "tags": [
+        "configuration",
+        "build-system",
+        "dependencies",
+        "frontend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:frontend/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "frontend/tsconfig.json",
+      "summary": "TypeScript compiler configuration for the Next.js frontend enabling strict mode, ESNext module output with bundler resolution, JSX react-jsx transform, incremental compilation, and an @/* path alias mapping to the frontend root.",
+      "tags": [
+        "configuration",
+        "typescript",
+        "build-system",
+        "frontend"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses moduleResolution: bundler (Next.js 13+ recommended setting) and the Next.js TypeScript plugin for enhanced IDE support. The @/* path alias enables clean absolute imports throughout the frontend."
+    },
+    {
+      "id": "config:.understand-anything/.understandignore",
+      "type": "config",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "Exclusion patterns configuration for the understand-anything analysis tool, specifying files and directories to skip during codebase scanning. Excludes graphify-out/, .venv/, __pycache__/, and provides commented patterns for common test file conventions.",
+      "tags": [
+        "configuration",
+        "tooling",
+        "analysis"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:backend/.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": "backend/.env.example",
+      "summary": "Template environment file for the backend showing the required GEMINI_API_KEY environment variable that must be set before running the FastAPI server.",
+      "tags": [
+        "configuration",
+        "environment",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/agents/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/agents/__init__.py",
+      "summary": "Empty Python package marker for the backend agents module.",
+      "tags": [
+        "python",
+        "package"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/agents/nodes/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/agents/nodes/__init__.py",
+      "summary": "Empty Python package marker for the backend agents nodes submodule.",
+      "tags": [
+        "python",
+        "package"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/api/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/api/__init__.py",
+      "summary": "Empty Python package marker for the backend API module.",
+      "tags": [
+        "python",
+        "package"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/models/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/models/__init__.py",
+      "summary": "Empty Python package marker for the backend models module.",
+      "tags": [
+        "python",
+        "package"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/plugins/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/plugins/__init__.py",
+      "summary": "Python package marker for the backend plugins module.",
+      "tags": [
+        "python",
+        "package"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:backend/requirements.txt",
+      "type": "document",
+      "name": "requirements.txt",
+      "filePath": "backend/requirements.txt",
+      "summary": "Python dependency manifest for the backend listing: google-adk (Agent Development Kit), fastapi, uvicorn, sse-starlette (Server-Sent Events), pydantic, python-dotenv, and httpx.",
+      "tags": [
+        "documentation",
+        "dependencies",
+        "backend",
+        "python"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/app/globals.css",
+      "type": "file",
+      "name": "globals.css",
+      "filePath": "frontend/app/globals.css",
+      "summary": "Global Tailwind CSS v4 stylesheet importing the Tailwind base layer and defining dark-mode CSS custom properties for the application color palette.",
+      "tags": [
+        "css",
+        "styling",
+        "tailwind",
+        "frontend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/app/layout.tsx",
+      "type": "file",
+      "name": "layout.tsx",
+      "filePath": "frontend/app/layout.tsx",
+      "summary": "Next.js App Router root layout component that configures Geist Sans and Geist Mono fonts, sets page metadata (title and description), applies global styles, and wraps all pages with the font class names.",
+      "tags": [
+        "next.js",
+        "layout",
+        "frontend",
+        "typescript",
+        "fonts"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/eslint.config.mjs",
+      "type": "file",
+      "name": "eslint.config.mjs",
+      "filePath": "frontend/eslint.config.mjs",
+      "summary": "ESLint flat configuration for the Next.js frontend extending the official next/core-web-vitals and next/typescript rulesets.",
+      "tags": [
+        "configuration",
+        "linting",
+        "frontend",
+        "tooling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/next.config.ts",
+      "type": "file",
+      "name": "next.config.ts",
+      "filePath": "frontend/next.config.ts",
+      "summary": "Minimal Next.js configuration file with empty config object, relying on Next.js 16 defaults for the Turbopack-powered dev server.",
+      "tags": [
+        "configuration",
+        "next.js",
+        "frontend",
+        "tooling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/postcss.config.mjs",
+      "type": "file",
+      "name": "postcss.config.mjs",
+      "filePath": "frontend/postcss.config.mjs",
+      "summary": "PostCSS configuration enabling the @tailwindcss/postcss plugin required for Tailwind CSS v4 processing.",
+      "tags": [
+        "configuration",
+        "css",
+        "tailwind",
+        "tooling",
+        "frontend"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:frontend/app/hooks/useFocusGroup.ts",
+      "target": "file:frontend/app/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/app/hooks/useFocusGroup.ts",
+      "target": "function:frontend/app/hooks/useFocusGroup.ts:useFocusGroup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/app/hooks/useFocusGroup.ts",
+      "target": "function:frontend/app/hooks/useFocusGroup.ts:useFocusGroup",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/page.tsx",
+      "target": "file:frontend/app/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/app/page.tsx",
+      "target": "function:frontend/app/page.tsx:Home",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/app/page.tsx",
+      "target": "function:frontend/app/page.tsx:Home",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/page.tsx",
+      "target": "function:frontend/app/hooks/useFocusGroup.ts:useFocusGroup",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/page.tsx",
+      "target": "file:frontend/app/hooks/useFocusGroup.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:frontend/app/components/AgentBubble.tsx",
+      "target": "file:frontend/app/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/app/components/AgentBubble.tsx",
+      "target": "function:frontend/app/components/AgentBubble.tsx:AgentBubble",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/app/components/AgentBubble.tsx",
+      "target": "function:frontend/app/components/AgentBubble.tsx:AgentBubble",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/components/AgentBubble.tsx",
+      "target": "function:frontend/app/components/AgentBubble.tsx:getInitials",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "function:frontend/app/components/AgentBubble.tsx:AgentBubble",
+      "target": "function:frontend/app/components/AgentBubble.tsx:getInitials",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/components/DiscussionThread.tsx",
+      "target": "file:frontend/app/components/AgentBubble.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/app/components/DiscussionThread.tsx",
+      "target": "file:frontend/app/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/app/components/DiscussionThread.tsx",
+      "target": "function:frontend/app/components/DiscussionThread.tsx:DiscussionThread",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/app/components/DiscussionThread.tsx",
+      "target": "function:frontend/app/components/DiscussionThread.tsx:DiscussionThread",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/app/components/DiscussionThread.tsx:DiscussionThread",
+      "target": "function:frontend/app/components/AgentBubble.tsx:AgentBubble",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/components/FinalReport.tsx",
+      "target": "file:frontend/app/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/app/components/FinalReport.tsx",
+      "target": "function:frontend/app/components/FinalReport.tsx:FinalReport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/app/components/FinalReport.tsx",
+      "target": "function:frontend/app/components/FinalReport.tsx:FinalReport",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/components/FinalReport.tsx",
+      "target": "function:frontend/app/components/FinalReport.tsx:Section",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "function:frontend/app/components/FinalReport.tsx:FinalReport",
+      "target": "function:frontend/app/components/FinalReport.tsx:Section",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/app/components/FinalReport.tsx:FinalReport",
+      "target": "function:frontend/app/utils/exportReport.ts:exportAsPdf",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/app/components/FinalReport.tsx:FinalReport",
+      "target": "function:frontend/app/utils/exportReport.ts:exportAsDocx",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/components/FinalReport.tsx",
+      "target": "file:frontend/app/utils/exportReport.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:frontend/app/components/ScorePanel.tsx",
+      "target": "file:frontend/app/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/app/components/ScorePanel.tsx",
+      "target": "function:frontend/app/components/ScorePanel.tsx:ScorePanel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/app/components/ScorePanel.tsx",
+      "target": "function:frontend/app/components/ScorePanel.tsx:ScorePanel",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/components/ScorePanel.tsx",
+      "target": "function:frontend/app/components/ScorePanel.tsx:averageScores",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/app/components/ScorePanel.tsx",
+      "target": "function:frontend/app/components/ScorePanel.tsx:ScoreBar",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "function:frontend/app/components/ScorePanel.tsx:ScorePanel",
+      "target": "function:frontend/app/components/ScorePanel.tsx:averageScores",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/app/components/ScorePanel.tsx:ScorePanel",
+      "target": "function:frontend/app/components/ScorePanel.tsx:ScoreBar",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/components/TopicInput.tsx",
+      "target": "file:frontend/app/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/app/components/TopicInput.tsx",
+      "target": "function:frontend/app/components/TopicInput.tsx:TopicInput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/app/components/TopicInput.tsx",
+      "target": "function:frontend/app/components/TopicInput.tsx:TopicInput",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/utils/exportReport.ts",
+      "target": "file:frontend/app/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/app/utils/exportReport.ts",
+      "target": "function:frontend/app/utils/exportReport.ts:exportAsPdf",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/app/utils/exportReport.ts",
+      "target": "function:frontend/app/utils/exportReport.ts:exportAsPdf",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/utils/exportReport.ts",
+      "target": "function:frontend/app/utils/exportReport.ts:exportAsDocx",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/app/utils/exportReport.ts",
+      "target": "function:frontend/app/utils/exportReport.ts:exportAsDocx",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/app/utils/exportReport.ts",
+      "target": "function:frontend/app/utils/exportReport.ts:getPhaseLabel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "function:frontend/app/utils/exportReport.ts:exportAsPdf",
+      "target": "function:frontend/app/utils/exportReport.ts:getPhaseLabel",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/app/utils/exportReport.ts:exportAsDocx",
+      "target": "function:frontend/app/utils/exportReport.ts:getPhaseLabel",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/agents/personas.py",
+      "target": "file:backend/models/state.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/agents/personas.py",
+      "target": "function:backend/agents/personas.py:get_persona",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/personas.py",
+      "target": "function:backend/agents/personas.py:get_all_persona_ids",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/personas.py",
+      "target": "function:backend/agents/personas.py:get_persona",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/agents/personas.py",
+      "target": "function:backend/agents/personas.py:get_all_persona_ids",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "file:backend/agents/graph.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "file:backend/agents/personas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "file:backend/models/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "file:backend/models/state.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "file:backend/plugins/blue_team_plugin.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "file:backend/plugins/green_team_plugin.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "function:backend/api/sessions.py:get_session_store",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "function:backend/api/sessions.py:_run_session",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "function:backend/api/sessions.py:create_session",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "function:backend/api/sessions.py:get_session",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "function:backend/api/sessions.py:create_session",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "function:backend/api/sessions.py:get_session",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "function:backend/api/sessions.py:get_session_store",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/api/sessions.py:_run_session",
+      "target": "function:backend/agents/graph.py:build_graph",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/api/sessions.py:create_session",
+      "target": "function:backend/agents/personas.py:get_persona",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/api/stream.py",
+      "target": "file:backend/api/sessions.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/api/stream.py",
+      "target": "function:backend/api/stream.py:get_or_create_queue",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/api/stream.py",
+      "target": "function:backend/api/stream.py:push_event",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/api/stream.py",
+      "target": "function:backend/api/stream.py:_event_generator",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/api/stream.py",
+      "target": "function:backend/api/stream.py:stream_session",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/api/stream.py",
+      "target": "function:backend/api/stream.py:stream_session",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/api/stream.py:_event_generator",
+      "target": "function:backend/api/stream.py:get_or_create_queue",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/api/stream.py:push_event",
+      "target": "function:backend/api/stream.py:get_or_create_queue",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:backend/api/sessions.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:backend/api/stream.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "function:backend/main.py:health",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "function:backend/main.py:list_personas",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "function:backend/main.py:health",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "function:backend/main.py:list_personas",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/main.py:list_personas",
+      "target": "function:backend/agents/personas.py:get_all_persona_ids",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "file:backend/models/state.py",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "class:backend/models/schemas.py:CreateSessionRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "class:backend/models/schemas.py:CreateSessionResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "class:backend/models/schemas.py:SessionStateResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "class:backend/models/schemas.py:CreateSessionRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "class:backend/models/schemas.py:CreateSessionResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "class:backend/models/schemas.py:SessionStateResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/plugins/blue_team_plugin.py",
+      "target": "class:backend/plugins/blue_team_plugin.py:BlueTeamAnalyticsPlugin",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/plugins/blue_team_plugin.py",
+      "target": "class:backend/plugins/blue_team_plugin.py:BlueTeamAnalyticsPlugin",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/plugins/green_team_plugin.py",
+      "target": "class:backend/plugins/green_team_plugin.py:GreenTeamQuarantinePlugin",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/plugins/green_team_plugin.py",
+      "target": "class:backend/plugins/green_team_plugin.py:GreenTeamQuarantinePlugin",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "class:backend/plugins/blue_team_plugin.py:BlueTeamAnalyticsPlugin",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:backend/api/sessions.py",
+      "target": "class:backend/plugins/green_team_plugin.py:GreenTeamQuarantinePlugin",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "class:backend/plugins/blue_team_plugin.py:BlueTeamAnalyticsPlugin",
+      "target": "class:backend/plugins/green_team_plugin.py:GreenTeamQuarantinePlugin",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:ScoringWeights",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:AgentPersona",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:ScoreSet",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:FinalReport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:StreamEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:FocusGroupState",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:ScoringWeights",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:AgentPersona",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:ScoreSet",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:FinalReport",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:StreamEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/models/state.py",
+      "target": "class:backend/models/state.py:FocusGroupState",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/agents/graph.py",
+      "target": "file:backend/models/state.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/agents/graph.py",
+      "target": "file:backend/agents/nodes/moderator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/agents/graph.py",
+      "target": "file:backend/agents/nodes/participant.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/agents/graph.py",
+      "target": "file:backend/agents/nodes/synthesizer.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/agents/graph.py",
+      "target": "function:backend/agents/graph.py:build_graph",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/graph.py",
+      "target": "function:backend/agents/graph.py:build_graph",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/agents/graph.py:build_graph",
+      "target": "function:backend/agents/nodes/moderator.py:moderator_introduce_node",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/agents/graph.py:build_graph",
+      "target": "function:backend/agents/nodes/moderator.py:moderator_followup_node",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/agents/graph.py:build_graph",
+      "target": "function:backend/agents/nodes/participant.py:make_independent_response",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/agents/graph.py:build_graph",
+      "target": "function:backend/agents/nodes/participant.py:make_discussion_response",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/agents/graph.py:build_graph",
+      "target": "function:backend/agents/nodes/participant.py:make_vote",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/agents/graph.py:build_graph",
+      "target": "function:backend/agents/nodes/synthesizer.py:synthesizer_node",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/agents/nodes/moderator.py",
+      "target": "file:backend/models/state.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/agents/nodes/moderator.py",
+      "target": "function:backend/agents/nodes/moderator.py:moderator_introduce_node",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/nodes/moderator.py",
+      "target": "function:backend/agents/nodes/moderator.py:moderator_followup_node",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/nodes/moderator.py",
+      "target": "function:backend/agents/nodes/moderator.py:moderator_introduce_node",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/agents/nodes/moderator.py",
+      "target": "function:backend/agents/nodes/moderator.py:moderator_followup_node",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/agents/nodes/participant.py",
+      "target": "file:backend/models/state.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/agents/nodes/participant.py",
+      "target": "class:backend/agents/nodes/participant.py:VoteScores",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/nodes/participant.py",
+      "target": "function:backend/agents/nodes/participant.py:_build_persona_context",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/nodes/participant.py",
+      "target": "function:backend/agents/nodes/participant.py:make_independent_response",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/nodes/participant.py",
+      "target": "function:backend/agents/nodes/participant.py:make_discussion_response",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/nodes/participant.py",
+      "target": "function:backend/agents/nodes/participant.py:make_vote",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/nodes/participant.py",
+      "target": "function:backend/agents/nodes/participant.py:make_independent_response",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/agents/nodes/participant.py",
+      "target": "function:backend/agents/nodes/participant.py:make_discussion_response",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/agents/nodes/participant.py",
+      "target": "function:backend/agents/nodes/participant.py:make_vote",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/agents/nodes/participant.py:make_independent_response",
+      "target": "function:backend/agents/nodes/participant.py:_build_persona_context",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/agents/nodes/participant.py:make_discussion_response",
+      "target": "function:backend/agents/nodes/participant.py:_build_persona_context",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/agents/nodes/participant.py:make_vote",
+      "target": "function:backend/agents/nodes/participant.py:_build_persona_context",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/agents/nodes/synthesizer.py",
+      "target": "file:backend/models/state.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/agents/nodes/synthesizer.py",
+      "target": "class:backend/agents/nodes/synthesizer.py:SynthesisResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/nodes/synthesizer.py",
+      "target": "function:backend/agents/nodes/synthesizer.py:_compute_stats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/nodes/synthesizer.py",
+      "target": "function:backend/agents/nodes/synthesizer.py:synthesizer_node",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/agents/nodes/synthesizer.py",
+      "target": "function:backend/agents/nodes/synthesizer.py:synthesizer_node",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/agents/nodes/synthesizer.py:synthesizer_node",
+      "target": "function:backend/agents/nodes/synthesizer.py:_compute_stats",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "document:README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "document:README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/agents/graph.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/agents/personas.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:frontend/app/page.tsx",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "file:backend/agents/graph.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "file:frontend/app/hooks/useFocusGroup.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:backend/main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:frontend/AGENTS.md",
+      "target": "document:frontend/README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:frontend/CLAUDE.md",
+      "target": "document:frontend/AGENTS.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:frontend/README.md",
+      "target": "config:frontend/package.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:frontend/README.md",
+      "target": "config:frontend/tsconfig.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:frontend/tsconfig.json",
+      "target": "config:frontend/package.json",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:frontend/app/layout.tsx",
+      "target": "file:frontend/app/globals.css",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/postcss.config.mjs",
+      "target": "file:frontend/app/globals.css",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:backend/requirements.txt",
+      "target": "file:backend/agents/__init__.py",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "file:backend/models/state.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:frontend/app/page.tsx",
+      "target": "file:frontend/app/components/DiscussionThread.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:frontend/app/page.tsx",
+      "target": "file:frontend/app/components/FinalReport.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:frontend/app/page.tsx",
+      "target": "file:frontend/app/components/ScorePanel.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:frontend/app/page.tsx",
+      "target": "file:frontend/app/components/TopicInput.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:frontend/app/page.tsx",
+      "target": "file:frontend/app/hooks/useFocusGroup.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:frontend-ui",
+      "name": "Frontend UI",
+      "description": "Next.js pages, root layout, global styles, and all React UI components rendered in the browser.",
+      "nodeIds": [
+        "file:frontend/app/page.tsx",
+        "file:frontend/app/layout.tsx",
+        "file:frontend/app/globals.css",
+        "file:frontend/app/components/AgentBubble.tsx",
+        "file:frontend/app/components/DiscussionThread.tsx",
+        "file:frontend/app/components/FinalReport.tsx",
+        "file:frontend/app/components/ScorePanel.tsx",
+        "file:frontend/app/components/TopicInput.tsx"
+      ]
+    },
+    {
+      "id": "layer:frontend-services",
+      "name": "Frontend Services",
+      "description": "Frontend state management hooks, shared TypeScript type definitions, and client-side utility functions.",
+      "nodeIds": [
+        "file:frontend/app/hooks/useFocusGroup.ts",
+        "file:frontend/app/types/index.ts",
+        "file:frontend/app/utils/exportReport.ts"
+      ]
+    },
+    {
+      "id": "layer:frontend-config",
+      "name": "Frontend Configuration",
+      "description": "Frontend build tooling and configuration files: Next.js, TypeScript, ESLint, PostCSS, and package manifest.",
+      "nodeIds": [
+        "file:frontend/next.config.ts",
+        "file:frontend/eslint.config.mjs",
+        "file:frontend/postcss.config.mjs",
+        "config:frontend/package.json",
+        "config:frontend/tsconfig.json"
+      ]
+    },
+    {
+      "id": "layer:backend-api",
+      "name": "Backend API",
+      "description": "FastAPI application entry point and routers handling session lifecycle and real-time SSE streaming.",
+      "nodeIds": [
+        "file:backend/main.py",
+        "file:backend/api/sessions.py",
+        "file:backend/api/stream.py",
+        "file:backend/api/__init__.py"
+      ]
+    },
+    {
+      "id": "layer:agent-orchestration",
+      "name": "Agent Orchestration",
+      "description": "Google ADK workflow graph, persona definitions, and the moderator, participant, and synthesizer agent nodes.",
+      "nodeIds": [
+        "file:backend/agents/graph.py",
+        "file:backend/agents/personas.py",
+        "file:backend/agents/nodes/moderator.py",
+        "file:backend/agents/nodes/participant.py",
+        "file:backend/agents/nodes/synthesizer.py",
+        "file:backend/agents/__init__.py",
+        "file:backend/agents/nodes/__init__.py"
+      ]
+    },
+    {
+      "id": "layer:data-models",
+      "name": "Data Models",
+      "description": "Shared TypedDict state models and Pydantic API request/response schemas used across the backend.",
+      "nodeIds": [
+        "file:backend/models/state.py",
+        "file:backend/models/schemas.py",
+        "file:backend/models/__init__.py"
+      ]
+    },
+    {
+      "id": "layer:security-plugins",
+      "name": "Security Plugins",
+      "description": "Blue Team (trust monitoring) and Green Team (quarantine enforcement) ADK plugins for agent safety.",
+      "nodeIds": [
+        "file:backend/plugins/blue_team_plugin.py",
+        "file:backend/plugins/green_team_plugin.py",
+        "file:backend/plugins/__init__.py"
+      ]
+    },
+    {
+      "id": "layer:project-support",
+      "name": "Project Support",
+      "description": "Documentation, environment configuration, dependency manifests, and analysis tooling configuration.",
+      "nodeIds": [
+        "document:README.md",
+        "document:AGENTS.md",
+        "document:CLAUDE.md",
+        "document:frontend/README.md",
+        "document:frontend/AGENTS.md",
+        "document:frontend/CLAUDE.md",
+        "document:backend/requirements.txt",
+        "config:backend/.env.example",
+        "config:.understand-anything/.understandignore"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "Start with README.md to understand the project's purpose: a synthetic research panel where five opinionated AI personas debate and score any idea in real time. This document outlines the multi-stage workflow \u2014 Moderator Intro, Independent Responses, Follow-up, Discussion, Voting, and Synthesis \u2014 and maps the technology stack (FastAPI + Google ADK on the backend, Next.js 16 + React 19 on the frontend, SSE for real-time streaming). Reading it first gives you the mental model that makes every subsequent file meaningful. AGENTS.md supplements this with agent-specific conventions for the Google ADK integration.",
+      "nodeIds": [
+        "document:README.md",
+        "document:AGENTS.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Data Models and Schemas",
+      "description": "The data layer defines the shared vocabulary for the entire system. state.py holds the TypedDict that flows through the ADK workflow graph \u2014 every agent node reads from and writes to this shared state object. schemas.py defines the Pydantic models used for API request/response validation, establishing the contract between the FastAPI layer and external callers. Understanding these two files first prevents confusion when reading how agents and API routes interact with the same data structures.",
+      "nodeIds": [
+        "file:backend/models/state.py",
+        "file:backend/models/schemas.py"
+      ],
+      "languageLesson": "Python TypedDict (from the `typing` module) provides static type hints for dictionary-shaped data without runtime overhead, while Pydantic models add runtime validation and serialization. The two are complementary: TypedDict for internal workflow state, Pydantic for external API boundaries."
+    },
+    {
+      "order": 3,
+      "title": "AI Persona Definitions",
+      "description": "personas.py is where the five AI identities live: the Skeptical Investor, Early Adopter, Enterprise CTO, UX Researcher, and Growth Marketer. Each persona is defined with a distinct system prompt, scoring rubric, and personality archetype that shapes how its underlying Gemini model responds. This file is the creative and behavioral heart of the project \u2014 the personas here are what make the debate feel like a real focus group rather than a generic chatbot response.",
+      "nodeIds": [
+        "file:backend/agents/personas.py"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "ADK Workflow Graph",
+      "description": "graph.py wires the workflow together using the Google ADK's graph primitives. It declares the sequence of nodes \u2014 moderator intro, parallel participant responses, moderator follow-up, parallel discussion, voting, and synthesis \u2014 and connects them with conditional and sequential edges. This file is the architectural blueprint of the focus group session: it determines what runs, in what order, and which steps run in parallel. Reading it alongside the persona definitions from Step 3 reveals how the ADK dispatches work to each agent.",
+      "nodeIds": [
+        "file:backend/agents/graph.py"
+      ],
+      "languageLesson": "Google ADK workflow graphs use a declarative node-and-edge model similar to a directed acyclic graph (DAG). Parallel fan-out steps allow multiple agent nodes to execute concurrently, which is how all five personas respond simultaneously in the Independent Responses phase."
+    },
+    {
+      "order": 5,
+      "title": "Agent Nodes",
+      "description": "The three node files implement the actual agent logic invoked by the graph. moderator.py manages the focus group \u2014 it writes the opening prompt and the follow-up probes that steer the discussion. participant.py is the generic node that each of the five personas runs through: it receives the shared state, appends its persona's voice, and emits a score. synthesizer.py runs last, aggregating all participant outputs into a coherent final report. Together, these three files translate the abstract graph topology from Step 4 into concrete LLM calls.",
+      "nodeIds": [
+        "file:backend/agents/nodes/moderator.py",
+        "file:backend/agents/nodes/participant.py",
+        "file:backend/agents/nodes/synthesizer.py"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "Backend API Layer",
+      "description": "main.py is the FastAPI entry point: it mounts the routers, configures CORS, and starts the application. sessions.py handles the session lifecycle \u2014 creating a new focus group run, storing session state, and cleaning up after completion. Together they form the HTTP layer that the frontend talks to, translating REST calls into ADK workflow invocations and making the state defined in Step 2 available across requests.",
+      "nodeIds": [
+        "file:backend/main.py",
+        "file:backend/api/sessions.py"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "SSE Streaming",
+      "description": "stream.py implements the Server-Sent Events endpoint that pushes real-time agent output to the browser as it is generated. Instead of waiting for all five agents to finish, the client receives events incrementally \u2014 each persona's message, score, and status update arrives as it happens. This file is the bridge between the async ADK workflow (Step 4) and the live frontend experience. It converts internal state mutations into a stream of JSON events the React hook (Step 9) consumes.",
+      "nodeIds": [
+        "file:backend/api/stream.py"
+      ],
+      "languageLesson": "Server-Sent Events (SSE) use a persistent HTTP connection where the server pushes `data: <json>\\n\\n` lines to the client. Unlike WebSockets, SSE is unidirectional and works over standard HTTP/2, making it ideal for streaming LLM output without the complexity of a full duplex channel."
+    },
+    {
+      "order": 8,
+      "title": "Security Plugins",
+      "description": "The plugins layer adds trust monitoring and enforcement on top of the agent workflow. blue_team_plugin.py observes agent outputs and computes trust scores based on consistency, tone, and adherence to persona constraints. green_team_plugin.py acts on those scores: when an agent's trust score drops below a threshold it quarantines that agent, preventing its output from influencing the final synthesis. This stateful guardrail system ensures the focus group remains methodologically sound even if a model produces anomalous responses.",
+      "nodeIds": [
+        "file:backend/plugins/blue_team_plugin.py",
+        "file:backend/plugins/green_team_plugin.py"
+      ],
+      "languageLesson": "Plugin architectures in ADK allow cross-cutting concerns (logging, safety, monitoring) to be injected into the workflow without modifying individual node logic. Blue Team (observe/score) and Green Team (enforce/quarantine) is a pattern borrowed from security red-team/blue-team exercises applied here to AI reliability."
+    },
+    {
+      "order": 9,
+      "title": "Frontend Types and State Hook",
+      "description": "frontend/app/types/index.ts defines the TypeScript interfaces that mirror the backend Pydantic schemas from Step 2 \u2014 AgentMessage, SessionState, Score, and FinalReport \u2014 giving the frontend full type safety over SSE payloads. useFocusGroup.ts is the central React hook that manages all client-side session state: it opens the SSE connection to stream.py, parses incoming events, and exposes typed state plus action dispatchers to every UI component. All React components receive their data from this single hook, making it the frontend equivalent of the ADK workflow graph.",
+      "nodeIds": [
+        "file:frontend/app/types/index.ts",
+        "file:frontend/app/hooks/useFocusGroup.ts"
+      ],
+      "languageLesson": "Centralizing SSE consumption in a single custom hook (`useFocusGroup`) is the React equivalent of a state machine. It prevents multiple components from independently opening SSE connections and ensures that all derived state updates are co-located, making the data flow easy to trace."
+    },
+    {
+      "order": 10,
+      "title": "UI Components and Entry Page",
+      "description": "The UI layer assembles the experience. layout.tsx wraps the app with global fonts and metadata. page.tsx is the Next.js root page that composes all components and calls useFocusGroup. TopicInput.tsx captures the user's idea and submits it to start a session. DiscussionThread.tsx and AgentBubble.tsx render the live debate as messages stream in. ScorePanel.tsx displays each persona's running score, and FinalReport.tsx renders the synthesized conclusion with export buttons powered by exportReport.ts, which generates PDF and Word documents entirely client-side using jsPDF and the docx library.",
+      "nodeIds": [
+        "file:frontend/app/layout.tsx",
+        "file:frontend/app/page.tsx",
+        "file:frontend/app/components/TopicInput.tsx",
+        "file:frontend/app/components/DiscussionThread.tsx",
+        "file:frontend/app/components/AgentBubble.tsx",
+        "file:frontend/app/components/ScorePanel.tsx",
+        "file:frontend/app/components/FinalReport.tsx",
+        "file:frontend/app/utils/exportReport.ts"
+      ],
+      "languageLesson": "Client-side document generation (jsPDF, docx) runs entirely in the browser without a server round-trip, which keeps the backend stateless and avoids storing user report data on the server. This pattern trades server resource usage for client CPU \u2014 acceptable here because reports are generated once per session."
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "scriptCompleted": true,
+  "stats": {
+    "filesScanned": 42,
+    "filesWithImports": 18,
+    "totalEdges": 32
+  },
+  "importMap": {
+    ".understand-anything/.understandignore": [],
+    "AGENTS.md": [],
+    "backend/.env.example": [],
+    "backend/agents/__init__.py": [],
+    "backend/agents/graph.py": [
+      "backend/agents/nodes/moderator.py",
+      "backend/agents/nodes/participant.py",
+      "backend/agents/nodes/synthesizer.py",
+      "backend/models/state.py"
+    ],
+    "backend/agents/nodes/__init__.py": [],
+    "backend/agents/nodes/moderator.py": [
+      "backend/models/state.py"
+    ],
+    "backend/agents/nodes/participant.py": [
+      "backend/models/state.py"
+    ],
+    "backend/agents/nodes/synthesizer.py": [
+      "backend/models/state.py"
+    ],
+    "backend/agents/personas.py": [
+      "backend/models/state.py"
+    ],
+    "backend/api/__init__.py": [],
+    "backend/api/sessions.py": [
+      "backend/agents/graph.py",
+      "backend/agents/personas.py",
+      "backend/models/schemas.py",
+      "backend/models/state.py",
+      "backend/plugins/blue_team_plugin.py",
+      "backend/plugins/green_team_plugin.py"
+    ],
+    "backend/api/stream.py": [
+      "backend/api/sessions.py"
+    ],
+    "backend/main.py": [
+      "backend/api/sessions.py",
+      "backend/api/stream.py"
+    ],
+    "backend/models/__init__.py": [],
+    "backend/models/schemas.py": [
+      "backend/models/state.py"
+    ],
+    "backend/models/state.py": [],
+    "backend/plugins/__init__.py": [],
+    "backend/plugins/blue_team_plugin.py": [],
+    "backend/plugins/green_team_plugin.py": [],
+    "backend/requirements.txt": [],
+    "CLAUDE.md": [],
+    "frontend/AGENTS.md": [],
+    "frontend/app/components/AgentBubble.tsx": [
+      "frontend/app/types/index.ts"
+    ],
+    "frontend/app/components/DiscussionThread.tsx": [
+      "frontend/app/components/AgentBubble.tsx",
+      "frontend/app/types/index.ts"
+    ],
+    "frontend/app/components/FinalReport.tsx": [
+      "frontend/app/types/index.ts"
+    ],
+    "frontend/app/components/ScorePanel.tsx": [
+      "frontend/app/types/index.ts"
+    ],
+    "frontend/app/components/TopicInput.tsx": [
+      "frontend/app/types/index.ts"
+    ],
+    "frontend/app/globals.css": [],
+    "frontend/app/hooks/useFocusGroup.ts": [
+      "frontend/app/types/index.ts"
+    ],
+    "frontend/app/layout.tsx": [
+      "frontend/app/globals.css"
+    ],
+    "frontend/app/page.tsx": [
+      "frontend/app/components/DiscussionThread.tsx",
+      "frontend/app/components/FinalReport.tsx",
+      "frontend/app/components/ScorePanel.tsx",
+      "frontend/app/components/TopicInput.tsx",
+      "frontend/app/hooks/useFocusGroup.ts"
+    ],
+    "frontend/app/types/index.ts": [],
+    "frontend/app/utils/exportReport.ts": [
+      "frontend/app/types/index.ts"
+    ],
+    "frontend/CLAUDE.md": [],
+    "frontend/eslint.config.mjs": [],
+    "frontend/next.config.ts": [],
+    "frontend/package.json": [],
+    "frontend/postcss.config.mjs": [],
+    "frontend/README.md": [],
+    "frontend/tsconfig.json": [],
+    "README.md": []
+  }
+}
