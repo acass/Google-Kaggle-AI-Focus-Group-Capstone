@@ -48,3 +48,17 @@ def test_session_state_response_defaults():
     assert resp.completed is False
     assert resp.final_report is None
     assert resp.moderator_intro is None
+
+
+def test_focus_group_state_has_citations_field():
+    from backend.models.state import FocusGroupState
+    import typing
+    hints = typing.get_type_hints(FocusGroupState, include_extras=True)
+    assert "citations" in hints
+
+
+def test_final_report_has_citations_field():
+    from backend.models.state import FinalReport
+    import typing
+    hints = typing.get_type_hints(FinalReport, include_extras=True)
+    assert "citations" in hints

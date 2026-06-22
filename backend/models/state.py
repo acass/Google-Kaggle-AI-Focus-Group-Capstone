@@ -45,6 +45,7 @@ class FinalReport(TypedDict):
     action_items: list[str]
     recommendation: str
     sentiment: str
+    citations: list[dict]
 
 
 class StreamEvent(TypedDict):
@@ -69,6 +70,7 @@ class FocusGroupState(TypedDict):
     scores: Annotated[dict[str, ScoreSet], operator.or_]
     final_report: Optional[FinalReport]
     stream_events: Annotated[list[StreamEvent], operator.add]
+    citations: Annotated[list[dict], operator.add]
     security_test_mode: bool
     trust_score: float
     agbom: list[dict]
