@@ -1,0 +1,26 @@
+{
+  "doc_path": "flutter_app/README.md",
+  "claims_checked": 3,
+  "claims_passed": 0,
+  "claims_failed": 3,
+  "failures": [
+    {
+      "line": 1,
+      "claim": "Project is named 'focus_group' (heading '# focus_group')",
+      "expected": "Heading reflects actual application title: 'Synthetic Market Intelligence Platform'",
+      "actual": "README heading says '# focus_group'; main.dart title is 'Synthetic Market Intelligence Platform', web/index.html title is 'Synthetic Market Intelligence Platform', web/manifest.json also uses that name"
+    },
+    {
+      "line": 3,
+      "claim": "A new Flutter project.",
+      "expected": "Description reflects the actual application: AI-powered synthetic focus group / market intelligence frontend built with Riverpod, SSE, PDF/DOCX export, and a multi-agent backend",
+      "actual": "Description is boilerplate Flutter starter text; the app has a full feature set including lib/state/session_notifier.dart, lib/data/sse_client.dart, lib/export/pdf_builder.dart, lib/export/docx_builder.dart, and lib/models/ with seven domain models"
+    },
+    {
+      "line": 7,
+      "claim": "This project is a starting point for a Flutter application.",
+      "expected": "This is a production frontend for the Synthetic Market Intelligence Platform, not a starter template",
+      "actual": "The app contains a complete, non-starter implementation: multi-agent focus group session management, SSE streaming, REST API client, PDF and DOCX export, and Riverpod state management — none of which exist in a default Flutter starter project"
+    }
+  ]
+}

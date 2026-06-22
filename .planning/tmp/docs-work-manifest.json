@@ -30,7 +30,7 @@
       "mode": "create",
       "preservation_mode": null,
       "wave": 2,
-      "status": "pending"
+      "status": "completed"
     },
     {
       "type": "development",
@@ -38,7 +38,7 @@
       "mode": "create",
       "preservation_mode": null,
       "wave": 2,
-      "status": "pending"
+      "status": "completed"
     },
     {
       "type": "testing",
@@ -46,7 +46,7 @@
       "mode": "create",
       "preservation_mode": null,
       "wave": 2,
-      "status": "pending"
+      "status": "completed"
     },
     {
       "type": "api",
@@ -54,7 +54,7 @@
       "mode": "create",
       "preservation_mode": null,
       "wave": 2,
-      "status": "pending"
+      "status": "completed"
     }
   ],
   "review_queue": [

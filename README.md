@@ -55,8 +55,8 @@ graph TD
 |------|------|-------------------|
 | Marcus Chen | Skeptical Investor | Find the fatal flaw before anyone else does |
 | Zoe Park | Enthusiastic Early Adopter | Be first to discover the next big thing |
-| David Okafor | Enterprise CTO | Protect against vendor lock-in and technical debt |
-| Priya Sharma | UX Researcher | Ensure real users can use this without a manual |
+| David Okafor | Enterprise CTO | Protect the organization from vendor lock-in and technical debt |
+| Priya Sharma | UX Researcher | Ensure real users can actually use this without a manual |
 | Jordan Ellis | Growth Marketer | Find the distribution wedge that makes this explode |
 
 Each persona has its own personality traits, expertise domain, known biases, LLM temperature, and weighted scoring criteria. Sessions accept 1–5 participants.

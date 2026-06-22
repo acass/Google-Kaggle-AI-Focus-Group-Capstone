@@ -110,7 +110,7 @@ All nodes are decorated with `rerun_on_resume=True` to support ADK session resum
 | `BlueTeamAnalyticsPlugin` | `backend/plugins/blue_team_plugin.py` | ADK `BasePlugin` with `after_tool_callback`; maintains a per-node Agent Bill of Materials (AGBOM), deducts 25 points from `trust_score` when a node exceeds `MAX_TOOLS_PER_NODE` (10) calls, and sets `quarantine_flag = True` when score falls below 50 |
 | `GreenTeamQuarantinePlugin` | `backend/plugins/green_team_plugin.py` | ADK `BasePlugin` with `before_tool_callback`; raises `RuntimeError` to halt all further tool execution when `quarantine_flag` is `True`, preserving session state for forensic analysis |
 | `record_citation_tool` | `backend/agents/tools/citation_tracker.py` | ADK `FunctionTool` that appends `{title, url, excerpt}` dicts to `tool_context.state["citations"]`; available to Moderator and Participant nodes |
-| `SessionNotifier` | `flutter_app/lib/state/session_notifier.dart` | Riverpod `Notifier` that owns the frontend state machine; manages SSE lifecycle and folds each `StreamEvent` into `FocusGroupSession` |
+| `SessionNotifier` | `flutter_app/lib/state/session_notifier.dart` | Riverpod `Notifier<FocusGroupState>` that owns the frontend state machine; manages SSE lifecycle and folds each `StreamEvent` into `FocusGroupState` |
 | `SseConnection` | `flutter_app/lib/data/sse_client.dart` | Thin wrapper over the browser's native `EventSource` (via `package:web` and `dart:js_interop`); one connection per session, no manual reconnect |
 
 ## Directory Structure Rationale

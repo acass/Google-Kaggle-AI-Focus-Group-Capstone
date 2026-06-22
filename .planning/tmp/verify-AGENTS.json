@@ -1,0 +1,104 @@
+{
+  "doc_path": "AGENTS.md",
+  "claims_checked": 24,
+  "claims_passed": 8,
+  "claims_failed": 16,
+  "failures": [
+    {
+      "line": 15,
+      "claim": "Frontend uses Next.js 16 & React 19",
+      "expected": "Next.js/React frontend exists",
+      "actual": "Frontend is Flutter/Dart in flutter_app/; no frontend/ directory, no Next.js, no React found anywhere in codebase"
+    },
+    {
+      "line": 16,
+      "claim": "Tailwind CSS v4: Utility-first CSS styling",
+      "expected": "Tailwind CSS dependency present",
+      "actual": "No Tailwind CSS; frontend uses Flutter Material design with Dart; no tailwind config or dependency found"
+    },
+    {
+      "line": 17,
+      "claim": "TypeScript: Standard type definitions",
+      "expected": "TypeScript used in frontend",
+      "actual": "Frontend is written in Dart, not TypeScript; no TypeScript files found"
+    },
+    {
+      "line": 18,
+      "claim": "jsPDF & docx: Client-side document export libraries",
+      "expected": "jsPDF and docx packages present",
+      "actual": "Export uses Flutter packages: pdf+printing (pdf_builder.dart) and archive (docx_builder.dart); no jsPDF or docx.js"
+    },
+    {
+      "line": 57,
+      "claim": "session.state = dict(initial_state)",
+      "expected": "Pattern 'session.state = dict(initial_state)' found in backend code",
+      "actual": "Pattern not found; backend uses _sessions dict in backend/api/sessions.py directly, not an ADK session object"
+    },
+    {
+      "line": 63,
+      "claim": "from google import genai",
+      "expected": "genai import pattern used in agent code",
+      "actual": "Agent code uses LlmAgent from google.adk.agents; no 'from google import genai' or 'client = genai.Client()' found in agent files"
+    },
+    {
+      "line": 64,
+      "claim": "client = genai.Client()",
+      "expected": "genai.Client() instantiation in agent code",
+      "actual": "Not found; agents use LlmAgent and ctx.run_node() pattern, not genai.Client()"
+    },
+    {
+      "line": 65,
+      "claim": "await client.aio.models.generate_content(...)",
+      "expected": "client.aio.models.generate_content() call pattern in backend",
+      "actual": "Not found; actual invocation pattern is ctx.run_node(agent, node_input='') via ADK LlmAgent"
+    },
+    {
+      "line": 66,
+      "claim": "response_mime_type=\"application/json\" and response_schema=YourPydanticModel in GenerateContentConfig",
+      "expected": "GenerateContentConfig with response_mime_type and response_schema used in backend",
+      "actual": "Not found; actual code uses output_schema=VoteScores on LlmAgent constructor; no GenerateContentConfig usage"
+    },
+    {
+      "line": 76,
+      "claim": "/frontend directory for Frontend Guidelines",
+      "expected": "frontend/ directory exists in project root",
+      "actual": "No frontend/ directory found; actual frontend is flutter_app/"
+    },
+    {
+      "line": 79,
+      "claim": "Next.js 16: Uses the App Router (app/ directory)",
+      "expected": "Next.js App Router and app/ directory present",
+      "actual": "No Next.js; no frontend/app/ directory; frontend is Flutter at flutter_app/"
+    },
+    {
+      "line": 81,
+      "claim": "Mark client-interactive components with 'use client'",
+      "expected": "React 'use client' directive used in frontend",
+      "actual": "Frontend is Dart/Flutter; React 'use client' directives are irrelevant and not present"
+    },
+    {
+      "line": 84,
+      "claim": "frontend/app/globals.css",
+      "expected": "file exists",
+      "actual": "file not found at frontend/app/globals.css; no frontend/ directory exists"
+    },
+    {
+      "line": 88,
+      "claim": "frontend/app/hooks/useFocusGroup.ts",
+      "expected": "file exists",
+      "actual": "file not found at frontend/app/hooks/useFocusGroup.ts; no frontend/ directory exists; SSE is handled by flutter_app/lib/data/sse_client.dart"
+    },
+    {
+      "line": 99,
+      "claim": "cd backend && uvicorn main:app --reload",
+      "expected": "backend run command works from cd backend",
+      "actual": "CLAUDE.md explicitly states 'cd backend && uvicorn main:app' FAILS with 'attempted relative import with no known parent package'; correct command is run from repo root as 'backend/.venv/bin/uvicorn backend.main:app --reload --port 8000'"
+    },
+    {
+      "line": 112,
+      "claim": "cd frontend && npm run dev",
+      "expected": "frontend/ directory and npm dev script present",
+      "actual": "No frontend/ directory; no package.json anywhere in project; frontend uses Flutter (flutter run -d chrome)"
+    }
+  ]
+}
