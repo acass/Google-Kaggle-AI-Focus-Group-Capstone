@@ -1,8 +1,7 @@
 from google.adk.agents import LlmAgent
 from google.adk.agents.context import Context
-from google.adk.tools import google_search, url_context
+from google.adk.tools import google_search
 from ...models.state import FocusGroupState, StreamEvent
-from ...agents.tools import record_citation_tool
 
 async def moderator_introduce_node(ctx: Context, state: FocusGroupState) -> dict:
     topic = state["topic"]
@@ -22,8 +21,6 @@ Write a brief, focused introduction (3-5 sentences) that:
 
 Before writing your introduction:
 - Use your Search tool to fetch 1-2 real-world facts or recent news context about this topic.
-- Follow at least one promising URL with the url_context tool to read the full article.
-- Call record_citation for each source you use (title, url, key excerpt).
 
 Be concise and professional. Do not be overly formal."""
 
@@ -31,7 +28,7 @@ Be concise and professional. Do not be overly formal."""
         name="moderator_intro",
         model="gemini-2.5-pro",
         instruction=prompt,
-        tools=[google_search, url_context, record_citation_tool],
+        tools=[google_search],
     )
 
     result = await ctx.run_node(agent, node_input="")
@@ -75,13 +72,13 @@ Write 2-3 targeted follow-up questions that:
 2. Probe the most critical unresolved risk or concern
 3. Ask panelists to respond to each other's strongest point
 
-If any panelist cited a specific factual claim you want to verify, use Search and url_context to check it, then call record_citation for the source. Reference what was actually said. Keep to 2-3 focused questions."""
+If any panelist cited a specific factual claim you want to verify, use Search to check it. Reference what was actually said. Keep to 2-3 focused questions."""
 
     agent = LlmAgent(
         name="moderator_followup",
         model="gemini-2.5-pro",
         instruction=prompt,
-        tools=[google_search, url_context, record_citation_tool],
+        tools=[google_search],
     )
 
     result = await ctx.run_node(agent, node_input="")

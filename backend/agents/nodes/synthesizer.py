@@ -2,7 +2,6 @@ import json
 import math
 from google.adk.agents import LlmAgent
 from google.adk.agents.context import Context
-from google.adk.tools import google_search, url_context
 from pydantic import BaseModel, Field
 from ...models.state import FocusGroupState, FinalReport, ScoreSet, StreamEvent
 
@@ -79,10 +78,6 @@ Scores:
 Category averages: {json.dumps(averages)}
 Consensus confidence: {consensus_confidence}
 
-If any specific factual claims in the discussion are central to the recommendation,
-use Search + url_context to verify them before concluding. Reference the actual
-discussion points — do not be generic.
-
 Produce a structured synthesis based on the provided discussion and scores."""
 
     agent = LlmAgent(
@@ -90,7 +85,6 @@ Produce a structured synthesis based on the provided discussion and scores."""
         model="gemini-2.5-pro",
         instruction=prompt,
         output_schema=SynthesisResult,
-        tools=[google_search, url_context],
         generate_content_config={"temperature": 0.4},
     )
 
