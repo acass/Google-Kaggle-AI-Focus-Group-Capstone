@@ -1,0 +1,230 @@
+# domain: session
+# maps-to: backend/models/state.py
+# constraint: fields using operator.or_ merge semantics are written by parallel ADK nodes (fan-out)
+# constraint: fields using operator.add merge semantics are appended across parallel nodes
+# constraint: trust_score is float (not int); starts at 100 and decrements by 25 per violation
+
+---
+schema: FocusGroupState
+description: >
+  The mutable session state threaded through the ADK workflow runner.
+  Written by workflow nodes; read by the SSE stream and GET /sessions/{id} endpoint.
+  Fields annotated with operator.or_ are merged by dict union across parallel nodes.
+  Fields annotated with operator.add are merged by list concatenation across parallel nodes.
+fields:
+  session_id:
+    type: str
+    nullable: false
+    description: UUID string assigned at session creation time
+  topic:
+    type: str
+    nullable: false
+    description: The idea, product, or concept being evaluated
+  participants:
+    type: list[AgentPersona]
+    nullable: false
+    description: List of AgentPersona dicts for the selected personas
+  phase:
+    type: str
+    nullable: false
+    description: Current workflow phase name (e.g. introduction, independent, discussion, voting, synthesis)
+  round:
+    type: int
+    nullable: false
+    description: Discussion round counter
+  moderator_intro:
+    type: str
+    nullable: false
+    description: Opening framing produced by the moderator_introduce node
+  moderator_followup:
+    type: str
+    nullable: false
+    description: Targeted follow-up questions produced by the moderator_followup node
+  independent_responses:
+    type: dict[str, str]
+    nullable: false
+    merge: operator.or_
+    description: "Keyed by persona ID. Each value is that persona's independent evaluation text."
+  discussion_responses:
+    type: dict[str, str]
+    nullable: false
+    merge: operator.or_
+    description: "Keyed by persona ID. Each value is that persona's discussion-phase response text."
+  scores:
+    type: dict[str, ScoreSet]
+    nullable: false
+    merge: operator.or_
+    description: "Keyed by persona ID. Each value is that persona's ScoreSet from the voting phase."
+  final_report:
+    type: FinalReport
+    nullable: true
+    description: Null until the synthesizer node completes; then populated with the full executive report.
+  stream_events:
+    type: list[StreamEvent]
+    nullable: false
+    merge: operator.add
+    description: Chronological list of all events emitted. Replayed in full on every SSE reconnect.
+  citations:
+    type: list[dict]
+    nullable: false
+    merge: operator.add
+    description: Structured source citations added by search-enabled nodes (moderator, synthesizer).
+  security_test_mode:
+    type: bool
+    nullable: false
+    description: When true, participant nodes exceed tool-call thresholds to trigger security plugins.
+  trust_score:
+    type: float
+    nullable: false
+    default: 100
+    description: >
+      Starts at 100. Blue Team deducts 25 each time a node exceeds MAX_TOOLS_PER_NODE (10) calls.
+      Floor is 0. When trust_score falls below 50, quarantine_flag is set to true.
+  agbom:
+    type: list[dict]
+    nullable: false
+    default: []
+    description: "Agent BOM: flat list of all tool call records across all nodes. Each record has node, tool, args, status."
+  agbom_per_node:
+    type: dict[str, list[dict]]
+    nullable: false
+    default: {}
+    description: "Keyed by node_path. Value is the list of tool call records for that node. Used by Blue Team to count per-node calls."
+  quarantine_flag:
+    type: bool
+    nullable: false
+    default: false
+    description: Set to true by Blue Team when trust_score < 50. Green Team blocks all further tool execution when true.
+
+---
+schema: FinalReport
+description: The synthesized executive report produced by the synthesizer node.
+fields:
+  overall_score:
+    type: float
+    nullable: false
+    description: Weighted aggregate score across all personas and dimensions
+  scores_by_agent:
+    type: dict[str, ScoreSet]
+    nullable: false
+    description: "Keyed by persona ID: each persona's full ScoreSet"
+  category_averages:
+    type: ScoreSet
+    nullable: false
+    description: Average score across all personas for each of the six dimensions
+  category_std_dev:
+    type: ScoreSet
+    nullable: false
+    description: Standard deviation per dimension; measures consensus vs disagreement
+  consensus_confidence:
+    type: float
+    nullable: false
+    description: Derived confidence metric based on score variance
+  key_concerns:
+    type: list[str]
+    nullable: false
+    description: Risks and failure modes surfaced across personas
+  key_strengths:
+    type: list[str]
+    nullable: false
+    description: Positive signals and opportunities identified across personas
+  action_items:
+    type: list[str]
+    nullable: false
+    description: Concrete next steps recommended by the synthesizer
+  recommendation:
+    type: str
+    nullable: false
+    description: The synthesizer's overall verdict on the idea
+  sentiment:
+    type: str
+    nullable: false
+    description: Aggregate sentiment label (e.g. cautiously optimistic, skeptical)
+  citations:
+    type: list[dict]
+    nullable: false
+    description: "Sources referenced during synthesis. Each dict has: title (str), url (str), excerpt (str)."
+
+---
+schema: ScoreSet
+description: One persona's blind vote across six scoring dimensions. Used in FocusGroupState.scores and FinalReport.
+fields:
+  innovation:
+    type: float
+    nullable: false
+    range: [0, 100]
+    description: How novel and differentiated the idea is
+  market:
+    type: float
+    nullable: false
+    range: [0, 100]
+    description: Market size, timing, and competitive dynamics
+  ux:
+    type: float
+    nullable: false
+    range: [0, 100]
+    description: Usability and user experience quality
+  feasibility:
+    type: float
+    nullable: false
+    range: [0, 100]
+    description: Technical complexity and execution risk
+  monetization:
+    type: float
+    nullable: false
+    range: [0, 100]
+    description: Revenue model clarity and sustainability
+  risk:
+    type: float
+    nullable: false
+    range: [0, 100]
+    description: Downside exposure and failure mode severity
+
+---
+schema: AgentPersona
+description: One participant's full definition. Stored in FocusGroupState.participants and in backend/agents/personas.py PERSONAS dict.
+fields:
+  id:
+    type: str
+    nullable: false
+    enum: [skeptical_investor, early_adopter, enterprise_cto, ux_researcher, growth_marketer]
+  name:
+    type: str
+    nullable: false
+  role:
+    type: str
+    nullable: false
+  personality:
+    type: list[str]
+    nullable: false
+  expertise:
+    type: list[str]
+    nullable: false
+  biases:
+    type: list[str]
+    nullable: false
+  hidden_motivation:
+    type: str
+    nullable: false
+  temperature:
+    type: float
+    nullable: false
+    description: LLM temperature for this persona's generative calls
+  communication_style:
+    type: str
+    nullable: false
+  scoring_weights:
+    type: ScoringWeights
+    nullable: false
+    description: Per-dimension multipliers applied when this persona generates its vote prompt
+
+---
+schema: ScoringWeights
+description: Per-dimension score multipliers for one persona. Keys match ScoreSet field names.
+fields:
+  innovation: { type: float }
+  market: { type: float }
+  ux: { type: float }
+  feasibility: { type: float }
+  monetization: { type: float }
+  risk: { type: float }

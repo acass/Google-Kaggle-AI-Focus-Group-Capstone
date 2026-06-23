@@ -1,0 +1,85 @@
+# domain: session
+# maps-to: backend/api/sessions.py, backend/api/stream.py, backend/models/schemas.py
+# constraint: CreateSessionResponse returns session_id, topic, and participant_ids — not a status field
+# constraint: SessionStateResponse uses completed (bool) field, not a status enum
+# constraint: The SSE endpoint replays the full stream_events list on every connect — no manual reconnect needed
+
+---
+endpoint: POST /sessions
+description: Create a new focus group session and start the ADK workflow in a background task.
+request:
+  content-type: application/json
+  body:
+    topic:
+      type: str
+      required: true
+      description: The idea, product, or concept to evaluate
+    participant_ids:
+      type: list[str]
+      required: true
+      min_items: 1
+      max_items: 5
+      valid_values: [skeptical_investor, early_adopter, enterprise_cto, ux_researcher, growth_marketer]
+    security_test_mode:
+      type: bool
+      required: false
+      default: false
+      description: Forces participant nodes to exceed tool-call thresholds
+response:
+  201:
+    session_id: { type: str, format: uuid }
+    topic: { type: str }
+    participant_ids: { type: list[str] }
+  422: Pydantic validation error — malformed body or invalid participant_id values
+
+---
+endpoint: GET /sessions/{session_id}
+description: Retrieve the current state of a session including the final report when complete.
+request:
+  path:
+    session_id: { type: str, format: uuid, required: true }
+response:
+  200:
+    session_id: { type: str }
+    topic: { type: str }
+    phase: { type: str }
+    round: { type: int }
+    moderator_intro: { type: str, nullable: true }
+    moderator_followup: { type: str, nullable: true }
+    independent_responses: { type: dict, default: {} }
+    discussion_responses: { type: dict, default: {} }
+    scores: { type: dict, default: {} }
+    final_report: { type: dict, nullable: true }
+    events_count: { type: int }
+    completed: { type: bool }
+  404: session_id not found in the in-memory session store
+
+---
+endpoint: GET /sessions/{session_id}/stream
+description: SSE stream of live discussion events. Replays the full stream_events history on connect.
+request:
+  path:
+    session_id: { type: str, format: uuid, required: true }
+response:
+  200:
+    content-type: text/event-stream
+    events: see specs/stream/stream-event.schema.yaml for event type shapes
+  404: session_id not found
+
+---
+endpoint: GET /personas
+description: Return the list of all available agent personas.
+response:
+  200:
+    type: list[dict]
+    each:
+      id: { type: str }
+      name: { type: str }
+      role: { type: str }
+
+---
+endpoint: GET /health
+description: Basic liveness check.
+response:
+  200:
+    status: { type: str, value: ok }
