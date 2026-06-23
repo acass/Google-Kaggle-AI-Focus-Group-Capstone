@@ -106,7 +106,7 @@ edges:
       type: sequential
 
 phases:
-  - name: introduction
+  - name: intro
     nodes: [moderator_introduce]
   - name: independent
     nodes: ["independent_{id} x N", collect_independent]
