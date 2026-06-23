@@ -1,0 +1,129 @@
+# domain: workflow
+# maps-to: backend/agents/graph.py
+# constraint: participant node names are dynamically generated as independent_{persona_id}, discussion_{persona_id}, vote_{persona_id}
+# constraint: all participant nodes use rerun_on_resume=True
+# constraint: loop variable capture uses default argument _p=p — do not refactor to a closure
+# constraint: the Workflow name is "focus_group_workflow"
+
+---
+schema: ADKGraphTopology
+description: >
+  The ADK Workflow graph that orchestrates the focus group session.
+  Built by backend/agents/graph.py::build_graph(participants).
+  The graph structure is fixed; only the number and IDs of participant nodes vary
+  based on the participants list passed at session creation.
+
+workflow:
+  name: focus_group_workflow
+  builder: backend/agents/graph.py::build_graph(participants: list[AgentPersona])
+
+node_types:
+  static:
+    description: Always present regardless of participant count
+    nodes:
+      - name: moderator_introduce
+        type: workflow node (decorated with @node)
+        model: gemini-2.5-pro
+        rerun_on_resume: true
+        calls: backend/agents/nodes/moderator.py::moderator_introduce_node
+        writes_to_state: moderator_intro, stream_events
+      - name: moderator_followup
+        type: workflow node (decorated with @node)
+        model: gemini-2.5-pro
+        rerun_on_resume: true
+        calls: backend/agents/nodes/moderator.py::moderator_followup_node
+        writes_to_state: moderator_followup, stream_events
+      - name: synthesizer
+        type: workflow node (decorated with @node)
+        model: gemini-2.5-pro
+        rerun_on_resume: true
+        calls: backend/agents/nodes/synthesizer.py::synthesizer_node
+        writes_to_state: final_report, stream_events, citations
+      - name: collect_independent
+        type: JoinNode
+        description: Fan-in barrier; waits for all independent_{persona_id} nodes to complete
+      - name: collect_discussion
+        type: JoinNode
+        description: Fan-in barrier; waits for all discussion_{persona_id} nodes to complete
+      - name: collect_votes
+        type: JoinNode
+        description: Fan-in barrier; waits for all vote_{persona_id} nodes to complete
+
+  dynamic:
+    description: One set of three nodes is created per participant at build_graph() call time
+    node_sets:
+      - name_pattern: "independent_{persona_id}"
+        type: workflow node (decorated with @node)
+        model: gemini-2.5-flash
+        rerun_on_resume: true
+        calls: backend/agents/nodes/participant.py::make_independent_response
+        writes_to_state: "independent_responses[persona_id], stream_events"
+      - name_pattern: "discussion_{persona_id}"
+        type: workflow node (decorated with @node)
+        model: gemini-2.5-flash
+        rerun_on_resume: true
+        calls: backend/agents/nodes/participant.py::make_discussion_response
+        writes_to_state: "discussion_responses[persona_id], stream_events"
+      - name_pattern: "vote_{persona_id}"
+        type: workflow node (decorated with @node)
+        model: gemini-2.5-flash
+        rerun_on_resume: true
+        calls: backend/agents/nodes/participant.py::make_vote
+        writes_to_state: "scores[persona_id], stream_events"
+        note: uses output_schema=ScoreSet for structured JSON output; do not add search tools here
+
+edges:
+  description: >
+    Edges define the execution order. A tuple of nodes on the left side means fan-out (parallel).
+    A JoinNode on the right side means fan-in (barrier, waits for all parallel nodes).
+  sequence:
+    - from: START
+      to: moderator_introduce
+      type: sequential
+    - from: moderator_introduce
+      to: "[independent_{id} for each participant]"
+      type: fan-out (parallel)
+    - from: "[independent_{id} for each participant]"
+      to: collect_independent
+      type: fan-in (JoinNode barrier)
+    - from: collect_independent
+      to: moderator_followup
+      type: sequential
+    - from: moderator_followup
+      to: "[discussion_{id} for each participant]"
+      type: fan-out (parallel)
+    - from: "[discussion_{id} for each participant]"
+      to: collect_discussion
+      type: fan-in (JoinNode barrier)
+    - from: collect_discussion
+      to: "[vote_{id} for each participant]"
+      type: fan-out (parallel)
+    - from: "[vote_{id} for each participant]"
+      to: collect_votes
+      type: fan-in (JoinNode barrier)
+    - from: collect_votes
+      to: synthesizer
+      type: sequential
+
+phases:
+  - name: introduction
+    nodes: [moderator_introduce]
+  - name: independent
+    nodes: ["independent_{id} x N", collect_independent]
+  - name: discussion
+    nodes: [moderator_followup, "discussion_{id} x N", collect_discussion]
+  - name: voting
+    nodes: ["vote_{id} x N", collect_votes]
+  - name: synthesis
+    nodes: [synthesizer]
+
+state_merge_rules:
+  description: >
+    Parallel nodes write to the same state dict simultaneously.
+    ADK uses type annotations on FocusGroupState to resolve conflicts.
+  operator.or_:
+    applies_to: [independent_responses, discussion_responses, scores]
+    behavior: dict union; later writer wins on key collision (no collision expected since keys are persona IDs)
+  operator.add:
+    applies_to: [stream_events, citations]
+    behavior: list concatenation; order across parallel nodes is non-deterministic
