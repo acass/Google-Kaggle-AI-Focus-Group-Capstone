@@ -1,0 +1,71 @@
+# domain: stream
+# maps-to: backend/models/state.py::StreamEvent, flutter_app/lib/models/
+# constraint: agent_id, agent_name, and scores are nullable — done and error events omit these fields
+# constraint: the SSE event type field is "type" in the JSON payload; the SSE event name uses the same value
+# constraint: StreamEvent is stored in FocusGroupState.stream_events and also serialized directly to the SSE wire format
+
+---
+schema: StreamEvent
+description: >
+  One event emitted during the focus group workflow.
+  Stored in FocusGroupState.stream_events and streamed directly to clients via SSE.
+  The done and error variants omit agent_id, agent_name, and scores.
+fields:
+  type:
+    type: str
+    nullable: false
+    enum: [phase_change, agent_message, score_update, done, error]
+    description: >
+      Discriminator field.
+      phase_change: a workflow phase transition (moderator, synthesizer).
+      agent_message: a participant text response (independent or discussion phase).
+      score_update: a participant vote with populated scores field.
+      done: session complete; agent_id, agent_name, scores are null.
+      error: workflow error; agent_id, agent_name, scores are null.
+  agent_id:
+    type: str
+    nullable: true
+    description: Persona ID of the emitting agent. Null for phase_change, done, and error events.
+  agent_name:
+    type: str
+    nullable: true
+    description: Display name of the emitting agent. Null for phase_change, done, and error events.
+  phase:
+    type: str
+    nullable: false
+    description: "Workflow phase this event belongs to: introduction, independent, discussion, voting, synthesis"
+  content:
+    type: str
+    nullable: false
+    description: Text payload. For phase_change events this is a phase description; for agent_message it is the persona's response text.
+  scores:
+    type: ScoreSet
+    nullable: true
+    description: Populated only for score_update events. Null for all other event types.
+
+event_type_variants:
+  phase_change:
+    agent_id: null
+    agent_name: null
+    scores: null
+    content: description of the phase starting
+  agent_message:
+    agent_id: persona ID string
+    agent_name: persona display name
+    scores: null
+    content: persona response text
+  score_update:
+    agent_id: persona ID string
+    agent_name: persona display name
+    scores: populated ScoreSet
+    content: brief vote summary text
+  done:
+    agent_id: null
+    agent_name: null
+    scores: null
+    content: session completion message
+  error:
+    agent_id: null
+    agent_name: null
+    scores: null
+    content: error description
