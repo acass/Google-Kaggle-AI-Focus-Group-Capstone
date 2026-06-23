@@ -1,39 +1,50 @@
 # domain: stream
-# maps-to: backend/models/state.py::StreamEvent, flutter_app/lib/models/
+# maps-to: backend/models/state.py::StreamEvent, backend/api/stream.py, flutter_app/lib/models/
 # constraint: agent_id, agent_name, and scores are nullable — done and error events omit these fields
 # constraint: the SSE event type field is "type" in the JSON payload; the SSE event name uses the same value
-# constraint: StreamEvent is stored in FocusGroupState.stream_events and also serialized directly to the SSE wire format
+# constraint: StreamEvent is stored in FocusGroupState.stream_events; done and error are SSE wire-only and never stored in state
+# constraint: "done" is injected by backend/api/stream.py after replaying state; "report_complete" is emitted by the synthesizer node and stored in state
 
 ---
 schema: StreamEvent
 description: >
   One event emitted during the focus group workflow.
-  Stored in FocusGroupState.stream_events and streamed directly to clients via SSE.
-  The done and error variants omit agent_id, agent_name, and scores.
+  There are two distinct layers:
+  (1) In-state types — stored in FocusGroupState.stream_events and replayed on every SSE reconnect.
+      These are produced by workflow nodes (backend/agents/nodes/).
+      Types: phase_change, agent_message, score_update, report_complete
+  (2) SSE wire-only types — injected by backend/api/stream.py after the workflow completes or errors.
+      These are NEVER stored in FocusGroupState.stream_events.
+      Types: done, error
+  The done and error wire events omit agent_id, agent_name, and scores.
 fields:
   type:
     type: str
     nullable: false
-    enum: [phase_change, agent_message, score_update, done, error]
+    in_state_enum: [phase_change, agent_message, score_update, report_complete]
+    sse_wire_only_enum: [done, error]
     description: >
-      Discriminator field.
-      phase_change: a workflow phase transition (moderator, synthesizer).
-      agent_message: a participant text response (independent or discussion phase).
-      score_update: a participant vote with populated scores field.
-      done: session complete; agent_id, agent_name, scores are null.
-      error: workflow error; agent_id, agent_name, scores are null.
+      Discriminator field. Two layers:
+      -- In-state types (stored in FocusGroupState.stream_events, produced by workflow nodes):
+         phase_change: a workflow phase transition (moderator, synthesizer).
+         agent_message: a participant text response (independent or discussion phase).
+         score_update: a participant vote with populated scores field.
+         report_complete: emitted by the synthesizer node (backend/agents/nodes/synthesizer.py) when the final report is ready.
+      -- SSE wire-only types (injected by backend/api/stream.py, never stored in state):
+         done: signals stream end to the frontend; agent_id, agent_name, scores are null.
+         error: signals unrecoverable workflow error; agent_id, agent_name, scores are null.
   agent_id:
     type: str
     nullable: true
-    description: Persona ID of the emitting agent. Null for phase_change, done, and error events.
+    description: Persona ID of the emitting agent. Null for phase_change, report_complete, done, and error events.
   agent_name:
     type: str
     nullable: true
-    description: Display name of the emitting agent. Null for phase_change, done, and error events.
+    description: Display name of the emitting agent. Null for phase_change, report_complete, done, and error events.
   phase:
     type: str
     nullable: false
-    description: "Workflow phase this event belongs to: introduction, independent, discussion, voting, synthesis"
+    description: "Workflow phase this event belongs to: intro, independent, discussion, voting, synthesis"
   content:
     type: str
     nullable: false
@@ -44,28 +55,41 @@ fields:
     description: Populated only for score_update events. Null for all other event types.
 
 event_type_variants:
+  # In-state types (stored in FocusGroupState.stream_events)
   phase_change:
+    layer: in-state
     agent_id: null
     agent_name: null
     scores: null
     content: description of the phase starting
   agent_message:
+    layer: in-state
     agent_id: persona ID string
     agent_name: persona display name
     scores: null
     content: persona response text
   score_update:
+    layer: in-state
     agent_id: persona ID string
     agent_name: persona display name
     scores: populated ScoreSet
     content: brief vote summary text
+  report_complete:
+    layer: in-state
+    agent_id: null
+    agent_name: null
+    scores: null
+    content: synthesizer completion message; final_report is now populated in state
+  # SSE wire-only types (injected by backend/api/stream.py, never stored in state)
   done:
+    layer: sse-wire-only
     agent_id: null
     agent_name: null
     scores: null
-    content: session completion message
+    content: signals stream end; frontend must call close() on EventSource
   error:
+    layer: sse-wire-only
     agent_id: null
     agent_name: null
     scores: null
-    content: error description
+    content: error description; frontend must call close() on EventSource

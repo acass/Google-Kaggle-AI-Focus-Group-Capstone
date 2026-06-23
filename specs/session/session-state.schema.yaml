@@ -27,7 +27,7 @@ fields:
   phase:
     type: str
     nullable: false
-    description: Current workflow phase name (e.g. introduction, independent, discussion, voting, synthesis)
+    description: Current workflow phase name (e.g. intro, independent, discussion, voting, synthesis)
   round:
     type: int
     nullable: false
@@ -152,32 +152,32 @@ fields:
   innovation:
     type: float
     nullable: false
-    range: [0, 100]
+    range: [0, 10]
     description: How novel and differentiated the idea is
   market:
     type: float
     nullable: false
-    range: [0, 100]
+    range: [0, 10]
     description: Market size, timing, and competitive dynamics
   ux:
     type: float
     nullable: false
-    range: [0, 100]
+    range: [0, 10]
     description: Usability and user experience quality
   feasibility:
     type: float
     nullable: false
-    range: [0, 100]
+    range: [0, 10]
     description: Technical complexity and execution risk
   monetization:
     type: float
     nullable: false
-    range: [0, 100]
+    range: [0, 10]
     description: Revenue model clarity and sustainability
   risk:
     type: float
     nullable: false
-    range: [0, 100]
+    range: [0, 10]
     description: Downside exposure and failure mode severity
 
 ---

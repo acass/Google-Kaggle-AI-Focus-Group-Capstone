@@ -3,7 +3,9 @@
 # constraint: the backend replays the full stream_events list on every SSE connect — no manual reconnect logic on the frontend
 # constraint: the frontend uses one EventSource connection per session (package:web + dart:js_interop)
 # constraint: the frontend must call close() immediately on receiving a done or error event type
-# constraint: StreamEvent fields agent_id, agent_name, and scores are nullable because done/error events omit them
+# constraint: StreamEvent fields agent_id, agent_name, and scores are nullable because done/error/report_complete events omit them
+# constraint: "done" and "error" are SSE wire-only events injected by backend/api/stream.py and are never stored in FocusGroupState.stream_events
+# constraint: "report_complete" is emitted by the synthesizer node (backend/agents/nodes/synthesizer.py) and IS stored in state
 
 Feature: SSE Streaming
   The backend streams focus group progress over Server-Sent Events.
@@ -20,20 +22,22 @@ Feature: SSE Streaming
     Given a session is running with one or more participants
     When the workflow executes all phases in order
     Then SSE events arrive in this sequence:
-      | type         | phase       | notes                                      |
-      | phase_change | introduction| moderator intro starts                     |
-      | agent_message| independent | one per participant (may arrive in parallel)|
-      | phase_change | discussion  | moderator followup starts                  |
-      | agent_message| discussion  | one per participant                        |
-      | score_update | voting      | one per participant with scores populated  |
-      | phase_change | synthesis   | synthesizer starts                         |
-      | done         | synthesis   | session complete; agent_id/agent_name null |
+      | type            | phase       | layer         | notes                                                      |
+      | phase_change    | intro       | in-state      | moderator intro starts; stored in stream_events            |
+      | agent_message   | independent | in-state      | one per participant (may arrive in parallel)                |
+      | phase_change    | discussion  | in-state      | moderator followup starts; stored in stream_events         |
+      | agent_message   | discussion  | in-state      | one per participant                                        |
+      | score_update    | voting      | in-state      | one per participant with scores populated                  |
+      | phase_change    | synthesis   | in-state      | synthesizer starts; stored in stream_events                |
+      | report_complete | synthesis   | in-state      | synthesizer node completes; final_report populated in state|
+      | done            | synthesis   | sse-wire-only | injected by stream.py to close the stream; never in state  |
 
   Scenario: done event triggers connection close on the frontend
-    Given the workflow has completed
-    When the SSE stream emits an event with type "done"
+    Given the workflow has completed and the synthesizer node has emitted report_complete
+    When the SSE delivery layer (backend/api/stream.py) injects a wire-only "done" event to close the stream
     Then the frontend SseConnection calls close() on the EventSource
     And no reconnect attempt is made
+    And the "done" event is not stored in FocusGroupState.stream_events
 
   Scenario: error event triggers connection close on the frontend
     Given an unrecoverable error occurs in the workflow

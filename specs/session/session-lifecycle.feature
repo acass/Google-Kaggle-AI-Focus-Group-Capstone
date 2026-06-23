@@ -19,7 +19,7 @@ Feature: Session Lifecycle
   Scenario: Session status transitions through all workflow phases
     Given a session has been created with valid participants
     When the ADK workflow runs to completion
-    Then the session phase progresses: introduction -> independent -> discussion -> voting -> synthesis
+    Then the session phase progresses: intro -> independent -> discussion -> voting -> synthesis
     And each completed node emits SSE events that are appended to state.stream_events
 
   Scenario: Session completes with a final report
@@ -32,13 +32,13 @@ Feature: Session Lifecycle
   Scenario: Session creation rejected for invalid participant IDs
     Given a request body with participant_ids containing an ID not present in PERSONAS
     When the client POSTs to /sessions
-    Then the response status is 422
+    Then the response status is 400
     And the response body describes which participant_id was invalid
 
   Scenario: Session creation rejected for too many participants
     Given a request body with more than 5 participant_ids
     When the client POSTs to /sessions
-    Then the response status is 422
+    Then the response status is 400
 
   Scenario: Security test mode enables intentional trust score decay
     Given a session creation request with security_test_mode set to true

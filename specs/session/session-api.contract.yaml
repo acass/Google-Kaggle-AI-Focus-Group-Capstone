@@ -30,7 +30,8 @@ response:
     session_id: { type: str, format: uuid }
     topic: { type: str }
     participant_ids: { type: list[str] }
-  422: Pydantic validation error — malformed body or invalid participant_id values
+  400: invalid participant_id values or participant count out of range (1-5)
+  422: Pydantic validation error — malformed body (wrong field types)
 
 ---
 endpoint: GET /sessions/{session_id}
@@ -76,6 +77,7 @@ response:
       id: { type: str }
       name: { type: str }
       role: { type: str }
+      communication_style: { type: str }
 
 ---
 endpoint: GET /health
