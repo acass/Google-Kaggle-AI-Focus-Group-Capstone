@@ -1,0 +1,62 @@
+# domain: security
+# maps-to: backend/plugins/blue_team_plugin.py, backend/plugins/green_team_plugin.py, backend/models/state.py
+# constraint: MAX_TOOLS_PER_NODE = 10 (also read from the MAX_TOOLS_PER_NODE file at repo root)
+# constraint: trust_score is a float in FocusGroupState; initialized to 100 in state dict before workflow starts
+# constraint: agbom_per_node keys are node_path strings from tool_context.node_path (e.g. "independent_skeptical_investor")
+
+---
+schema: TrustScoreSystem
+description: >
+  The Blue Team and Green Team plugins share state fields within FocusGroupState.
+  This schema documents those fields and the rules governing trust score changes.
+
+fields:
+  trust_score:
+    type: float
+    initial_value: 100
+    floor: 0
+    description: >
+      Session-level trust score. Starts at 100.
+      Decremented by 25 each time a single workflow node exceeds MAX_TOOLS_PER_NODE tool calls.
+      Minimum value is 0 (clamped with max(0, trust_score - 25)).
+  quarantine_flag:
+    type: bool
+    initial_value: false
+    description: >
+      Set to true by BlueTeamAnalyticsPlugin when trust_score falls below 50.
+      Once true, persists for the entire session — never reset to false mid-session.
+      Checked by GreenTeamQuarantinePlugin before every tool call.
+  agbom:
+    type: list[dict]
+    initial_value: []
+    description: >
+      Agent BOM: flat chronological list of all tool call records across all nodes and all sessions.
+    record_fields:
+      node: { type: str, description: "node_path string from tool_context.node_path" }
+      tool: { type: str, description: "tool.name from the ADK BaseTool instance" }
+      args: { type: dict, description: "tool_args dict passed to the tool" }
+      status: { type: str, enum: [success, unknown], description: "'success' when result is truthy; 'unknown' otherwise" }
+  agbom_per_node:
+    type: dict[str, list[dict]]
+    initial_value: {}
+    description: >
+      Same records as agbom but grouped by node_path.
+      The Blue Team uses len(agbom_per_node[node]) to count per-node calls.
+      The threshold check fires when len > MAX_TOOLS_PER_NODE (10).
+
+thresholds:
+  MAX_TOOLS_PER_NODE:
+    value: 10
+    source: backend/plugins/blue_team_plugin.py and MAX_TOOLS_PER_NODE file at repo root
+    description: Maximum tool calls per workflow node before a trust score deduction triggers
+  TRUST_DEDUCTION_PER_VIOLATION:
+    value: 25
+    description: Amount subtracted from trust_score per threshold violation
+  QUARANTINE_THRESHOLD:
+    value: 50
+    comparison: strict less-than
+    description: trust_score < 50 triggers quarantine_flag = true
+
+plugin_execution_order:
+  before_tool: GreenTeamQuarantinePlugin runs first (checks quarantine_flag, raises if true)
+  after_tool: BlueTeamAnalyticsPlugin runs after tool completes (records call, updates trust_score)
