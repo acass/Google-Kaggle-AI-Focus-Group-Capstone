@@ -30,3 +30,4 @@ node_modules/
 
 # Tool caches
 .understand-anything/
+.planning/
