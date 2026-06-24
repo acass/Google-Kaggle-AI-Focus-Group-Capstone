@@ -54,7 +54,7 @@ GEMINI_API_KEY=your-key-here
 ### 3. Set up the frontend
 
 ```bash
-cd flutter_app
+cd frontend
 flutter pub get
 cd ..
 ```
@@ -81,7 +81,7 @@ curl http://localhost:8000/health
 **Terminal 2 — Start the frontend:**
 
 ```bash
-cd flutter_app
+cd frontend
 flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000
 ```
 

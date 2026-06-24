@@ -783,7 +783,7 @@ git commit -m "docs: add agents domain specs (persona behavior feature, personas
 
 ```gherkin
 # domain: stream
-# maps-to: backend/api/stream.py, flutter_app/lib/data/sse_client.dart, flutter_app/lib/models/
+# maps-to: backend/api/stream.py, frontend/lib/data/sse_client.dart, frontend/lib/models/
 # constraint: the backend replays the full stream_events list on every SSE connect — no manual reconnect logic on the frontend
 # constraint: the frontend uses one EventSource connection per session (package:web + dart:js_interop)
 # constraint: the frontend must call close() immediately on receiving a done or error event type
@@ -842,7 +842,7 @@ Feature: SSE Streaming
 
 ```yaml
 # domain: stream
-# maps-to: backend/models/state.py::StreamEvent, flutter_app/lib/models/
+# maps-to: backend/models/state.py::StreamEvent, frontend/lib/models/
 # constraint: agent_id, agent_name, and scores are nullable — done and error events omit these fields
 # constraint: the SSE event type field is "type" in the JSON payload; the SSE event name uses the same value
 # constraint: StreamEvent is stored in FocusGroupState.stream_events and also serialized directly to the SSE wire format

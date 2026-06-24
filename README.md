@@ -132,7 +132,7 @@ Set `security_test_mode: true` in the session creation request to exercise these
 │   │   ├── blue_team_plugin.py  # Intent Drift detection, Trust Score tracking
 │   │   └── green_team_plugin.py # Stateful Quarantine enforcement
 │   └── tests/
-└── flutter_app/
+└── frontend/
     ├── lib/
     │   ├── app/config.dart           # API_BASE dart-define config
     │   ├── data/
@@ -180,7 +180,7 @@ The API will be available at `http://localhost:8000`. Health check: `GET /health
 ### Frontend
 
 ```bash
-cd flutter_app
+cd frontend
 flutter pub get
 flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000
 ```
@@ -255,7 +255,7 @@ backend/.venv/bin/python -m pytest
 ### Flutter
 
 ```bash
-cd flutter_app
+cd frontend
 flutter test
 flutter analyze
 ```

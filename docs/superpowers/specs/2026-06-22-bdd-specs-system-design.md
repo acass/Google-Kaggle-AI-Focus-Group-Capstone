@@ -179,7 +179,7 @@ The `specs/README.md` defines four hard rules for any AI agent consuming specs:
 
 ### `stream/` — SSE Streaming
 - Covers: SSE connection lifecycle, event sequence, event type contracts (phase_change, agent_message, score_update, done, error), nullable field rules, no-manual-reconnect constraint
-- Maps to: `backend/api/stream.py`, `flutter_app/lib/data/sse_client.dart`, `flutter_app/lib/models/`
+- Maps to: `backend/api/stream.py`, `frontend/lib/data/sse_client.dart`, `frontend/lib/models/`
 
 ### `security/` — Plugin Behavior
 - Covers: Blue Team tool-call counting per node, trust score deduction rules, threshold, Green Team quarantine gate, `security_test_mode` flag

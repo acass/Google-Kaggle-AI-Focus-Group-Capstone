@@ -35,7 +35,7 @@ graph TD
 
     GEMINI_PRO[Gemini 2.5 Pro\nModerator + Synthesizer]
     GEMINI_FLASH[Gemini 2.5 Flash\nParticipant agents]
-    GSEARCH[Google Search + url_context\ngrounding tools]
+    GSEARCH[Google Search\ngrounding tool]
 
     PDF[pdf_builder.dart\nPDF export]
     DOCX[docx_builder.dart\nDOCX export]
@@ -62,7 +62,6 @@ graph TD
     MOD_F --> GSEARCH
     P_INDEP --> GSEARCH
     P_DISC --> GSEARCH
-    SYNTH --> GSEARCH
     WF -->|stream_events appended| SS
     UI --> PDF
     UI --> DOCX
@@ -78,7 +77,7 @@ graph TD
 
 4. **State machine (frontend).** `SessionNotifier` (Riverpod `Notifier`) listens on the `SseConnection.events` stream and folds each `StreamEvent` into `FocusGroupState`. Events of type `agent_message` and `phase_change` advance the `Phase` enum; `score_update` populates the per-agent `scores` map; `report_complete` transitions to the synthesis phase; `done` sets `completed = true` and triggers a final `GET /sessions/{id}` REST call to fetch the full `FinalReport`.
 
-5. **Report export.** Once a session is complete, the UI can invoke `buildPdf` (`flutter_app/lib/export/pdf_builder.dart`, using the `pdf` + `printing` packages) or the DOCX builder (`flutter_app/lib/export/docx_builder.dart`, using hand-rolled OOXML zipped with `archive`). Both run entirely client-side in the browser.
+5. **Report export.** Once a session is complete, the UI can invoke `buildPdf` (`frontend/lib/export/pdf_builder.dart`, using the `pdf` + `printing` packages) or the DOCX builder (`frontend/lib/export/docx_builder.dart`, using hand-rolled OOXML zipped with `archive`). Both run entirely client-side in the browser.
 
 ## Workflow Phases
 
@@ -86,7 +85,7 @@ The ADK `Workflow` in `backend/agents/graph.py` defines the following edge seque
 
 | Step | Node(s) | Type | Description |
 |------|---------|------|-------------|
-| 1 | `moderator_introduce` | Single | Gemini 2.5 Pro writes the panel introduction, performs live web search, records citations |
+| 1 | `moderator_introduce` | Single | Gemini 2.5 Pro writes the panel introduction and performs live web search via `google_search` |
 | 2 | `independent_{id}` (per persona) | Parallel fan-out | Each persona agent (Gemini 2.5 Flash) gives an independent evaluation without seeing others' responses |
 | 3 | `collect_independent` | JoinNode | Barrier — waits for all independent responses before proceeding |
 | 4 | `moderator_followup` | Single | Gemini 2.5 Pro reviews disagreements across Round 1 and writes 2-3 targeted follow-up questions |
@@ -94,7 +93,7 @@ The ADK `Workflow` in `backend/agents/graph.py` defines the following edge seque
 | 6 | `collect_discussion` | JoinNode | Barrier — waits for all discussion responses |
 | 7 | `vote_{id}` (per persona) | Parallel fan-out | Each persona scores the topic privately across 6 dimensions (innovation, market, ux, feasibility, monetization, risk) using structured output (`VoteScores` Pydantic model) |
 | 8 | `collect_votes` | JoinNode | Barrier — waits for all votes |
-| 9 | `synthesizer` | Single | Gemini 2.5 Pro computes weighted averages, std deviations, consensus confidence, and produces a `FinalReport` with citations |
+| 9 | `synthesizer` | Single | Gemini 2.5 Pro computes weighted averages, std deviations, consensus confidence, and produces a `FinalReport` |
 
 All nodes are decorated with `rerun_on_resume=True` to support ADK session resumption.
 
@@ -109,9 +108,9 @@ All nodes are decorated with `rerun_on_resume=True` to support ADK session resum
 | `build_graph` | `backend/agents/graph.py` | Factory that accepts a list of `AgentPersona` objects and returns a configured ADK `Workflow` with all parallel fan-out nodes dynamically generated |
 | `BlueTeamAnalyticsPlugin` | `backend/plugins/blue_team_plugin.py` | ADK `BasePlugin` with `after_tool_callback`; maintains a per-node Agent Bill of Materials (AGBOM), deducts 25 points from `trust_score` when a node exceeds `MAX_TOOLS_PER_NODE` (10) calls, and sets `quarantine_flag = True` when score falls below 50 |
 | `GreenTeamQuarantinePlugin` | `backend/plugins/green_team_plugin.py` | ADK `BasePlugin` with `before_tool_callback`; raises `RuntimeError` to halt all further tool execution when `quarantine_flag` is `True`, preserving session state for forensic analysis |
-| `record_citation_tool` | `backend/agents/tools/citation_tracker.py` | ADK `FunctionTool` that appends `{title, url, excerpt}` dicts to `tool_context.state["citations"]`; available to Moderator and Participant nodes |
-| `SessionNotifier` | `flutter_app/lib/state/session_notifier.dart` | Riverpod `Notifier<FocusGroupState>` that owns the frontend state machine; manages SSE lifecycle and folds each `StreamEvent` into `FocusGroupState` |
-| `SseConnection` | `flutter_app/lib/data/sse_client.dart` | Thin wrapper over the browser's native `EventSource` (via `package:web` and `dart:js_interop`); one connection per session, no manual reconnect |
+| `record_citation_tool` | `backend/agents/tools/citation_tracker.py` | ADK `FunctionTool` for recording source citations — present in the codebase but currently not passed to any agent node (removed as active tool in favor of `google_search` grounding) |
+| `SessionNotifier` | `frontend/lib/state/session_notifier.dart` | Riverpod `Notifier<FocusGroupState>` that owns the frontend state machine; manages SSE lifecycle and folds each `StreamEvent` into `FocusGroupState` |
+| `SseConnection` | `frontend/lib/data/sse_client.dart` | Thin wrapper over the browser's native `EventSource` (via `package:web` and `dart:js_interop`); one connection per session, no manual reconnect |
 
 ## Directory Structure Rationale
 
@@ -122,14 +121,14 @@ Agentic-Focus-Group/
 │   │   ├── graph.py          Workflow builder — the only place edges are declared
 │   │   ├── personas.py       Static registry of the five available AgentPersona profiles
 │   │   ├── nodes/            One module per node role (moderator, participant, synthesizer)
-│   │   └── tools/            Shared ADK FunctionTools (citation_tracker)
+│   │   └── tools/            ADK FunctionTools (citation_tracker.py present but not currently wired to agents)
 │   ├── api/                  FastAPI routers — sessions (CRUD + background task) and stream (SSE)
 │   ├── models/               Pydantic schemas (request/response) and TypedDict state definitions
 │   ├── plugins/              ADK BasePlugin subclasses (blue_team, green_team)
 │   ├── tests/                pytest test suite
 │   ├── main.py               FastAPI app factory, CORS config, router registration
 │   └── requirements.txt      Python dependencies (google-adk>=2.0.0, fastapi, sse-starlette, etc.)
-├── flutter_app/              Flutter Web frontend
+├── frontend/              Flutter Web frontend
 │   └── lib/
 │       ├── app/              App-level constants: config.dart (API_BASE dart-define)
 │       ├── data/             I/O layer: api_client.dart (HTTP) and sse_client.dart (EventSource)

@@ -16,7 +16,7 @@ Welcome to the **Synthetic Market Intelligence Platform (AI Focus Group)** codeb
 - **python-dotenv**: Loads `backend/.env` for `GEMINI_API_KEY`.
 
 ### Frontend
-- **Flutter Web** (Dart SDK `^3.11.5`): All UI code lives in `flutter_app/`.
+- **Flutter Web** (Dart SDK `^3.11.5`): All UI code lives in `frontend/`.
 - **Riverpod** (`flutter_riverpod ^3.3.2`): The sole state management solution.
 - **`package:web` + `dart:js_interop`**: Browser-native `EventSource` for SSE.
 - **`pdf` + `printing`**: Client-side PDF report export (`pdf_builder.dart`).
@@ -133,31 +133,31 @@ Each persona has `temperature`, `communication_style`, `scoring_weights`, `perso
 
 ---
 
-## Frontend Guidelines (`flutter_app/`)
+## Frontend Guidelines (`frontend/`)
 
 ### 1. State Management (Riverpod)
 
 - Use **Riverpod only** for state management. Do not introduce ad-hoc `setState` or `InheritedWidget` patterns.
-- The primary state machine is `SessionNotifier` (a `Notifier<FocusGroupState>`) in `flutter_app/lib/state/session_notifier.dart`.
+- The primary state machine is `SessionNotifier` (a `Notifier<FocusGroupState>`) in `frontend/lib/state/session_notifier.dart`.
 - Expose it via `sessionProvider` (`NotifierProvider<SessionNotifier, FocusGroupState>`).
 - All SSE event folding, session start, and reset logic must go through `SessionNotifier`. Widgets read state only.
 
 ### 2. SSE Client
 
-- SSE is consumed via `SseConnection` in `flutter_app/lib/data/sse_client.dart`.
+- SSE is consumed via `SseConnection` in `frontend/lib/data/sse_client.dart`.
 - It wraps the browser's native `EventSource` using `package:web` and `dart:js_interop`.
 - **One connection per session, no manual reconnect.** The backend replays the full event history on every connect.
 - Call `_sse?.close()` immediately on receiving a `done` or `error` event.
 
 ### 3. REST Client
 
-- All REST calls go through `ApiClient` in `flutter_app/lib/data/api_client.dart`.
-- The base URL is configured via `--dart-define=API_BASE=http://localhost:8000` at build/run time and read from `flutter_app/lib/app/config.dart`.
+- All REST calls go through `ApiClient` in `frontend/lib/data/api_client.dart`.
+- The base URL is configured via `--dart-define=API_BASE=http://localhost:8000` at build/run time and read from `frontend/lib/app/config.dart`.
 - Do not make `http` calls directly in widgets or notifiers — use `ApiClient` methods.
 
 ### 4. Data Models
 
-- Models are hand-written with `fromJson` in `flutter_app/lib/models/`.
+- Models are hand-written with `fromJson` in `frontend/lib/models/`.
 - `StreamEvent` fields `agent_id`, `agent_name`, and `scores` are **nullable** because `done` and `error` events omit them.
 - Do not replace hand-written models with code-generation (e.g., `json_serializable`) without updating all `fromJson` call sites.
 
@@ -167,8 +167,8 @@ Both export formats must remain working:
 
 | File | Package | Output |
 |------|---------|--------|
-| `flutter_app/lib/export/pdf_builder.dart` | `pdf` + `printing` | PDF report |
-| `flutter_app/lib/export/docx_builder.dart` | `archive` (hand-rolled OOXML) | DOCX report |
+| `frontend/lib/export/pdf_builder.dart` | `pdf` + `printing` | PDF report |
+| `frontend/lib/export/docx_builder.dart` | `archive` (hand-rolled OOXML) | DOCX report |
 
 Do not remove or stub out either export path.
 
@@ -176,13 +176,13 @@ Do not remove or stub out either export path.
 
 | File | Purpose |
 |------|---------|
-| `flutter_app/lib/state/session_notifier.dart` | `SessionNotifier` — all session state and SSE event folding |
-| `flutter_app/lib/data/sse_client.dart` | `SseConnection` wrapping browser `EventSource` |
-| `flutter_app/lib/data/api_client.dart` | REST client (`ApiClient`) |
-| `flutter_app/lib/app/config.dart` | `apiBaseUrl` from `--dart-define=API_BASE` |
-| `flutter_app/lib/models/` | Hand-written `fromJson` data models |
-| `flutter_app/lib/export/pdf_builder.dart` | PDF export (`buildPdf`) |
-| `flutter_app/lib/export/docx_builder.dart` | DOCX export |
+| `frontend/lib/state/session_notifier.dart` | `SessionNotifier` — all session state and SSE event folding |
+| `frontend/lib/data/sse_client.dart` | `SseConnection` wrapping browser `EventSource` |
+| `frontend/lib/data/api_client.dart` | REST client (`ApiClient`) |
+| `frontend/lib/app/config.dart` | `apiBaseUrl` from `--dart-define=API_BASE` |
+| `frontend/lib/models/` | Hand-written `fromJson` data models |
+| `frontend/lib/export/pdf_builder.dart` | PDF export (`buildPdf`) |
+| `frontend/lib/export/docx_builder.dart` | DOCX export |
 
 ---
 
@@ -216,13 +216,13 @@ cp backend/.env.example backend/.env
 Install dependencies:
 
 ```bash
-cd flutter_app && flutter pub get
+cd frontend && flutter pub get
 ```
 
 Run the development server (Chrome, port 8080):
 
 ```bash
-cd flutter_app && flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000
+cd frontend && flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000
 ```
 
 > The backend CORS allowlist permits `http://localhost:8080`. Keep the Flutter web port at 8080.
@@ -230,17 +230,17 @@ cd flutter_app && flutter run -d chrome --web-port=8080 --dart-define=API_BASE=h
 Analyze:
 
 ```bash
-cd flutter_app && flutter analyze
+cd frontend && flutter analyze
 ```
 
 Test:
 
 ```bash
-cd flutter_app && flutter test
+cd frontend && flutter test
 ```
 
 Build production bundle:
 
 ```bash
-cd flutter_app && flutter build web --dart-define=API_BASE=http://localhost:8000
+cd frontend && flutter build web --dart-define=API_BASE=http://localhost:8000
 ```

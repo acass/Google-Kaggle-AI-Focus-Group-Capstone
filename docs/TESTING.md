@@ -41,7 +41,7 @@ backend/.venv/bin/pip install -r backend/requirements.txt
 **Required setup before running Flutter tests:**
 
 ```bash
-cd flutter_app && flutter pub get
+cd frontend && flutter pub get
 ```
 
 ---
@@ -81,19 +81,19 @@ backend/.venv/bin/pytest -v
 Run the full Flutter test suite:
 
 ```bash
-cd flutter_app && flutter test
+cd frontend && flutter test
 ```
 
 Run a single test file:
 
 ```bash
-cd flutter_app && flutter test test/stream_event_test.dart
+cd frontend && flutter test test/stream_event_test.dart
 ```
 
 Run static analysis (recommended before committing frontend changes):
 
 ```bash
-cd flutter_app && flutter analyze
+cd frontend && flutter analyze
 ```
 
 ---
@@ -115,7 +115,7 @@ Fixture reference:
 
 ### Flutter conventions
 
-- **Location:** `flutter_app/test/`
+- **Location:** `frontend/test/`
 - **File naming:** `<subject>_test.dart` (e.g., `stream_event_test.dart`, `score_set_test.dart`)
 - **Groups:** Use `group('ClassName.methodName', () { ... })` to mirror the class and method under test.
 - **Imports:** Tests import directly from `package:focus_group/models/` — no test helper library is used.
@@ -139,9 +139,9 @@ Fixture reference:
 
 | File | What it covers |
 |------|----------------|
-| `flutter_app/test/stream_event_test.dart` | `StreamEvent.fromJson` — agent messages, score updates, `done` and `error` events with nullable fields |
-| `flutter_app/test/score_set_test.dart` | `ScoreSet.fromJson`, `ScoreSet.average`, and `orderedEntries` canonical ordering |
-| `flutter_app/test/session_state_response_test.dart` | `SessionStateResponse.fromJson` and `CreateSessionResponse.fromJson` — full parse and missing-field defaults |
+| `frontend/test/stream_event_test.dart` | `StreamEvent.fromJson` — agent messages, score updates, `done` and `error` events with nullable fields |
+| `frontend/test/score_set_test.dart` | `ScoreSet.fromJson`, `ScoreSet.average`, and `orderedEntries` canonical ordering |
+| `frontend/test/session_state_response_test.dart` | `SessionStateResponse.fromJson` and `CreateSessionResponse.fromJson` — full parse and missing-field defaults |
 
 ---
 
@@ -168,6 +168,6 @@ Recommended pre-merge checklist:
 backend/.venv/bin/pytest -v
 
 # Frontend — analysis then tests
-cd flutter_app && flutter analyze
-cd flutter_app && flutter test
+cd frontend && flutter analyze
+cd frontend && flutter test
 ```

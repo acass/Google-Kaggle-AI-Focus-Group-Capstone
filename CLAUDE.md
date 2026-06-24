@@ -12,12 +12,12 @@ Quick reference for commands, styling, and coding guidelines in the AI Focus Gro
 - **Environment**: Copy `backend/.env.example` to `backend/.env` and add `GEMINI_API_KEY`.
 
 ### Frontend (Flutter Web)
-- **Start Frontend**: `cd flutter_app && flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000`
+- **Start Frontend**: `cd frontend && flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000`
   - The backend CORS allowlist (`backend/main.py`) permits `http://localhost:8080`, so keep the Flutter web port at 8080.
-- **Install Dependencies**: `cd flutter_app && flutter pub get`
-- **Analyze**: `cd flutter_app && flutter analyze`
-- **Test**: `cd flutter_app && flutter test`
-- **Build**: `cd flutter_app && flutter build web --dart-define=API_BASE=http://localhost:8000`
+- **Install Dependencies**: `cd frontend && flutter pub get`
+- **Analyze**: `cd frontend && flutter analyze`
+- **Test**: `cd frontend && flutter test`
+- **Build**: `cd frontend && flutter build web --dart-define=API_BASE=http://localhost:8000`
 
 ---
 
@@ -30,8 +30,8 @@ Quick reference for commands, styling, and coding guidelines in the AI Focus Gro
 - Capture loop variables using default arguments (e.g. `_p=p`) in dynamically generated node functions.
 
 ### Dart / Flutter (Frontend)
-- State management uses **Riverpod** (`flutter_riverpod`). The session state machine and SSE handling live in `flutter_app/lib/state/session_notifier.dart` (the `SessionNotifier`). Do not implement ad-hoc SSE parsing in widgets.
-- SSE is consumed via the browser's native `EventSource` through `package:web` + `dart:js_interop` in `flutter_app/lib/data/sse_client.dart`. One connection per session, no manual reconnect (the backend replays history on connect); close on the `done`/`error` event.
-- REST calls go through `flutter_app/lib/data/api_client.dart`. The backend base URL is configured via `--dart-define=API_BASE=...` (see `flutter_app/lib/app/config.dart`).
-- PDF and Word report generation run client-side in `flutter_app/lib/export/`: PDF via the `pdf` + `printing` packages (`pdf_builder.dart`), DOCX via hand-rolled OOXML zipped with `archive` (`docx_builder.dart`). Keep both export options working.
-- Data models are hand-written with `fromJson` in `flutter_app/lib/models/` (StreamEvent fields `agent_id`/`agent_name`/`scores` are nullable because the `done`/`error` events omit them).
+- State management uses **Riverpod** (`flutter_riverpod`). The session state machine and SSE handling live in `frontend/lib/state/session_notifier.dart` (the `SessionNotifier`). Do not implement ad-hoc SSE parsing in widgets.
+- SSE is consumed via the browser's native `EventSource` through `package:web` + `dart:js_interop` in `frontend/lib/data/sse_client.dart`. One connection per session, no manual reconnect (the backend replays history on connect); close on the `done`/`error` event.
+- REST calls go through `frontend/lib/data/api_client.dart`. The backend base URL is configured via `--dart-define=API_BASE=...` (see `frontend/lib/app/config.dart`).
+- PDF and Word report generation run client-side in `frontend/lib/export/`: PDF via the `pdf` + `printing` packages (`pdf_builder.dart`), DOCX via hand-rolled OOXML zipped with `archive` (`docx_builder.dart`). Keep both export options working.
+- Data models are hand-written with `fromJson` in `frontend/lib/models/` (StreamEvent fields `agent_id`/`agent_name`/`scores` are nullable because the `done`/`error` events omit them).

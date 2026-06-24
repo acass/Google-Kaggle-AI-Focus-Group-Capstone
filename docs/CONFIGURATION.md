@@ -31,7 +31,7 @@ The Flutter frontend has no `.env` file. Configuration is passed as `--dart-defi
 
 | Define | Required | Default | Description |
 |---|---|---|---|
-| `API_BASE` | Optional | `http://localhost:8000` | Base URL for the FastAPI backend. Consumed by `flutter_app/lib/app/config.dart`. |
+| `API_BASE` | Optional | `http://localhost:8000` | Base URL for the FastAPI backend. Consumed by `frontend/lib/app/config.dart`. |
 
 **Development run example:**
 
@@ -46,7 +46,7 @@ flutter build web --dart-define=API_BASE=https://your-backend-url
 ```
 <!-- VERIFY: Replace https://your-backend-url with the actual deployed backend URL -->
 
-The default value `http://localhost:8000` is set directly in `flutter_app/lib/app/config.dart` using `String.fromEnvironment('API_BASE', defaultValue: 'http://localhost:8000')`. No define is needed for local development unless the backend runs on a different port.
+The default value `http://localhost:8000` is set directly in `frontend/lib/app/config.dart` using `String.fromEnvironment('API_BASE', defaultValue: 'http://localhost:8000')`. No define is needed for local development unless the backend runs on a different port.
 
 ---
 

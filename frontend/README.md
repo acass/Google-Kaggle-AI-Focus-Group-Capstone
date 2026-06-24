@@ -3,7 +3,7 @@
 
 Flutter Web frontend for the AI Focus Group platform. Streams real-time AI agent discussions via Server-Sent Events (SSE), displays live scoring, and exports executive reports as PDF or DOCX.
 
-This is the `flutter_app/` package within the monorepo. See the [root README](../README.md) for full-stack setup.
+This is the `frontend/` package within the monorepo. See the [root README](../README.md) for full-stack setup.
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ This is the `flutter_app/` package within the monorepo. See the [root README](..
 ## Installation
 
 ```bash
-cd flutter_app
+cd frontend
 flutter pub get
 ```
 

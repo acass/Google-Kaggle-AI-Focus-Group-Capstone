@@ -51,16 +51,16 @@ backend/.venv/bin/uvicorn backend.main:app --reload --port 8000
 1. Install Flutter dependencies:
 
 ```bash
-cd flutter_app && flutter pub get
+cd frontend && flutter pub get
 ```
 
 2. Start the Flutter Web dev server (keep port 8080 — it is in the backend CORS allowlist):
 
 ```bash
-cd flutter_app && flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000
+cd frontend && flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000
 ```
 
-The `API_BASE` dart-define is read in `flutter_app/lib/app/config.dart` and passed to `ApiClient`. Do not change the port without also updating the `allow_origins` list in `backend/main.py`.
+The `API_BASE` dart-define is read in `frontend/lib/app/config.dart` and passed to `ApiClient`. Do not change the port without also updating the `allow_origins` list in `backend/main.py`.
 
 ---
 
@@ -78,11 +78,11 @@ The `API_BASE` dart-define is read in `flutter_app/lib/app/config.dart` and pass
 
 | Command | Description |
 |---|---|
-| `cd flutter_app && flutter pub get` | Install / refresh Dart dependencies |
-| `cd flutter_app && flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000` | Start Flutter Web dev server |
-| `cd flutter_app && flutter analyze` | Run static analysis (flutter_lints) |
-| `cd flutter_app && flutter test` | Run Flutter unit tests |
-| `cd flutter_app && flutter build web --dart-define=API_BASE=http://localhost:8000` | Produce a production web build in `flutter_app/build/web/` |
+| `cd frontend && flutter pub get` | Install / refresh Dart dependencies |
+| `cd frontend && flutter run -d chrome --web-port=8080 --dart-define=API_BASE=http://localhost:8000` | Start Flutter Web dev server |
+| `cd frontend && flutter analyze` | Run static analysis (flutter_lints) |
+| `cd frontend && flutter test` | Run Flutter unit tests |
+| `cd frontend && flutter build web --dart-define=API_BASE=http://localhost:8000` | Produce a production web build in `frontend/build/web/` |
 
 ---
 
@@ -100,11 +100,11 @@ The backend does not use an automated formatter enforced by CI. Follow these con
 
 ### Dart / Flutter (Frontend)
 
-Static analysis is provided by `flutter_lints` via `flutter_app/analysis_options.yaml` (which includes `package:flutter_lints/flutter.yaml`). Run `flutter analyze` before pushing.
+Static analysis is provided by `flutter_lints` via `frontend/analysis_options.yaml` (which includes `package:flutter_lints/flutter.yaml`). Run `flutter analyze` before pushing.
 
-- **State management** — all session state and SSE event folding must live in `flutter_app/lib/state/session_notifier.dart` (`SessionNotifier`). Do not add ad-hoc SSE parsing or session logic inside widget classes.
-- **SSE** — the `SseConnection` class in `flutter_app/lib/data/sse_client.dart` wraps the browser's native `EventSource` via `package:web` and `dart:js_interop`. One connection per session; the connection is closed when a `done` or `error` event arrives. Do not implement manual reconnect — the backend replays full history on every connect, so reconnecting would duplicate events.
-- **REST calls** — route all HTTP calls through `flutter_app/lib/data/api_client.dart`. Do not construct `http.Client` instances directly in widgets.
+- **State management** — all session state and SSE event folding must live in `frontend/lib/state/session_notifier.dart` (`SessionNotifier`). Do not add ad-hoc SSE parsing or session logic inside widget classes.
+- **SSE** — the `SseConnection` class in `frontend/lib/data/sse_client.dart` wraps the browser's native `EventSource` via `package:web` and `dart:js_interop`. One connection per session; the connection is closed when a `done` or `error` event arrives. Do not implement manual reconnect — the backend replays full history on every connect, so reconnecting would duplicate events.
+- **REST calls** — route all HTTP calls through `frontend/lib/data/api_client.dart`. Do not construct `http.Client` instances directly in widgets.
 - **Nullable stream event fields** — `StreamEvent` fields `agent_id`, `agent_name`, and `scores` are nullable. The `done` and `error` events omit these fields; handle null values wherever these are read.
 - **Export builders** — both `pdf_builder.dart` (PDF via `pdf` + `printing` packages) and `docx_builder.dart` (DOCX via hand-rolled OOXML + `archive`) must remain functional. Do not change one without verifying the other still produces valid output.
 
@@ -122,7 +122,7 @@ Static analysis is provided by `flutter_lints` via `flutter_app/analysis_options
 | `backend/agents/nodes/moderator.py` | Intro and follow-up question nodes (gemini-2.5-pro) |
 | `backend/agents/nodes/participant.py` | Independent eval, discussion, and voting nodes (gemini-2.5-flash) |
 | `backend/agents/nodes/synthesizer.py` | Final report node (gemini-2.5-pro with `google_search` tool) |
-| `backend/agents/tools/citation_tracker.py` | ADK `FunctionTool` for citation tracking |
+| `backend/agents/tools/citation_tracker.py` | ADK `FunctionTool` for citation tracking (present but not currently passed to any agent node) |
 | `backend/api/sessions.py` | Session CRUD, in-memory store (`_sessions`), background task runner |
 | `backend/api/stream.py` | SSE streaming endpoint with replay-on-reconnect |
 | `backend/models/schemas.py` | Pydantic request/response models |
@@ -134,14 +134,14 @@ Static analysis is provided by `flutter_lints` via `flutter_app/analysis_options
 
 | File | Purpose |
 |---|---|
-| `flutter_app/lib/main.dart` | App entry point |
-| `flutter_app/lib/app/config.dart` | Reads `API_BASE` dart-define |
-| `flutter_app/lib/state/session_notifier.dart` | `SessionNotifier` — SSE state machine and event folding |
-| `flutter_app/lib/data/sse_client.dart` | `SseConnection` — native `EventSource` wrapper |
-| `flutter_app/lib/data/api_client.dart` | REST API client |
-| `flutter_app/lib/models/` | Hand-written `fromJson` data models |
-| `flutter_app/lib/export/pdf_builder.dart` | Client-side PDF export |
-| `flutter_app/lib/export/docx_builder.dart` | Client-side DOCX export |
+| `frontend/lib/main.dart` | App entry point |
+| `frontend/lib/app/config.dart` | Reads `API_BASE` dart-define |
+| `frontend/lib/state/session_notifier.dart` | `SessionNotifier` — SSE state machine and event folding |
+| `frontend/lib/data/sse_client.dart` | `SseConnection` — native `EventSource` wrapper |
+| `frontend/lib/data/api_client.dart` | REST API client |
+| `frontend/lib/models/` | Hand-written `fromJson` data models |
+| `frontend/lib/export/pdf_builder.dart` | Client-side PDF export |
+| `frontend/lib/export/docx_builder.dart` | Client-side DOCX export |
 
 ---
 
@@ -168,7 +168,7 @@ backend/.venv/bin/pytest backend/tests/test_tools.py
 ### Flutter
 
 ```bash
-cd flutter_app && flutter test
+cd frontend && flutter test
 ```
 
 ---
@@ -188,8 +188,8 @@ No formal branch naming convention is documented. The repository default branch 
 No pull request template is present in the repository. Follow these guidelines when submitting changes:
 
 - Run `backend/.venv/bin/pytest` and confirm all backend tests pass before opening a PR.
-- Run `cd flutter_app && flutter analyze` and resolve all analysis warnings before opening a PR.
-- Run `cd flutter_app && flutter test` and confirm all Flutter tests pass.
+- Run `cd frontend && flutter analyze` and resolve all analysis warnings before opening a PR.
+- Run `cd frontend && flutter test` and confirm all Flutter tests pass.
 - Keep PRs focused on a single concern — separate feature work from refactoring.
 - Reference the relevant issue number in the PR description if one exists.
 
