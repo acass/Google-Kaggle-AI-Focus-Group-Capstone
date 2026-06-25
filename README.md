@@ -1,4 +1,3 @@
-<!-- generated-by: gsd-doc-writer -->
 # Synthetic Market Intelligence Platform
 
 A synthetic research panel powered by role-based AI agents. Submit any idea, product, or concept and watch a structured panel of distinct AI personas debate, critique, score, and synthesize it — in real time.
