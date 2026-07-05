@@ -89,6 +89,29 @@ Chrome will open automatically at `http://localhost:8080`. The platform is ready
 
 ---
 
+## Optional: Run the MCP Server
+
+The project also ships a Model Context Protocol server that exposes the same panel to MCP hosts (Claude Desktop, the Google ADK Agents CLI, or another ADK agent). It reuses the backend dependencies you already installed — the `mcp` package is included in `backend/requirements.txt`. Run it **from the repo root** so the package-relative imports resolve:
+
+```bash
+# stdio transport (Claude Desktop / Agents CLI)
+backend/.venv/bin/python -m backend.mcp_server.server
+
+# streamable HTTP on :8765
+backend/.venv/bin/python -m backend.mcp_server.server --http
+```
+
+To drive it from the terminal via the Agents CLI:
+
+```bash
+export GEMINI_API_KEY=...   # the client agent's Gemini model
+backend/.venv/bin/adk run backend/mcp_client_agent
+```
+
+See [MCP-SERVER.md](MCP-SERVER.md) for the full tool/resource surface and client wiring.
+
+---
+
 ## Common Setup Issues
 
 **Wrong Python or missing `google.adk.workflow` module**
@@ -147,3 +170,4 @@ Session state is stored in memory only. Restarting the backend clears all active
 - See [CONFIGURATION.md](CONFIGURATION.md) for all environment variables and configuration options.
 - See [DEVELOPMENT.md](DEVELOPMENT.md) for build commands, code style, and contribution workflow.
 - See [TESTING.md](TESTING.md) for how to run backend and Flutter tests.
+- See [MCP-SERVER.md](MCP-SERVER.md) for exposing the panel over the Model Context Protocol.

@@ -135,6 +135,26 @@ Fixture reference:
 | `backend/tests/test_tools.py` | `record_citation` tool unit tests — verifies state writes, appends, and ADK `FunctionTool` wrapping |
 | `backend/tests/conftest.py` | Shared `client` fixture |
 
+> **Not yet covered by automated tests:** the MCP server (`backend/mcp_server/`) and the Agents CLI client (`backend/mcp_client_agent/`). Note that `backend/mcp_server/server.py` reuses the same `personas.py` registry and scoring math already exercised by `test_personas.py` and `test_tools.py`. Verify the MCP surface manually — see below.
+
+### MCP server smoke check
+
+The MCP server is not part of the pytest suite. To confirm it starts and lists its tools, run it from the repo root and drive it from the Agents CLI:
+
+```bash
+# Terminal check: server imports and starts over stdio (Ctrl-C to exit)
+backend/.venv/bin/python -m backend.mcp_server.server
+
+# End-to-end: the client agent spawns the server and calls its tools
+export GEMINI_API_KEY=...
+backend/.venv/bin/adk run backend/mcp_client_agent
+# then, at the prompt:
+#   List the panel personas, then have Marcus Chen score an idea with
+#   innovation 8, market 6, ux 5, feasibility 7, monetization 4, risk 3.
+```
+
+A successful run lists all five personas and returns Marcus's weighted verdict — the same scoring math as the in-workflow ADK `vote` node. See [MCP-SERVER.md](MCP-SERVER.md) for details.
+
 ### Flutter
 
 | File | What it covers |

@@ -88,6 +88,25 @@ Set `security_test_mode: true` in the session creation request to exercise these
 
 ---
 
+## MCP Server
+
+The panel is also exposed over the **Model Context Protocol** so any MCP host
+(Claude Desktop, the Agents CLI, another ADK agent) can drive it without
+importing this project's internals. The server reuses `backend/agents/personas.py`
+as the single source of truth and offers tools to list personas, apply a
+persona's scoring lens, and record/read citations.
+
+```bash
+# from the repo root, using the project venv
+backend/.venv/bin/python -m backend.mcp_server.server        # stdio
+backend/.venv/bin/python -m backend.mcp_server.server --http # streamable HTTP :8765
+```
+
+See [docs/MCP-SERVER.md](docs/MCP-SERVER.md) for the full tool/resource surface
+and a client config example.
+
+---
+
 ## Stack
 
 **Backend**

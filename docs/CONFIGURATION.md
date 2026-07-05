@@ -16,8 +16,9 @@ cp backend/.env.example backend/.env
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `GEMINI_API_KEY` | Required | — | Google Gemini API key. Obtain from https://aistudio.google.com/app/apikey |
+| `MCP_CITATIONS_STORE` | Optional | `backend/mcp_server/citations_store.json` | Read only by the MCP server. Where citations recorded through the MCP `record_citation` tool are persisted. Not needed by the FastAPI backend. The store file is gitignored. |
 
-No other environment variables are defined in `backend/.env.example`. The application will fail to authenticate with the Gemini API if `GEMINI_API_KEY` is absent or invalid.
+`GEMINI_API_KEY` is the only variable defined in `backend/.env.example`; `MCP_CITATIONS_STORE` is read from the process environment only when running the MCP server and is optional. The FastAPI application will fail to authenticate with the Gemini API if `GEMINI_API_KEY` is absent or invalid. The Agents CLI client (`backend/mcp_client_agent/`) also reads `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) for its own Gemini model.
 
 ### Required setting
 
@@ -105,9 +106,22 @@ To add a persona, append a new entry to the `PERSONAS` dict in `backend/agents/p
 
 ---
 
+## MCP Server Configuration
+
+The Model Context Protocol server (`backend/mcp_server/server.py`) requires the `mcp>=1.2.0` package, which is listed in `backend/requirements.txt` and installed with the rest of the backend dependencies. It has no `.env` file of its own; configuration is limited to the transport flag and the citations-store path.
+
+| Setting | Mechanism | Default | Description |
+|---|---|---|---|
+| Transport | `--http` CLI flag | stdio | Omit the flag for stdio (Claude Desktop / Agents CLI); pass `--http` for streamable HTTP on port `8765` |
+| Citations store | `MCP_CITATIONS_STORE` env var | `backend/mcp_server/citations_store.json` | JSON file where MCP-recorded citations persist (the standalone equivalent of ADK `tool_context.state`) |
+
+Client wiring is documented in `backend/mcp_server/client-config.example.json` — set `cwd` to the repo root and point `command` at the project venv's Python so the package-relative imports resolve. See [MCP-SERVER.md](MCP-SERVER.md) for the full tool/resource surface.
+
+---
+
 ## Session State
 
-The backend holds all focus group session state in memory (Python dicts). There is no database, cache layer, or persistent store. All session data is lost when the backend process restarts. This is by design for the current iteration — no database configuration is required.
+The backend holds all focus group session state in memory (Python dicts). There is no database, cache layer, or persistent store. All session data is lost when the backend process restarts. This is by design for the current iteration — no database configuration is required. (The MCP server's citations store is the one exception: MCP-recorded citations persist to the JSON file described above.)
 
 ---
 

@@ -28,6 +28,9 @@ node_modules/
 *.swp
 *.swo
 
+# MCP server runtime citation store (generated at runtime)
+backend/mcp_server/citations_store.json
+
 # Tool caches
 .understand-anything/
 .planning/

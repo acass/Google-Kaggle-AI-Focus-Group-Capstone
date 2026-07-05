@@ -3,6 +3,8 @@
 
 The Synthetic Market Intelligence Platform exposes a REST API served by FastAPI at `http://localhost:8000`. All request and response bodies use JSON. The SSE stream endpoint uses the `text/event-stream` content type.
 
+> **Note:** This document covers the HTTP/SSE API consumed by the Flutter frontend. The same panel capabilities (persona discovery, persona-weighted scoring, and citation recording) are also published over the Model Context Protocol by a separate server — see [MCP-SERVER.md](MCP-SERVER.md) for that surface. The MCP server is not part of the HTTP API described below.
+
 ## Authentication
 
 No authentication is required in the current implementation. The API is designed for local development use. All endpoints are open.

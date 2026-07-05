@@ -5,6 +5,8 @@
 
 The Synthetic Market Intelligence Platform is a multi-agent AI system that simulates a structured focus group to evaluate business ideas, products, or topics. A user submits a topic via the Flutter Web frontend; the FastAPI backend launches a Google ADK workflow that drives a sequence of LLM-powered agent nodes through distinct conversational phases (introduction, independent evaluation, moderated discussion, blind voting, and synthesis). As each node completes, it appends `StreamEvent` objects to a shared in-memory session state, and a Server-Sent Events endpoint replays the full event history to any connected client in real time. The final output is a structured analyst report with weighted scores across six dimensions and grounded citations from live web search.
 
+The same panel capabilities are additionally published over the **Model Context Protocol (MCP)** by a standalone server (`backend/mcp_server/`), so external hosts — Claude Desktop, the Google ADK Agents CLI, or another ADK agent acting as an MCP client — can discover the personas, apply a persona's scoring lens, and record/read citations without importing this project's internals. See [MCP-SERVER.md](MCP-SERVER.md) for the full tool and resource surface.
+
 ## Component Diagram
 
 ```mermaid
@@ -97,6 +99,20 @@ The ADK `Workflow` in `backend/agents/graph.py` defines the following edge seque
 
 All nodes are decorated with `rerun_on_resume=True` to support ADK session resumption.
 
+## MCP Server Surface
+
+The FastAPI app and ADK workflow above serve the bundled Flutter frontend. In parallel, `backend/mcp_server/server.py` exposes the same panel over the Model Context Protocol using `FastMCP`, so any MCP host can drive it independently of the HTTP API. Persona data comes straight from `backend/agents/personas.py` — the single source of truth — so the MCP surface can never drift from the panel the frontend sees.
+
+| MCP Tool | Purpose |
+|----------|---------|
+| `list_personas` | List all five personas with role, hidden motivation, and scoring weights |
+| `get_persona(persona_id)` | Full profile for one persona |
+| `score_idea(persona_id, category_scores)` | Weight raw 0–10 category scores by that persona's lens — the same math as the ADK `vote` node |
+| `record_citation(title, url, excerpt, session_id?)` | Persist a source citation for a session |
+| `list_citations(session_id?)` | Read back a session's citations |
+
+Two resources are also published: `panel://roster` (map of persona id → name) and `persona://{persona_id}` (full JSON profile). The server runs over stdio by default (what Claude Desktop and the Agents CLI expect) or streamable HTTP on `:8765` with `--http`. Because an MCP client has no ADK `tool_context.state`, citations persist to a JSON file (`MCP_CITATIONS_STORE`) instead of session state. A minimal ADK client agent that consumes this server via the Agents CLI lives in `backend/mcp_client_agent/`.
+
 ## Key Abstractions
 
 | Abstraction | File | Description |
@@ -109,6 +125,8 @@ All nodes are decorated with `rerun_on_resume=True` to support ADK session resum
 | `BlueTeamAnalyticsPlugin` | `backend/plugins/blue_team_plugin.py` | ADK `BasePlugin` with `after_tool_callback`; maintains a per-node Agent Bill of Materials (AGBOM), deducts 25 points from `trust_score` when a node exceeds `MAX_TOOLS_PER_NODE` (10) calls, and sets `quarantine_flag = True` when score falls below 50 |
 | `GreenTeamQuarantinePlugin` | `backend/plugins/green_team_plugin.py` | ADK `BasePlugin` with `before_tool_callback`; raises `RuntimeError` to halt all further tool execution when `quarantine_flag` is `True`, preserving session state for forensic analysis |
 | `record_citation_tool` | `backend/agents/tools/citation_tracker.py` | ADK `FunctionTool` for recording source citations — present in the codebase but currently not passed to any agent node (removed as active tool in favor of `google_search` grounding) |
+| `mcp` (FastMCP server) | `backend/mcp_server/server.py` | `FastMCP` instance publishing the panel over MCP (tools + resources) for external hosts; reuses `personas.py` and persists citations to `MCP_CITATIONS_STORE` |
+| `root_agent` | `backend/mcp_client_agent/agent.py` | Minimal ADK `Agent` wired to the MCP server via `MCPToolset` over stdio; demonstrates driving the panel from the Google ADK Agents CLI (`adk run`) |
 | `SessionNotifier` | `frontend/lib/state/session_notifier.dart` | Riverpod `Notifier<FocusGroupState>` that owns the frontend state machine; manages SSE lifecycle and folds each `StreamEvent` into `FocusGroupState` |
 | `SseConnection` | `frontend/lib/data/sse_client.dart` | Thin wrapper over the browser's native `EventSource` (via `package:web` and `dart:js_interop`); one connection per session, no manual reconnect |
 
@@ -125,9 +143,11 @@ Agentic-Focus-Group/
 │   ├── api/                  FastAPI routers — sessions (CRUD + background task) and stream (SSE)
 │   ├── models/               Pydantic schemas (request/response) and TypedDict state definitions
 │   ├── plugins/              ADK BasePlugin subclasses (blue_team, green_team)
+│   ├── mcp_server/           FastMCP server publishing the panel over MCP (server.py + client-config example)
+│   ├── mcp_client_agent/     Minimal ADK agent that consumes the MCP server via the Agents CLI
 │   ├── tests/                pytest test suite
 │   ├── main.py               FastAPI app factory, CORS config, router registration
-│   └── requirements.txt      Python dependencies (google-adk>=2.0.0, fastapi, sse-starlette, etc.)
+│   └── requirements.txt      Python dependencies (google-adk>=2.0.0, fastapi, sse-starlette, mcp, etc.)
 ├── frontend/              Flutter Web frontend
 │   └── lib/
 │       ├── app/              App-level constants: config.dart (API_BASE dart-define)

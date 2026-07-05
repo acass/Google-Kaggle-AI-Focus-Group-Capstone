@@ -73,6 +73,8 @@ The `API_BASE` dart-define is read in `frontend/lib/app/config.dart` and passed 
 | `backend/.venv/bin/uvicorn backend.main:app --reload --port 8000` | Start dev server with auto-reload |
 | `backend/.venv/bin/pip install -r backend/requirements.txt` | Install / refresh backend dependencies |
 | `backend/.venv/bin/pytest` | Run the full backend test suite |
+| `backend/.venv/bin/python -m backend.mcp_server.server` | Start the MCP server over stdio (add `--http` for streamable HTTP on :8765) |
+| `backend/.venv/bin/adk run backend/mcp_client_agent` | Drive the MCP server from the Google ADK Agents CLI |
 
 ### Frontend
 
@@ -121,8 +123,10 @@ Static analysis is provided by `flutter_lints` via `frontend/analysis_options.ya
 | `backend/agents/personas.py` | All 5 persona definitions (scoring weights, temperatures) |
 | `backend/agents/nodes/moderator.py` | Intro and follow-up question nodes (gemini-2.5-pro) |
 | `backend/agents/nodes/participant.py` | Independent eval, discussion, and voting nodes (gemini-2.5-flash) |
-| `backend/agents/nodes/synthesizer.py` | Final report node (gemini-2.5-pro with `google_search` tool) |
+| `backend/agents/nodes/synthesizer.py` | Final report node (gemini-2.5-pro; computes weighted averages and consensus from votes — no web-search tool) |
 | `backend/agents/tools/citation_tracker.py` | ADK `FunctionTool` for citation tracking (present but not currently passed to any agent node) |
+| `backend/mcp_server/server.py` | FastMCP server exposing the panel over MCP (tools + resources); stdio or `--http` |
+| `backend/mcp_client_agent/agent.py` | Minimal ADK agent (`root_agent`) that consumes the MCP server via `MCPToolset` for the Agents CLI |
 | `backend/api/sessions.py` | Session CRUD, in-memory store (`_sessions`), background task runner |
 | `backend/api/stream.py` | SSE streaming endpoint with replay-on-reconnect |
 | `backend/models/schemas.py` | Pydantic request/response models |
@@ -200,3 +204,4 @@ No pull request template is present in the repository. Follow these guidelines w
 - [docs/GETTING-STARTED.md](GETTING-STARTED.md) — prerequisites and first-run instructions
 - [docs/ARCHITECTURE.md](ARCHITECTURE.md) — system design and component overview
 - [docs/CONFIGURATION.md](CONFIGURATION.md) — environment variables and configuration reference
+- [docs/MCP-SERVER.md](MCP-SERVER.md) — MCP server tool/resource surface and Agents CLI client

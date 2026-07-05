@@ -1,0 +1,10 @@
+{
+  "//": "Example MCP client config (Claude Desktop / Agents CLI). Point 'cwd' at the repo root and use the project venv's python so google-adk imports resolve. Copy into your host's mcp servers config.",
+  "mcpServers": {
+    "synthetic-market-intelligence": {
+      "command": "backend/.venv/bin/python",
+      "args": ["-m", "backend.mcp_server.server"],
+      "cwd": "/absolute/path/to/Agentic-Focus-Group"
+    }
+  }
+}
