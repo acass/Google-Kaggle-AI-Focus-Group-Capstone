@@ -4,6 +4,8 @@
 
 **Track:** Agents for Business
 
+![Synthetic Market Intelligence Platform — a multi-agent AI research panel. 5 personas, 3 rounds, 1 report.](images/cover.png)
+
 ---
 
 ## The Problem: Business Feedback Is Broken
@@ -19,6 +21,9 @@ The question this project asked was: what if we could instantiate that protocol 
 ## The Solution: A Synthetic Focus Group
 
 The Synthetic Market Intelligence Platform is a multi-agent AI system that simulates a structured research panel. You submit any topic — a product concept, a pitch, a strategy, a feature idea — select up to five AI personas, and watch them debate it in real time. When they finish, you receive a synthesized executive report with weighted scores across six dimensions and grounded citations from live web search.
+
+![The platform UI: a topic and persona panel on the left, the live session transcript in the center, and the synthesized report on the right.](images/app-ui.jpg)
+*The three-panel interface — pick a topic and up to five personas, then watch the session run and the synthesis build in real time.*
 
 The key design insight is that the value is not in any single agent's opinion. It is in the structured *disagreement*. Marcus Chen, a Skeptical Investor, cares almost exclusively about monetization and market size (scoring weights of 2.0 and 1.5); he will find the fatal flaw in your unit economics that everyone else politely overlooked. Priya Sharma, a UX Researcher, will ask who the actual user is and whether they can use the product without a manual. Jordan Ellis, a Growth Marketer, will ignore both of them and ask what the distribution wedge is. These are not just different prompts — they are different agents with different temperature settings, different scoring-weight matrices, and different communication styles baked into their system prompts.
 
@@ -41,6 +46,9 @@ The capstone asks for at least three course concepts. This project implements **
 
 **Stack.** The backend is Python 3.11 with FastAPI and Google ADK (`>=2.0.0`). The workflow is orchestrated entirely through the ADK graph API. LLM calls go through the Google GenAI SDK — Gemini 2.5 Pro for the Moderator and Synthesizer (which require deeper reasoning and synthesis), and Gemini 2.5 Flash for the five participant agents (where speed and persona distinctiveness matter more than raw capability). The frontend is Flutter Web with Riverpod state management, consuming a Server-Sent Events stream via the browser's native `EventSource` API.
 
+![Layered system architecture: Flutter Web frontend over a FastAPI SSE layer, over the Google ADK workflow graph, over Gemini 2.5 models — with the MCP server publishing the same panel to the Agents CLI.](images/architecture.png)
+*The stack end to end. The same ADK panel is also published over MCP (right), reachable from the Agents CLI or Claude Desktop.*
+
 ### The ADK Workflow Graph
 
 The core of the system is an ADK `Workflow` built dynamically in `backend/agents/graph.py`. The graph structure encodes the focus-group protocol as a topology of sequential and parallel nodes:
@@ -57,9 +65,15 @@ moderator_introduce
     → synthesizer
 ```
 
+![Workflow topology: a Moderator Intro node fans out to parallel agent nodes, which converge on a JoinNode barrier before reaching the Synthesizer.](images/workflow-topology.jpg)
+*Each round fans out to parallel per-persona nodes and reconverges at a JoinNode barrier before the next phase can begin.*
+
 Each fan-out spawns one ADK node per selected persona. The `JoinNode` barriers enforce the protocol: no agent can see Round 2 questions until every Round 1 response is collected. This is not just a logical constraint — it is structurally impossible to bypass at the graph level, which means no prompt-engineering accident can accidentally expose early responses and contaminate the independent evaluation.
 
 The `build_graph` factory accepts a list of `AgentPersona` TypedDicts and generates node identifiers dynamically (e.g. `independent_skeptical_investor`, `vote_ux_researcher`). Adding a new persona requires only a new entry in the persona registry — the graph topology wires itself.
+
+![Python source from graph.py showing a loop that generates one parallel @node per participant, followed by a fan-in collect_independent barrier node.](images/adk-graph-code.jpg)
+*The runtime fan-out in `graph.py`: one `@node` per participant, then a fan-in barrier that collects every response before the workflow advances.*
 
 ### State Threading
 
@@ -92,6 +106,9 @@ backend/.venv/bin/adk run backend/mcp_client_agent
 ## Agent Security: Blue Team and Green Team Plugins
 
 One of the more interesting engineering decisions was building explicit safety controls directly into the workflow as ADK `BasePlugin` subclasses rather than as prompting constraints.
+
+![Python source showing the Blue Team plugin's after_tool_callback: it increments a per-node tool count, deducts 25 from the trust score past the limit, and sets a quarantine flag below 50.](images/security-plugin.jpg)
+*The trust-score logic (simplified for illustration): tool calls are logged per node, over-limit nodes lose trust, and a low score trips the Green Team quarantine flag.*
 
 The `BlueTeamAnalyticsPlugin` runs an `after_tool_callback` on every tool call across all nodes. It maintains an Agent Bill of Materials (AGBOM) — a per-node log of every tool invoked — and computes a session-level Trust Score starting at 100. If any single workflow node exceeds ten tool calls (a threshold that indicates potential Intent Drift, where an agent is doing far more than its role requires), the plugin deducts 25 points and emits a warning.
 
