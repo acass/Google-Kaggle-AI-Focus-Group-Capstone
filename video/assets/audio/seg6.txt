@@ -1,0 +1,1 @@
+Google ADK. Gemini 2.5 Pro and Flash. Google Search grounding. An MCP server reachable from the command line. Two agentic-security plugins. Five agents, three rounds, one synthesized report. Expensive, slow, inconsistent market research, turned into a reproducible business output in three minutes.

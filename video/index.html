@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Synthetic Market Intelligence Platform — Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg0: #070b12;
+        --bg1: #0d1420;
+        --panel: #0f1826;
+        --panel2: #131f30;
+        --border: #22304a;
+        --ink: #eaf2ff;
+        --muted: #8ea3c0;
+        --dim: #5f7391;
+        --cyan: #22d3ee;
+        --blue: #38bdf8;
+        --violet: #a78bfa;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --red: #f87171;
+        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas,
+          monospace;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+      body {
+        font-family: var(--sans);
+        color: var(--ink);
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+      }
+      .fill {
+        position: absolute;
+        inset: 0;
+      }
+      .bg-base {
+        background: radial-gradient(
+            1200px 700px at 78% 12%,
+            rgba(56, 189, 248, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            1000px 800px at 10% 95%,
+            rgba(167, 139, 250, 0.1),
+            transparent 55%
+          ),
+          linear-gradient(160deg, var(--bg1), var(--bg0));
+      }
+      .grid {
+        background-image: linear-gradient(
+            rgba(120, 160, 220, 0.06) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(120, 160, 220, 0.06) 1px, transparent 1px);
+        background-size: 64px 64px;
+        mask-image: radial-gradient(
+          1400px 900px at 50% 40%,
+          #000 30%,
+          transparent 80%
+        );
+      }
+      .pad {
+        position: absolute;
+        inset: 0;
+        padding: 96px 128px;
+        display: flex;
+        flex-direction: column;
+      }
+      .eyebrow {
+        font-size: 26px;
+        letter-spacing: 8px;
+        font-weight: 700;
+        color: var(--cyan);
+        text-transform: uppercase;
+      }
+      .kicker-bar {
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .kicker-bar::before {
+        content: "";
+        width: 54px;
+        height: 3px;
+        background: var(--cyan);
+        display: inline-block;
+      }
+      h1.hero {
+        font-size: 92px;
+        line-height: 1.04;
+        font-weight: 800;
+        letter-spacing: -2px;
+        max-width: 1400px;
+      }
+      .sub {
+        font-size: 40px;
+        color: var(--muted);
+        font-weight: 500;
+        max-width: 1250px;
+        line-height: 1.3;
+      }
+      .accent {
+        color: var(--cyan);
+      }
+      .accent-v {
+        color: var(--violet);
+      }
+      .accent-g {
+        color: var(--green);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 28px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(19, 31, 48, 0.7);
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .chip .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+      }
+      .row {
+        display: flex;
+        gap: 22px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .metrics {
+        display: flex;
+        gap: 40px;
+      }
+      .metric {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: rgba(15, 24, 38, 0.7);
+        padding: 30px 40px;
+        min-width: 260px;
+      }
+      .metric .big {
+        font-size: 66px;
+        font-weight: 800;
+        color: var(--cyan);
+        letter-spacing: -1px;
+      }
+      .metric .lbl {
+        font-size: 26px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .lower-bug {
+        position: absolute;
+        left: 128px;
+        bottom: 54px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-size: 24px;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+      }
+      .lower-bug b {
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .seg-tag {
+        position: absolute;
+        right: 128px;
+        bottom: 54px;
+        font-size: 22px;
+        letter-spacing: 3px;
+        color: #93a7c4;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      /* framed screenshot */
+      .browser {
+        position: absolute;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
+        background: #0a1018;
+      }
+      .browser .bar {
+        height: 46px;
+        background: #0c1622;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 18px;
+        border-bottom: 1px solid var(--border);
+      }
+      .browser .bar i {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .browser .shotwrap {
+        position: relative;
+        width: 100%;
+        height: calc(100% - 46px);
+        overflow: hidden;
+      }
+      .browser img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+      }
+      .callout {
+        position: absolute;
+        border: 1px solid var(--border);
+        border-left: 5px solid var(--cyan);
+        border-radius: 14px;
+        background: rgba(9, 14, 22, 0.9);
+        padding: 22px 28px;
+        backdrop-filter: blur(4px);
+        max-width: 560px;
+      }
+      .callout .t {
+        font-size: 30px;
+        font-weight: 700;
+      }
+      .callout .d {
+        font-size: 24px;
+        color: var(--muted);
+        margin-top: 6px;
+        line-height: 1.3;
+      }
+      .callout.v {
+        border-left-color: var(--violet);
+      }
+      .callout.g {
+        border-left-color: var(--green);
+      }
+      .callout.a {
+        border-left-color: var(--amber);
+      }
+      /* code panel */
+      .panel {
+        position: absolute;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #0c1420, #0a1019);
+        overflow: hidden;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+      }
+      .panel .head {
+        height: 52px;
+        background: #0c1622;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 20px;
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--muted);
+      }
+      .panel .head i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      pre.code {
+        font-family: var(--mono);
+        font-size: 26px;
+        line-height: 1.5;
+        padding: 28px 32px;
+        color: #cfe3ff;
+        white-space: pre;
+      }
+      .code .ln {
+        display: block;
+      }
+      .c-key {
+        color: var(--violet);
+      }
+      .c-fn {
+        color: var(--cyan);
+      }
+      .c-str {
+        color: var(--green);
+      }
+      .c-com {
+        color: #7f9cbf;
+      }
+      .c-num {
+        color: var(--amber);
+      }
+      .c-dec {
+        color: var(--amber);
+      }
+      .hl {
+        background: rgba(251, 191, 36, 0.16);
+        border-left: 3px solid var(--amber);
+        margin-left: -32px;
+        padding-left: 29px;
+      }
+      /* terminal */
+      .term {
+        position: absolute;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: #05090f;
+        overflow: hidden;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+      }
+      .term .head {
+        height: 52px;
+        background: #0a121c;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 20px;
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--muted);
+      }
+      .term pre {
+        font-family: var(--mono);
+        font-size: 25px;
+        line-height: 1.55;
+        padding: 26px 30px;
+        white-space: pre-wrap;
+        color: #d6e6ff;
+      }
+      .prompt {
+        color: var(--green);
+      }
+      .ok {
+        color: var(--green);
+      }
+      .arrow {
+        color: var(--cyan);
+      }
+      .h2 {
+        font-size: 58px;
+        font-weight: 800;
+        letter-spacing: -1px;
+      }
+      .h2 .num {
+        color: var(--cyan);
+        font-family: var(--mono);
+        font-size: 40px;
+        margin-right: 18px;
+      }
+      .lead {
+        font-size: 34px;
+        color: var(--muted);
+        line-height: 1.35;
+        max-width: 720px;
+      }
+      /* topology nodes */
+      .node {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 22px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(15, 24, 38, 0.9);
+        font-family: var(--mono);
+        font-size: 24px;
+        font-weight: 600;
+      }
+      /* trust meter */
+      .meter-wrap {
+        position: absolute;
+      }
+      .meter {
+        width: 640px;
+        height: 46px;
+        border-radius: 999px;
+        background: #10202c;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        position: relative;
+      }
+      .meter .fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        transform-origin: left center;
+        border-radius: 999px;
+      }
+      .fill-green {
+        background-color: #34d399;
+      }
+      .thresh {
+        position: absolute;
+        top: -10px;
+        bottom: -10px;
+        width: 3px;
+        background: repeating-linear-gradient(
+          180deg,
+          var(--red) 0 8px,
+          transparent 8px 16px
+        );
+      }
+      .score-num {
+        font-family: var(--mono);
+        font-size: 120px;
+        font-weight: 800;
+        letter-spacing: -2px;
+      }
+      .stamp {
+        position: absolute;
+        border: 4px solid var(--red);
+        color: var(--red);
+        font-weight: 900;
+        font-size: 60px;
+        letter-spacing: 6px;
+        padding: 14px 34px;
+        border-radius: 14px;
+        transform: rotate(-9deg);
+        text-transform: uppercase;
+      }
+      .recap {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        width: 100%;
+      }
+      .rcard {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: rgba(15, 24, 38, 0.7);
+        padding: 34px 36px;
+      }
+      .rcard .rt {
+        font-size: 34px;
+        font-weight: 700;
+      }
+      .rcard .rd {
+        font-size: 25px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .close-line {
+        font-size: 60px;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -1px;
+        max-width: 1500px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-width="1920"
+      data-height="1080"
+      data-duration="261.4"
+    >
+      <!-- ================= SCENE 1 — HOOK ================= -->
+      <section
+        id="s1"
+        class="scene clip"
+        data-start="0"
+        data-duration="27.5"
+        data-track-index="0"
+      >
+        <div class="fill bg-base"></div>
+        <div class="fill grid"></div>
+        <div class="pad">
+          <div id="s1-eyebrow" class="kicker-bar eyebrow">
+            AI Focus Group · Capstone
+          </div>
+          <h1 id="s1-hero" class="hero" style="margin-top: 40px">
+            Critical feedback on any idea —<br /><span class="accent"
+              >in under three minutes.</span
+            >
+          </h1>
+          <div id="s1-sub" class="sub" style="margin-top: 40px">
+            Five expert AI personas that debate independently, disagree, and
+            <span class="accent-v">vote blind.</span>
+          </div>
+          <div id="s1-metrics" class="metrics" style="margin-top: 64px">
+            <div class="metric">
+              <div class="big">&lt; 3 min</div>
+              <div class="lbl">idea → scored report</div>
+            </div>
+            <div class="metric">
+              <div class="big">5</div>
+              <div class="lbl">expert personas</div>
+            </div>
+            <div class="metric">
+              <div class="big">6</div>
+              <div class="lbl">scoring dimensions</div>
+            </div>
+          </div>
+          <div id="s1-chips" class="row" style="margin-top: 56px">
+            <span class="chip"
+              ><span class="dot" style="background: var(--blue)"></span>Google
+              ADK</span
+            >
+            <span class="chip"
+              ><span class="dot" style="background: var(--cyan)"></span>Gemini
+              2.5 Pro + Flash</span
+            >
+            <span class="chip"
+              ><span class="dot" style="background: var(--violet)"></span>MCP
+              Server</span
+            >
+            <span class="chip"
+              ><span class="dot" style="background: var(--green)"></span>Google
+              Search grounding</span
+            >
+          </div>
+        </div>
+        <div class="lower-bug">
+          <b>Synthetic Market Intelligence Platform</b>
+        </div>
+        <div class="seg-tag">01 · Overview</div>
+      </section>
+
+      <!-- ================= SCENE 2 — LIVE DEMO ================= -->
+      <section
+        id="s2"
+        class="scene clip"
+        data-start="27.5"
+        data-duration="73.2"
+        data-track-index="0"
+      >
+        <div class="fill bg-base"></div>
+        <div class="fill grid"></div>
+        <div
+          id="s2-frame"
+          class="browser"
+          style="left: 96px; top: 150px; width: 1060px; height: 720px"
+        >
+          <div class="bar">
+            <i style="background: #ff5f57"></i><i style="background: #febc2e"></i
+            ><i style="background: #28c840"></i>
+            <span
+              style="
+                margin-left: 14px;
+                font-family: var(--mono);
+                font-size: 20px;
+                color: var(--muted);
+              "
+              >localhost:8080 — AI Focus Group</span
+            >
+          </div>
+          <div class="shotwrap">
+            <img
+              id="s2-shot"
+              src="assets/images/app-ui.jpg"
+              alt="app"
+              data-layout-allow-overflow
+            />
+          </div>
+        </div>
+
+        <div
+          id="s2-title"
+          class="h2"
+          style="position: absolute; left: 1210px; top: 132px"
+        >
+          The panel, live
+        </div>
+
+        <div
+          id="s2-c1"
+          class="callout"
+          style="left: 1210px; top: 232px; width: 600px"
+        >
+          <div class="t">Pick up to 5 personas</div>
+          <div class="d">
+            Investor · Early Adopter · Enterprise CTO · UX Researcher · Growth
+            Marketer — each with its own biases &amp; scoring weights.
+          </div>
+        </div>
+        <div
+          id="s2-c2"
+          class="callout v"
+          style="left: 1210px; top: 232px; width: 600px"
+        >
+          <div class="t">Moderator opens the panel</div>
+          <div class="d">
+            Gemini 2.5 Pro with Google Search grounding — real market context.
+          </div>
+        </div>
+        <div
+          id="s2-c3"
+          class="callout"
+          style="left: 1210px; top: 232px; width: 600px"
+        >
+          <div class="t accent">Independent · in parallel</div>
+          <div class="d">
+            All five evaluate at once — no agent can see the others. The first
+            round stays honest.
+          </div>
+        </div>
+        <div
+          id="s2-c4"
+          class="callout a"
+          style="left: 1210px; top: 232px; width: 600px"
+        >
+          <div class="t">Then they push back</div>
+          <div class="d">
+            The Moderator surfaces the disagreements and reopens the floor.
+          </div>
+        </div>
+        <div
+          id="s2-c5"
+          class="callout g"
+          style="left: 1210px; top: 232px; width: 600px"
+        >
+          <div class="t">Blind vote · 6 dimensions</div>
+          <div class="d">
+            Streamed to the score board live over Server-Sent Events.
+          </div>
+        </div>
+        <div
+          id="s2-c6"
+          class="callout"
+          style="
+            left: 1210px;
+            top: 232px;
+            width: 600px;
+            border-left-color: var(--green);
+          "
+        >
+          <div class="t accent-g">Synthesizer writes the report</div>
+          <div class="d">
+            Weighted averages, consensus by std-dev, strengths / risks / action
+            items — export PDF or DOCX.
+          </div>
+        </div>
+
+        <div class="lower-bug"><b>Live session</b> · topic → report</div>
+        <div class="seg-tag">02 · Demo</div>
+      </section>
+
+      <!-- ================= SCENE 3 — ADK WORKFLOW GRAPH ================= -->
+      <section
+        id="s3"
+        class="scene clip"
+        data-start="100.7"
+        data-duration="49.7"
+        data-track-index="0"
+      >
+        <div class="fill bg-base"></div>
+        <div class="fill grid"></div>
+        <div class="pad" style="padding: 84px 128px">
+          <div class="kicker-bar eyebrow">Under the hood</div>
+          <div class="h2" style="margin-top: 22px">
+            <span class="num">graph.py</span>The protocol is the
+            <span class="accent">topology</span>
+          </div>
+        </div>
+
+        <div
+          id="s3-panel"
+          class="panel"
+          style="left: 128px; top: 250px; width: 940px; height: 720px"
+        >
+          <div class="head">
+            <i style="background: #ff5f57"></i><i style="background: #febc2e"></i
+            ><i style="background: #28c840"></i>
+            <span style="margin-left: 10px">backend/agents/graph.py</span>
+          </div>
+          <pre class="code"><span class="ln" id="s3l1">moderator_introduce</span><span class="ln" id="s3l2">  <span class="arrow">→</span> [independent_eval <span class="c-num">× N</span>]   <span class="c-com">← parallel fan-out</span></span><span class="ln hl" id="s3l3">  <span class="arrow">→</span> collect_independent      <span class="c-com">← JoinNode barrier</span></span><span class="ln" id="s3l4">  <span class="arrow">→</span> moderator_followup</span><span class="ln" id="s3l5">  <span class="arrow">→</span> [discussion <span class="c-num">× N</span>]         <span class="c-com">← parallel fan-out</span></span><span class="ln hl" id="s3l6">  <span class="arrow">→</span> collect_discussion       <span class="c-com">← JoinNode barrier</span></span><span class="ln" id="s3l7">  <span class="arrow">→</span> [vote <span class="c-num">× N</span>]               <span class="c-com">← parallel fan-out</span></span><span class="ln hl" id="s3l8">  <span class="arrow">→</span> collect_votes            <span class="c-com">← JoinNode barrier</span></span><span class="ln" id="s3l9">  <span class="arrow">→</span> synthesizer</span></pre>
+        </div>
+
+        <div
+          id="s3-c1"
+          class="callout a"
+          style="left: 1150px; top: 262px; width: 640px"
+        >
+          <div class="t">Three fan-out / fan-in cycles</div>
+          <div class="d">
+            JoinNode barriers make it structurally impossible to see round two
+            before round one is fully collected — no contamination, even by
+            accident.
+          </div>
+        </div>
+        <div
+          id="s3-c2"
+          class="callout"
+          style="left: 1150px; top: 500px; width: 640px"
+        >
+          <div class="t accent">Self-assembling graph</div>
+          <div class="d">
+            Built at runtime from the selected personas. Adding one is a single
+            registry entry — no wiring.
+          </div>
+        </div>
+        <div
+          id="s3-c3"
+          class="callout v"
+          style="left: 1150px; top: 700px; width: 640px"
+        >
+          <div class="t">Flash ×5 · Pro ×2</div>
+          <div class="d">
+            Gemini 2.5 Flash runs the participants; 2.5 Pro runs Moderator &amp;
+            Synthesizer. Votes return as type-safe Pydantic output.
+          </div>
+        </div>
+        <div class="lower-bug"><b>Google ADK</b> · workflow orchestration</div>
+        <div class="seg-tag">03 · Architecture</div>
+      </section>
+
+      <!-- ================= SCENE 4 — MCP + AGENTS CLI ================= -->
+      <section
+        id="s4"
+        class="scene clip"
+        data-start="150.4"
+        data-duration="44.0"
+        data-track-index="0"
+      >
+        <div class="fill bg-base"></div>
+        <div class="fill grid"></div>
+        <div class="pad" style="padding: 84px 128px">
+          <div class="kicker-bar eyebrow">One capability surface</div>
+          <div class="h2" style="margin-top: 22px">
+            Published as an <span class="accent-v">MCP server</span>
+          </div>
+        </div>
+
+        <div
+          id="s4-panel"
+          class="panel"
+          style="left: 128px; top: 250px; width: 860px; height: 640px"
+        >
+          <div class="head">
+            <i style="background: #ff5f57"></i><i style="background: #febc2e"></i
+            ><i style="background: #28c840"></i>
+            <span style="margin-left: 10px">backend/mcp_server/server.py</span>
+          </div>
+          <pre class="code" style="font-size: 25px"><span class="ln" id="s4l1"><span class="c-com"># personas imported from the workflow registry</span></span><span class="ln" id="s4l2"><span class="c-key">from</span> agents.registry <span class="c-key">import</span> PERSONAS</span><span class="ln" id="s4l3"></span><span class="ln" id="s4l4"><span class="c-dec">@mcp.tool()</span></span><span class="ln" id="s4l5"><span class="c-key">def</span> <span class="c-fn">list_personas</span>() -&gt; list[Persona]: ...</span><span class="ln" id="s4l6"></span><span class="ln" id="s4l7"><span class="c-dec">@mcp.tool()</span></span><span class="ln" id="s4l8"><span class="c-key">def</span> <span class="c-fn">score_idea</span>(persona_id, scores) -&gt; Verdict: ...</span><span class="ln" id="s4l9"></span><span class="ln" id="s4l10"><span class="c-dec">@mcp.tool()</span></span><span class="ln" id="s4l11"><span class="c-key">def</span> <span class="c-fn">get_citations</span>(session_id) -&gt; list[Source]: ...</span></pre>
+        </div>
+
+        <div
+          id="s4-term"
+          class="term"
+          style="left: 1030px; top: 250px; width: 760px; height: 640px"
+        >
+          <div class="head">
+            <i style="background: #ff5f57"></i><i style="background: #febc2e"></i
+            ><i style="background: #28c840"></i>
+            <span style="margin-left: 10px">Agents CLI — MCP client</span>
+          </div>
+          <pre><span id="s4t1"><span class="prompt">$</span> adk run backend/mcp_client_agent</span>
+<span id="s4t2"><span class="prompt">&gt;</span> List the personas, then have Marcus
+  score an idea: innovation 8, market 6,
+  ux 5, feasibility 7, monetization 4,
+  risk 3.</span>
+
+<span id="s4t3"><span class="arrow">→</span> list_personas()            <span class="ok">✓</span></span>
+<span id="s4t4"><span class="arrow">→</span> score_idea("marcus", …)    <span class="ok">✓</span></span>
+
+<span id="s4t5"><span class="ok">Marcus Chen — weighted verdict: 5.8 / 10</span>
+  "Monetization is the weak link."</span></pre>
+        </div>
+
+        <div
+          id="s4-c1"
+          class="callout g"
+          style="left: 1030px; top: 924px; width: 760px"
+        >
+          <div class="t accent-g">Same math, one source of truth</div>
+          <div class="d">
+            Imported from the workflow registry — the MCP surface can never
+            drift from the app. Reachable from the app, Claude Desktop, or the
+            CLI.
+          </div>
+        </div>
+        <div class="lower-bug"><b>Model Context Protocol</b> · Agents CLI</div>
+        <div class="seg-tag">04 · MCP + CLI</div>
+      </section>
+
+      <!-- ================= SCENE 5 — AGENTIC SECURITY ================= -->
+      <section
+        id="s5"
+        class="scene clip"
+        data-start="194.4"
+        data-duration="41.0"
+        data-track-index="0"
+      >
+        <div class="fill bg-base"></div>
+        <div class="fill grid"></div>
+        <div class="pad" style="padding: 84px 128px">
+          <div class="kicker-bar eyebrow">Safety as infrastructure</div>
+          <div class="h2" style="margin-top: 22px">
+            Two ADK plugins · <span class="accent">intent-drift detection</span>
+          </div>
+        </div>
+
+        <div
+          id="s5-img"
+          class="panel"
+          style="left: 128px; top: 250px; width: 820px; height: 640px"
+        >
+          <div class="head">
+            <i style="background: #ff5f57"></i><i style="background: #febc2e"></i
+            ><i style="background: #28c840"></i>
+            <span style="margin-left: 10px"
+              >backend/plugins/ — blue &amp; green team</span
+            >
+          </div>
+          <div style="position: relative; width: 100%; height: calc(100% - 52px)">
+            <img
+              src="assets/images/security-plugin.jpg"
+              alt="security plugin"
+              style="
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: top left;
+              "
+            />
+          </div>
+        </div>
+
+        <div class="meter-wrap" style="left: 1030px; top: 300px">
+          <div id="s5-blue" class="callout" style="position: static; width: 760px">
+            <div class="t accent">Blue Team — logs everything</div>
+            <div class="d">
+              Every tool call → Agent Bill of Materials. Session Trust Score
+              starts at 100.
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: baseline; gap: 24px; margin-top: 44px">
+            <span id="s5-score" class="score-num accent-g">100</span>
+            <span id="s5-flag" style="font-size: 30px; color: var(--red); font-weight: 700"
+              >research_agent: 11 tool calls → −25</span
+            >
+          </div>
+
+          <div style="position: relative; margin-top: 18px; width: 640px">
+            <div class="meter">
+              <div id="s5-fill" class="fill fill-green"></div>
+            </div>
+            <div class="thresh" style="left: 320px"></div>
+            <div style="position: absolute; left: 305px; top: 52px; font-size: 20px; color: var(--red); font-family: var(--mono)">50 · quarantine</div>
+          </div>
+
+          <div id="s5-green" class="callout g" style="position: static; width: 760px; margin-top: 70px">
+            <div class="t accent-g">Green Team — quarantines below 50</div>
+            <div class="d">
+              Raises before the next tool call, freezes execution cleanly, and
+              preserves full state for forensic review.
+            </div>
+          </div>
+        </div>
+
+        <div id="s5-stamp" class="stamp" style="left: 1360px; top: 452px">
+          Quarantined
+        </div>
+
+        <div class="lower-bug">
+          <b>Deterministic enforcement</b> · not prompt instructions
+        </div>
+        <div class="seg-tag">05 · Security</div>
+      </section>
+
+      <!-- ================= SCENE 6 — OUTRO ================= -->
+      <section
+        id="s6"
+        class="scene clip"
+        data-start="235.4"
+        data-duration="26.0"
+        data-track-index="0"
+      >
+        <div class="fill bg-base"></div>
+        <div class="fill grid"></div>
+        <div class="pad" style="padding: 90px 128px; justify-content: center">
+          <div class="kicker-bar eyebrow" style="margin-bottom: 44px">
+            Five agents · three rounds · one report
+          </div>
+          <div id="s6-recap" class="recap">
+            <div class="rcard">
+              <div class="rt accent">Google ADK</div>
+              <div class="rd">Workflow-graph orchestration</div>
+            </div>
+            <div class="rcard">
+              <div class="rt accent">Gemini 2.5 Pro + Flash</div>
+              <div class="rd">Reasoning where it matters</div>
+            </div>
+            <div class="rcard">
+              <div class="rt accent">Search grounding</div>
+              <div class="rd">Real market context</div>
+            </div>
+            <div class="rcard">
+              <div class="rt accent-v">MCP server</div>
+              <div class="rd">Reachable from the CLI</div>
+            </div>
+            <div class="rcard">
+              <div class="rt accent-g">2 security plugins</div>
+              <div class="rd">Deterministic guardrails</div>
+            </div>
+            <div class="rcard">
+              <div class="rt">PDF / DOCX export</div>
+              <div class="rd">A reproducible business output</div>
+            </div>
+          </div>
+          <div id="s6-close" class="close-line" style="margin-top: 64px">
+            Expensive, slow, inconsistent market research —<br />turned into a
+            reproducible output in
+            <span class="accent">three minutes.</span>
+          </div>
+        </div>
+        <div class="lower-bug">
+          <b>Synthetic Market Intelligence Platform</b>
+        </div>
+        <div class="seg-tag">06 · Outro</div>
+      </section>
+
+      <!-- ================= NARRATION (direct children of root) ============ -->
+      <audio
+        id="a1"
+        src="assets/audio/seg1.wav"
+        data-start="0.4"
+        data-duration="26.048"
+        data-track-index="20"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="a2"
+        src="assets/audio/seg2.wav"
+        data-start="27.9"
+        data-duration="71.595"
+        data-track-index="21"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="a3"
+        src="assets/audio/seg3.wav"
+        data-start="101.1"
+        data-duration="48.149"
+        data-track-index="22"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="a4"
+        src="assets/audio/seg4.wav"
+        data-start="150.8"
+        data-duration="42.475"
+        data-track-index="23"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="a5"
+        src="assets/audio/seg5.wav"
+        data-start="194.8"
+        data-duration="39.552"
+        data-track-index="24"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="a6"
+        src="assets/audio/seg6.wav"
+        data-start="235.8"
+        data-duration="23.403"
+        data-track-index="25"
+        data-volume="1"
+      ></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // scene global start times
+      const S = { s1: 0, s2: 27.5, s3: 100.7, s4: 150.4, s5: 194.4, s6: 235.4 };
+      const DUR = {
+        s1: 27.5,
+        s2: 73.2,
+        s3: 49.7,
+        s4: 44.0,
+        s5: 41.0,
+        s6: 26.0,
+      };
+
+      const inUp = { opacity: 0, y: 28, duration: 0.7, ease: "power3.out" };
+      const inFade = { opacity: 0, duration: 0.6, ease: "power2.out" };
+
+      // fade each scene in at its start and out just before its end (smooth cuts)
+      Object.keys(S).forEach((k) => {
+        tl.from("#" + k, { opacity: 0, duration: 0.5, ease: "power1.out" }, S[k]);
+        tl.to(
+          "#" + k,
+          { opacity: 0, duration: 0.4, ease: "power1.in" },
+          S[k] + DUR[k] - 0.4
+        );
+      });
+
+      /* ---------- SCENE 1 ---------- */
+      tl.from("#s1-eyebrow", inUp, S.s1 + 0.4);
+      tl.from("#s1-hero", { ...inUp, y: 40, duration: 0.9 }, S.s1 + 1.1);
+      tl.from("#s1-sub", inUp, S.s1 + 2.4);
+      tl.from(
+        "#s1-metrics .metric",
+        { ...inUp, stagger: 0.18 },
+        S.s1 + 4.2
+      );
+      tl.from("#s1-chips .chip", { ...inUp, y: 20, stagger: 0.12 }, S.s1 + 9.0);
+
+      /* ---------- SCENE 2 — Ken Burns + timed callouts ---------- */
+      tl.fromTo(
+        "#s2-shot",
+        { scale: 1.04, xPercent: 0, yPercent: 0 },
+        { scale: 1.2, xPercent: -6, yPercent: -6, duration: DUR.s2, ease: "none" },
+        S.s2
+      );
+      tl.from("#s2-frame", { opacity: 0, x: -50, duration: 0.8, ease: "power3.out" }, S.s2 + 0.3);
+      tl.from("#s2-title", inUp, S.s2 + 0.6);
+
+      // six callouts share the same slot; reveal one, hide before the next.
+      const s2c = [
+        { id: "#s2-c1", at: 1.4, out: 12.5 },
+        { id: "#s2-c2", at: 13.0, out: 21.0 },
+        { id: "#s2-c3", at: 21.5, out: 33.0 },
+        { id: "#s2-c4", at: 33.5, out: 41.0 },
+        { id: "#s2-c5", at: 41.5, out: 52.0 },
+        { id: "#s2-c6", at: 52.5, out: 71.5 },
+      ];
+      s2c.forEach((c) => {
+        tl.from(c.id, { opacity: 0, x: 40, duration: 0.6, ease: "power3.out" }, S.s2 + c.at);
+        tl.to(c.id, { opacity: 0, duration: 0.4, ease: "power1.in" }, S.s2 + c.out);
+      });
+
+      /* ---------- SCENE 3 — topology reveal ---------- */
+      tl.from("#s3 .kicker-bar", inUp, S.s3 + 0.4);
+      tl.from("#s3 .h2", inUp, S.s3 + 0.9);
+      tl.from("#s3-panel", { opacity: 0, y: 30, duration: 0.7, ease: "power3.out" }, S.s3 + 1.2);
+      const s3lines = [
+        "#s3l1", "#s3l2", "#s3l3", "#s3l4", "#s3l5",
+        "#s3l6", "#s3l7", "#s3l8", "#s3l9",
+      ];
+      s3lines.forEach((l, i) => {
+        tl.from(l, { opacity: 0, x: 18, duration: 0.4, ease: "power1.out" }, S.s3 + 2.0 + i * 0.55);
+      });
+      // pulse the JoinNode barrier lines
+      ["#s3l3", "#s3l6", "#s3l8"].forEach((l, i) => {
+        tl.fromTo(
+          l,
+          { backgroundColor: "rgba(251,191,36,0.16)" },
+          { backgroundColor: "rgba(251,191,36,0.42)", duration: 0.5, yoyo: true, repeat: 1, ease: "sine.inOut" },
+          S.s3 + 8.0 + i * 0.4
+        );
+      });
+      tl.from("#s3-c1", { opacity: 0, x: 40, duration: 0.6, ease: "power3.out" }, S.s3 + 9.5);
+      tl.from("#s3-c2", { opacity: 0, x: 40, duration: 0.6, ease: "power3.out" }, S.s3 + 24.0);
+      tl.from("#s3-c3", { opacity: 0, x: 40, duration: 0.6, ease: "power3.out" }, S.s3 + 36.0);
+
+      /* ---------- SCENE 4 — MCP + CLI ---------- */
+      tl.from("#s4 .kicker-bar", inUp, S.s4 + 0.4);
+      tl.from("#s4 .h2", inUp, S.s4 + 0.9);
+      tl.from("#s4-panel", { opacity: 0, x: -40, duration: 0.7, ease: "power3.out" }, S.s4 + 1.3);
+      const s4code = ["#s4l1", "#s4l2", "#s4l4", "#s4l5", "#s4l7", "#s4l8", "#s4l10", "#s4l11"];
+      s4code.forEach((l, i) => {
+        tl.from(l, { opacity: 0, x: 14, duration: 0.35, ease: "power1.out" }, S.s4 + 2.2 + i * 0.5);
+      });
+      tl.from("#s4-term", { opacity: 0, x: 40, duration: 0.7, ease: "power3.out" }, S.s4 + 12.0);
+      const s4term = [
+        { id: "#s4t1", at: 13.5 },
+        { id: "#s4t2", at: 16.0 },
+        { id: "#s4t3", at: 21.0 },
+        { id: "#s4t4", at: 24.0 },
+        { id: "#s4t5", at: 27.5 },
+      ];
+      s4term.forEach((t) =>
+        tl.from(t.id, { opacity: 0, y: 10, duration: 0.4, ease: "power1.out" }, S.s4 + t.at)
+      );
+      tl.from("#s4-c1", { opacity: 0, y: 24, duration: 0.6, ease: "power3.out" }, S.s4 + 33.0);
+
+      /* ---------- SCENE 5 — trust score ---------- */
+      tl.from("#s5 .kicker-bar", inUp, S.s5 + 0.4);
+      tl.from("#s5 .h2", inUp, S.s5 + 0.9);
+      tl.from("#s5-img", { opacity: 0, x: -40, duration: 0.7, ease: "power3.out" }, S.s5 + 1.2);
+      tl.from("#s5-blue", { opacity: 0, x: 40, duration: 0.6, ease: "power3.out" }, S.s5 + 3.0);
+      // score + meter (green, 100) are visible from scene start via the scene fade-in.
+      // the -25 flag appears, then the meter drops 100 -> 50 in two steps
+      tl.from("#s5-flag", { opacity: 0, y: 10, duration: 0.4 }, S.s5 + 13.0);
+      tl.to("#s5-fill", { scaleX: 0.75, duration: 0.6, ease: "power2.inOut" }, S.s5 + 13.6);
+      tl.to("#s5-score", { textContent: 75, snap: { textContent: 1 }, duration: 0.6, ease: "none" }, S.s5 + 13.6);
+      tl.to("#s5-fill", { scaleX: 0.5, duration: 0.6, ease: "power2.inOut" }, S.s5 + 15.4);
+      tl.to("#s5-score", { textContent: 50, snap: { textContent: 1 }, duration: 0.6, ease: "none" }, S.s5 + 15.4);
+      // cross threshold -> quarantine: flag clears, green bar reddens, score reddens, stamp slams in
+      tl.to("#s5-flag", { opacity: 0, duration: 0.3 }, S.s5 + 17.0);
+      tl.to("#s5-fill", { backgroundColor: "#f87171", duration: 0.5 }, S.s5 + 17.2);
+      tl.to("#s5-score", { color: "#f87171", duration: 0.4 }, S.s5 + 17.2);
+      tl.from(
+        "#s5-stamp",
+        { opacity: 0, scale: 1.6, rotate: -20, duration: 0.5, ease: "back.out(2)" },
+        S.s5 + 17.6
+      );
+      tl.from("#s5-green", { opacity: 0, x: 40, duration: 0.6, ease: "power3.out" }, S.s5 + 24.0);
+
+      /* ---------- SCENE 6 — outro ---------- */
+      tl.from("#s6 .kicker-bar", inUp, S.s6 + 0.5);
+      tl.from("#s6-recap .rcard", { ...inUp, y: 30, stagger: 0.16 }, S.s6 + 1.2);
+      tl.from("#s6-close", { opacity: 0, y: 30, duration: 0.9, ease: "power3.out" }, S.s6 + 12.0);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

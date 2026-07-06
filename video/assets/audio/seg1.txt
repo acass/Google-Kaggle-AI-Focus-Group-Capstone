@@ -1,0 +1,1 @@
+What if you could get structured, diverse, critical feedback on any idea in under three minutes, from five distinct expert perspectives, with a scored, exportable report at the end? This is the Synthetic Market Intelligence Platform: a multi-agent system on Google ADK and Gemini 2.5, where AI personas don't just answer. They debate independently, disagree, and vote blind.
