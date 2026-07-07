@@ -1,0 +1,98 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.0 Safari/537.36" version="29.6.1">
+  <diagram id="92vdRenHFWYLaefNlVcG" name="Page-1">
+    <mxGraphModel dx="1166" dy="751" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F6FA;strokeColor=#9AA3B2;fontColor=#3a414d;align=center;spacingTop=4;" value="&lt;b&gt;ADK App plugins = [ BlueTeamAnalyticsPlugin , GreenTeamQuarantinePlugin ]&lt;/b&gt;&lt;br&gt;attached to every session&#39;s App (sessions.py) · both hook the tool-call lifecycle · both read/write shared session state" vertex="1">
+          <mxGeometry height="52" width="920" x="40" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="start" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA3B2;fontColor=#3a414d;" value="Workflow node about to call a tool&#xa;(e.g. google_search)" vertex="1">
+          <mxGeometry height="54" width="300" x="320" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DDF0E4;strokeColor=#2E8B57;fontColor=#194d33;" value="&lt;b&gt;GREEN&lt;/b&gt;&lt;br&gt;before_tool_callback&lt;br&gt;quarantine_flag == True ?" vertex="1">
+          <mxGeometry height="110" width="220" x="360" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="halt" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBE0E0;strokeColor=#C0392B;fontColor=#7a1f1f;" value="&lt;b&gt;raise RuntimeError&lt;/b&gt;&lt;br&gt;Stateful Quarantine — halt tool execution.&lt;br&gt;Session state preserved for forensic analysis.&lt;br&gt;(agent frozen, external APIs untouched)" vertex="1">
+          <mxGeometry height="90" width="300" x="660" y="192" as="geometry" />
+        </mxCell>
+        <mxCell id="tool" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDEFF4;strokeColor=#556070;fontColor=#2b3340;" value="&lt;b&gt;Tool executes&lt;/b&gt;  (google_search)" vertex="1">
+          <mxGeometry height="52" width="300" x="320" y="332" as="geometry" />
+        </mxCell>
+        <mxCell id="blue1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DDE6FA;strokeColor=#3A5FC0;fontColor=#1e335f;" value="&lt;b&gt;BLUE&lt;/b&gt; after_tool_callback&lt;br&gt;append AgBOM record { node, tool, args, status }&lt;br&gt;→ agbom[]  and  agbom_per_node[node]" vertex="1">
+          <mxGeometry height="70" width="340" x="300" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DDE6FA;strokeColor=#3A5FC0;fontColor=#1e335f;" value="&lt;b&gt;BLUE&lt;/b&gt;&lt;br&gt;tools used in THIS node&lt;br&gt;&gt; 10 ? (MAX_TOOLS_PER_NODE)" vertex="1">
+          <mxGeometry height="110" width="220" x="360" y="526" as="geometry" />
+        </mxCell>
+        <mxCell id="ok1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DDF0E4;strokeColor=#2E8B57;fontColor=#194d33;" value="&lt;b&gt;return None&lt;/b&gt;&lt;br&gt;tool allowed · within budget" vertex="1">
+          <mxGeometry height="66" width="300" x="660" y="548" as="geometry" />
+        </mxCell>
+        <mxCell id="blue2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCEBD0;strokeColor=#B87910;fontColor=#5a3d08;" value="&lt;b&gt;Intent Drift detected&lt;/b&gt;&lt;br&gt;trust_score -= 25" vertex="1">
+          <mxGeometry height="56" width="300" x="320" y="672" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DDE6FA;strokeColor=#3A5FC0;fontColor=#1e335f;" value="&lt;b&gt;BLUE&lt;/b&gt;&lt;br&gt;trust_score &lt; 50 ?" vertex="1">
+          <mxGeometry height="110" width="220" x="360" y="766" as="geometry" />
+        </mxCell>
+        <mxCell id="ok2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DDF0E4;strokeColor=#2E8B57;fontColor=#194d33;" value="&lt;b&gt;allow&lt;/b&gt;&lt;br&gt;trust warned · not yet quarantined" vertex="1">
+          <mxGeometry height="66" width="300" x="660" y="788" as="geometry" />
+        </mxCell>
+        <mxCell id="qset" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBE0E0;strokeColor=#C0392B;fontColor=#7a1f1f;" value="&lt;b&gt;quarantine_flag = True&lt;/b&gt;&lt;br&gt;flag raised for Green Team" vertex="1">
+          <mxGeometry height="56" width="270" x="335" y="912" as="geometry" />
+        </mxCell>
+        <mxCell id="state" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#EEF0F4;strokeColor=#9AA3B2;fontColor=#2b3340;boundedLbl=1;verticalAlign=top;spacingTop=10;align=left;spacingLeft=10;" value="&lt;b&gt;SHARED SESSION STATE&lt;/b&gt;&lt;br&gt;(tool_context.state)&lt;br&gt;• trust_score  (start 100)&lt;br&gt;• agbom[]  ·  agbom_per_node{}&lt;br&gt;• quarantine_flag  (start False)&lt;br&gt;• security_test_mode" vertex="1">
+          <mxGeometry height="190" width="240" x="40" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" edge="1" parent="1" source="start" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#556070;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="d1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" edge="1" parent="1" source="d1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#C0392B;strokeWidth=2;fontColor=#7a1f1f;fontStyle=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="halt" value="Yes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" edge="1" parent="1" source="d1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#2E8B57;fontColor=#194d33;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="tool" value="No">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" edge="1" parent="1" source="tool" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#556070;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="blue1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" edge="1" parent="1" source="blue1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#3A5FC0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="d2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s6" edge="1" parent="1" source="d2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#2E8B57;fontColor=#194d33;fontStyle=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="ok1" value="No">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s7" edge="1" parent="1" source="d2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#B87910;strokeWidth=2;fontColor=#5a3d08;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="blue2" value="Yes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s8" edge="1" parent="1" source="blue2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#B87910;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="d3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s9" edge="1" parent="1" source="d3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#2E8B57;fontColor=#194d33;fontStyle=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="ok2" value="No">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s10" edge="1" parent="1" source="d3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#C0392B;strokeWidth=2;fontColor=#7a1f1f;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="qset" value="Yes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="st1" edge="1" parent="1" source="state" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;dashed=1;strokeColor=#2E8B57;fontSize=10;fontColor=#194d33;exitX=0.5;exitY=0;entryX=0;entryY=0.5;" target="d1" value="reads flag">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="st2" edge="1" parent="1" source="blue1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;dashed=1;strokeColor=#3A5FC0;fontSize=10;fontColor=#1e335f;exitX=0;exitY=0.5;entryX=1;entryY=0.25;" target="state" value="append AgBOM">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="st3" edge="1" parent="1" source="blue2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;dashed=1;strokeColor=#B87910;fontSize=10;fontColor=#5a3d08;exitX=0;exitY=0.5;entryX=1;entryY=0.85;" target="state" value="write trust_score">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="st4" edge="1" parent="1" source="qset" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;dashed=1;strokeColor=#C0392B;fontSize=10;fontColor=#7a1f1f;exitX=0;exitY=0.5;entryX=0.5;entryY=1;" target="state" value="set quarantine_flag">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="160" y="940" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7F8FB;strokeColor=#C2CAD8;fontColor=#3a414d;align=left;spacingLeft=12;spacingTop=8;fontSize=11;verticalAlign=top;" value="&lt;b&gt;How it fits together:&lt;/b&gt;  BLUE = detector (after_tool_callback): builds the AgBOM ledger, decays trust_score on Intent Drift, raises quarantine_flag.  GREEN = responder (before_tool_callback): reads the flag and halts the NEXT tool call via RuntimeError.  The enforcement loop closes through shared session state, not a direct call — Blue flags now, Green enforces on the following tool invocation." vertex="1">
+          <mxGeometry height="80" width="920" x="40" y="1000" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

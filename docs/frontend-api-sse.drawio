@@ -1,0 +1,83 @@
+<mxGraphModel dx="1000" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="960" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- ===== lanes ===== -->
+    <mxCell id="laneL" value="FLUTTER WEB CLIENT  (Riverpod)" style="swimlane;startSize=34;whiteSpace=wrap;html=1;fillColor=#DDE6FA;strokeColor=#3A5FC0;fontColor=#1e335f;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="20" y="70" width="360" height="740" as="geometry"/>
+    </mxCell>
+    <mxCell id="laneR" value="FASTAPI BACKEND  (Google ADK)" style="swimlane;startSize=34;whiteSpace=wrap;html=1;fillColor=#D3EFEE;strokeColor=#0C8A88;fontColor=#0a5a58;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="460" y="70" width="380" height="740" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== left (client) nodes ===== -->
+    <mxCell id="L1" value="&lt;b&gt;TopicInput&lt;/b&gt;&lt;br&gt;user enters topic + selects 1&#8211;5 personas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B7EC7;fontColor=#22314f;" vertex="1" parent="laneL">
+      <mxGeometry x="20" y="48" width="320" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="L2" value="&lt;b&gt;SessionNotifier.start()&lt;/b&gt;&lt;br&gt;Riverpod state machine" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B7EC7;fontColor=#22314f;" vertex="1" parent="laneL">
+      <mxGeometry x="20" y="140" width="320" height="56" as="geometry"/>
+    </mxCell>
+    <mxCell id="L3a" value="&lt;b&gt;api_client.createSession&lt;/b&gt;&lt;br&gt;REST &#183; POST" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3A5FC0;fontColor=#1e335f;" vertex="1" parent="laneL">
+      <mxGeometry x="20" y="218" width="320" height="56" as="geometry"/>
+    </mxCell>
+    <mxCell id="L3b" value="&lt;b&gt;SseConnection&lt;/b&gt;&lt;br&gt;browser EventSource (package:web)&lt;br&gt;one connection &#183; no manual reconnect" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCEBD0;strokeColor=#B87910;fontColor=#5a3d08;" vertex="1" parent="laneL">
+      <mxGeometry x="20" y="296" width="320" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="L4" value="&lt;b&gt;SessionNotifier._applyEvent&lt;/b&gt;&lt;br&gt;folds each event into state&lt;br&gt;&#8226; phase_change &#183; agent_message&lt;br&gt;&#8226; score_update &#183; report_complete&lt;br&gt;&#8226; error &#183; done (close SSE)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B7EC7;fontColor=#22314f;align=left;spacingLeft=12;" vertex="1" parent="laneL">
+      <mxGeometry x="20" y="392" width="320" height="112" as="geometry"/>
+    </mxCell>
+    <mxCell id="L5" value="&lt;b&gt;UI widgets&lt;/b&gt;&lt;br&gt;DiscussionThread &#183; ScorePanel&lt;br&gt;FinalReportCard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B7EC7;fontColor=#22314f;" vertex="1" parent="laneL">
+      <mxGeometry x="20" y="528" width="320" height="82" as="geometry"/>
+    </mxCell>
+    <mxCell id="L6" value="&lt;b&gt;Export&lt;/b&gt;&lt;br&gt;PDF (printing) &#183; DOCX (OOXML / archive)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDEFF4;strokeColor=#9AA3B2;fontColor=#3a414d;" vertex="1" parent="laneL">
+      <mxGeometry x="20" y="636" width="320" height="60" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== right (backend) nodes ===== -->
+    <mxCell id="R1" value="&lt;b&gt;POST /sessions&lt;/b&gt;&lt;br&gt;validate 1&#8211;5 &#183; create session&lt;br&gt;+ BackgroundTask(_run_session)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0C8A88;fontColor=#0a3d3c;" vertex="1" parent="laneR">
+      <mxGeometry x="30" y="140" width="320" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="R2" value="&lt;b&gt;_run_session &#8594; ADK workflow&lt;/b&gt;&lt;br&gt;background task &#183; InMemoryRunner&lt;br&gt;(18-node graph &#8212; see ai-workflow.drawio)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF6F5;strokeColor=#0C8A88;fontColor=#0a3d3c;dashed=1;" vertex="1" parent="laneR">
+      <mxGeometry x="30" y="244" width="320" height="76" as="geometry"/>
+    </mxCell>
+    <mxCell id="R3" value="&lt;b&gt;_sessions / _session_complete&lt;/b&gt;&lt;br&gt;in-memory store &#183; stream_events[] appended" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#EDEFF4;strokeColor=#9AA3B2;fontColor=#3a414d;boundedLbl=1;verticalAlign=top;spacingTop=8;" vertex="1" parent="laneR">
+      <mxGeometry x="60" y="344" width="260" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="R4" value="&lt;b&gt;GET /sessions/{id}/stream&lt;/b&gt;&lt;br&gt;EventSourceResponse&lt;br&gt;_event_generator: replay history,&lt;br&gt;poll state every 0.5s, emit 'done'" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCEBD0;strokeColor=#B87910;fontColor=#5a3d08;" vertex="1" parent="laneR">
+      <mxGeometry x="30" y="448" width="320" height="98" as="geometry"/>
+    </mxCell>
+    <mxCell id="R5" value="&lt;b&gt;GET /sessions/{id}&lt;/b&gt;&lt;br&gt;snapshot + final_report" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0C8A88;fontColor=#0a3d3c;" vertex="1" parent="laneR">
+      <mxGeometry x="30" y="592" width="320" height="60" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== left internal edges ===== -->
+    <mxCell id="li1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6B7EC7;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="L1" target="L2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="li2" value="createSession (await)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6B7EC7;fontSize=10;fontColor=#3a414d;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="L2" target="L3a"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="li3" value="then open stream" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6B7EC7;fontSize=10;fontColor=#3a414d;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="L3a" target="L3b"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="li4" value="StreamEvent (parsed)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6B7EC7;fontSize=10;fontColor=#3a414d;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="L3b" target="L4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="li5" value="render" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6B7EC7;fontSize=10;fontColor=#3a414d;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="L4" target="L5"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="li6" value="export" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6B7EC7;fontSize=10;fontColor=#3a414d;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="L5" target="L6"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ===== right internal edges ===== -->
+    <mxCell id="ri1" value="spawn" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#0C8A88;fontSize=10;fontColor=#0a3d3c;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="R1" target="R2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="ri2" value="append stream_events" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#0C8A88;fontSize=10;fontColor=#0a3d3c;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="R2" target="R3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="ri3" value="poll every 0.5s" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;strokeColor=#9AA3B2;fontSize=10;fontColor=#3a414d;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="R3" target="R4"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ===== cross-lane edges ===== -->
+    <mxCell id="c1" value="POST /sessions&#10;{topic, participant_ids}" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#3A5FC0;strokeWidth=2;fontSize=10;fontColor=#1e335f;exitX=1;exitY=0.25;entryX=0;entryY=0.75;" edge="1" parent="1" source="L3a" target="R1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="c2" value="{session_id}" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;dashed=1;strokeColor=#9AA3B2;fontSize=10;fontColor=#3a414d;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="R1" target="L2"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <mxCell id="c3" value="GET /sessions/{id}/stream&#10;open EventSource" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#B87910;strokeWidth=2;fontSize=10;fontColor=#5a3d08;exitX=1;exitY=0.3;entryX=0;entryY=0.25;" edge="1" parent="1" source="L3b" target="R4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="c4" value="SSE stream: StreamEvent x N&#10;replay history, then live" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;strokeColor=#B87910;strokeWidth=2;fontSize=10;fontColor=#5a3d08;exitX=0;exitY=0.7;entryX=1;entryY=0.7;" edge="1" parent="1" source="R4" target="L3b"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <mxCell id="c5" value="GET /sessions/{id}&#10;on 'done' event" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#3A5FC0;strokeWidth=2;fontSize=10;fontColor=#1e335f;exitX=1;exitY=0.6;entryX=0;entryY=0.35;" edge="1" parent="1" source="L4" target="R5"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="c6" value="{final_report}" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;dashed=1;strokeColor=#9AA3B2;fontSize=10;fontColor=#3a414d;exitX=0;exitY=0.75;entryX=1;entryY=0.85;" edge="1" parent="1" source="R5" target="L4"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ===== legend ===== -->
+    <mxCell id="lg" value="&lt;b&gt;Legend&lt;/b&gt;&lt;br&gt;&#8212; solid = request / call&lt;br&gt;&#8226;&#8226; dashed = response / event stream&lt;br&gt;amber = SSE channel &#183; blue = REST&lt;br&gt;one SSE connection per session; backend&lt;br&gt;replays full history on (re)connect" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7F8FB;strokeColor=#C2CAD8;fontColor=#3a414d;align=left;spacingLeft=10;spacingTop=6;fontSize=11;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="20" y="820" width="820" height="100" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>

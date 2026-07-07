@@ -1,0 +1,70 @@
+<mxGraphModel dx="1120" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1140" pageHeight="830" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- title -->
+    <mxCell id="title" value="&lt;b&gt;Agent Skills / Agents CLI &#8212; MCP client &amp; server&lt;/b&gt;&lt;br&gt;the synthetic panel published as a standard MCP server; an ADK CLI agent (and other hosts) consume it over stdio" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F6FA;strokeColor=#9AA3B2;fontColor=#3a414d;align=center;spacingTop=4;" vertex="1" parent="1">
+      <mxGeometry x="40" y="18" width="1060" height="52" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== left lane: clients ===== -->
+    <mxCell id="laneL" value="MCP CLIENTS / HOSTS" style="swimlane;startSize=34;whiteSpace=wrap;html=1;fillColor=#DDE6FA;strokeColor=#3A5FC0;fontColor=#1e335f;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="40" y="92" width="380" height="430" as="geometry"/>
+    </mxCell>
+    <mxCell id="L_cli" value="&lt;b&gt;ADK CLI agent&lt;/b&gt; &#183; root_agent = &lt;b&gt;panel_cli&lt;/b&gt;&lt;br&gt;model: gemini-2.0-flash&lt;br&gt;run: adk run backend/mcp_client_agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3A5FC0;fontColor=#1e335f;" vertex="1" parent="laneL">
+      <mxGeometry x="30" y="48" width="320" height="92" as="geometry"/>
+    </mxCell>
+    <mxCell id="L_tool" value="&lt;b&gt;_panel_toolset&lt;/b&gt; = MCPToolset&lt;br&gt;StdioConnectionParams /&lt;br&gt;StdioServerParameters&lt;br&gt;Agent(tools=[ _panel_toolset ])" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B7EC7;fontColor=#22314f;" vertex="1" parent="laneL">
+      <mxGeometry x="30" y="164" width="320" height="96" as="geometry"/>
+    </mxCell>
+    <mxCell id="L_hosts" value="&lt;b&gt;Other MCP hosts&lt;/b&gt;&lt;br&gt;Claude Desktop &#183; Agents CLI&lt;br&gt;(mcp_server/client-config.example.json)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDEFF4;strokeColor=#6B7EC7;fontColor=#22314f;dashed=1;" vertex="1" parent="laneL">
+      <mxGeometry x="30" y="288" width="320" height="96" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== right lane: server ===== -->
+    <mxCell id="laneR" value="MCP SERVER &#183; FastMCP(&quot;synthetic-market-intelligence&quot;)" style="swimlane;startSize=34;whiteSpace=wrap;html=1;fillColor=#D3EFEE;strokeColor=#0C8A88;fontColor=#0a5a58;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="720" y="92" width="380" height="470" as="geometry"/>
+    </mxCell>
+    <mxCell id="R_tools" value="&lt;b&gt;TOOLS&lt;/b&gt;  (@mcp.tool)&lt;br&gt;&#8226; list_personas&lt;br&gt;&#8226; get_persona&lt;br&gt;&#8226; score_idea  (weighted by scoring_weights)&lt;br&gt;&#8226; record_citation&lt;br&gt;&#8226; list_citations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0C8A88;fontColor=#0a3d3c;align=left;spacingLeft=12;spacingTop=6;verticalAlign=top;" vertex="1" parent="laneR">
+      <mxGeometry x="30" y="48" width="320" height="164" as="geometry"/>
+    </mxCell>
+    <mxCell id="R_res" value="&lt;b&gt;RESOURCES&lt;/b&gt;  (@mcp.resource)&lt;br&gt;&#8226; persona://{persona_id}&lt;br&gt;&#8226; panel://roster" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF6F5;strokeColor=#0C8A88;fontColor=#0a3d3c;align=left;spacingLeft=12;spacingTop=6;verticalAlign=top;" vertex="1" parent="laneR">
+      <mxGeometry x="30" y="228" width="320" height="86" as="geometry"/>
+    </mxCell>
+    <mxCell id="R_transport" value="&lt;b&gt;transport&lt;/b&gt;&lt;br&gt;stdio (default)  &#183;  --http &#8594; streamable-HTTP :8765" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCEBD0;strokeColor=#B87910;fontColor=#5a3d08;" vertex="1" parent="laneR">
+      <mxGeometry x="30" y="330" width="320" height="66" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== backing stores + app link ===== -->
+    <mxCell id="APP" value="&lt;b&gt;In-process ADK focus-group workflow&lt;/b&gt;&lt;br&gt;backend/agents/graph.py  (powers the Flutter app)&lt;br&gt;graph agents use only google_search" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDF0F6;strokeColor=#6B7EC7;fontColor=#22314f;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="600" width="380" height="100" as="geometry"/>
+    </mxCell>
+    <mxCell id="PERSONAS" value="&lt;b&gt;PERSONAS&lt;/b&gt;&lt;br&gt;backend/agents/personas.py&lt;br&gt;single source of truth" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#DDF0E4;strokeColor=#2E8B57;fontColor=#194d33;boundedLbl=1;verticalAlign=top;spacingTop=8;" vertex="1" parent="1">
+      <mxGeometry x="520" y="600" width="200" height="110" as="geometry"/>
+    </mxCell>
+    <mxCell id="CIT" value="&lt;b&gt;citations_store.json&lt;/b&gt;&lt;br&gt;CITATIONS_STORE&lt;br&gt;(MCP_CITATIONS_STORE)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#EEF0F4;strokeColor=#9AA3B2;fontColor=#2b3340;boundedLbl=1;verticalAlign=top;spacingTop=8;" vertex="1" parent="1">
+      <mxGeometry x="900" y="600" width="200" height="110" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== edges ===== -->
+    <!-- left internal -->
+    <mxCell id="e_cli_tool" value="tools=[...]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6B7EC7;fontSize=10;fontColor=#22314f;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="L_cli" target="L_tool"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- transport: client spawns server over stdio -->
+    <mxCell id="t1" value="stdio &#183; spawn subprocess&#10;command = backend/.venv/bin/python&#10;args = -m backend.mcp_server.server&#10;cwd = repo root &#183; timeout 30s" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#B87910;strokeWidth=2;fontSize=10;fontColor=#5a3d08;exitX=1;exitY=0.4;entryX=0;entryY=0.35;" edge="1" parent="1" source="L_tool" target="R_tools"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="t2" value="stdio &#183; same command / args / cwd&#10;(client-config.example.json)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#B87910;strokeWidth=2;dashed=1;fontSize=10;fontColor=#5a3d08;exitX=1;exitY=0.5;entryX=0;entryY=0.75;" edge="1" parent="1" source="L_hosts" target="R_tools"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="t3" value="tool results / resource reads" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;dashed=1;strokeColor=#9AA3B2;fontSize=10;fontColor=#3a414d;exitX=0;exitY=0.15;entryX=1;entryY=0.15;" edge="1" parent="1" source="R_tools" target="L_tool"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- backing -->
+    <mxCell id="b1" value="reuses PERSONAS&#10;(never re-declared)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#2E8B57;fontSize=10;fontColor=#194d33;exitX=0.35;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="laneR" target="PERSONAS"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="b2" value="record / list_citations&#10;persist to JSON store" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#9AA3B2;fontSize=10;fontColor=#3a414d;exitX=0.7;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="laneR" target="CIT"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="b3" value="imports PERSONAS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;strokeColor=#2E8B57;fontSize=10;fontColor=#194d33;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="APP" target="PERSONAS"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- legend -->
+    <mxCell id="legend" value="&lt;b&gt;Parallel access path, not a workflow node.&lt;/b&gt;  The MCP server republishes the SAME persona panel that powers the Flutter app (backend/agents/personas.py). It is consumed by external hosts &#8212; the ADK CLI agent here, Claude Desktop, the Agents CLI &#8212; but is NOT wired into the in-process focus-group graph (graph.py), whose agents use only google_search. Citations recorded via MCP persist to a JSON file (standalone analogue of ADK tool_context.state)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7F8FB;strokeColor=#C2CAD8;fontColor=#3a414d;align=left;spacingLeft=12;spacingTop=8;fontSize=11;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="40" y="730" width="1060" height="80" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>
